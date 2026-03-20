@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'dart:math' show min;
+
 import 'cubit/game_cubit.dart';
 import 'cubit/game_state.dart';
 import 'theme.dart';
@@ -47,6 +49,9 @@ class BullpenHomePage extends StatelessWidget {
             const _ControlsRow(),
             const SizedBox(height: 8),
             const Expanded(child: _GridArea()),
+            const SizedBox(height: 8),
+            const _RemainingBullsIndicator(),
+            const _HintReasonBanner(),
             const _UndoRedoRow(),
             const SizedBox(height: 12),
           ],
@@ -168,6 +173,73 @@ class _GenerateButton extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
+// Remaining bulls indicator
+// ---------------------------------------------------------------------------
+
+class _RemainingBullsIndicator extends StatelessWidget {
+  const _RemainingBullsIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocSelector<GameCubit, GameState,
+        ({int remaining, bool visible})>(
+      selector: (state) {
+        if (state is GamePlaying && !state.solved) {
+          final total = 2 * state.board.size;
+          var placed = 0;
+          for (final row in state.marks) {
+            for (final cell in row) {
+              if (cell == CellMark.bull) placed++;
+            }
+          }
+          return (remaining: total - placed, visible: true);
+        }
+        return (remaining: 0, visible: false);
+      },
+      builder: (context, s) {
+        if (!s.visible) return const SizedBox.shrink();
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Remaining bulls',
+              style: TextStyle(
+                color: bullpenAccentColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                alignment: WrapAlignment.center,
+                children: List.generate(
+                  s.remaining,
+                  (_) => Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: bullpenAccentColor,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Undo / Redo row
 // ---------------------------------------------------------------------------
 
@@ -211,8 +283,73 @@ class _UndoRedoRow extends StatelessWidget {
                 disabledColor: bullpenAccentColor.withValues(alpha: 0.3),
                 iconSize: 28,
               ),
+              const SizedBox(width: 24),
+              IconButton(
+                onPressed: () => context.read<GameCubit>().requestHint(),
+                icon: const Icon(Icons.lightbulb_outline),
+                tooltip: 'Hint',
+                color: bullpenAccentColor,
+                iconSize: 28,
+              ),
             ],
           ),
+        );
+      },
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Hint reason banner
+// ---------------------------------------------------------------------------
+
+class _HintReasonBanner extends StatelessWidget {
+  const _HintReasonBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocSelector<GameCubit, GameState, String?>(
+      selector: (state) =>
+          state is GamePlaying ? state.hintReason : null,
+      builder: (context, reason) {
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: reason != null
+              ? Padding(
+                  key: ValueKey(reason),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      border: Border.all(
+                        color: bullpenAccentColor.withValues(alpha: 0.3),
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.lightbulb,
+                            size: 16, color: bullpenAccentColor),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            reason,
+                            style: const TextStyle(
+                              color: bullpenAccentColor,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
         );
       },
     );
@@ -247,23 +384,152 @@ class _GridArea extends StatelessWidget {
           );
         }
         if (state is GamePlaying) {
-          return Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: BullpenGrid(gameState: state),
-              ),
-              if (state.solved)
-                Positioned.fill(
-                  child: CelebrationOverlay(
-                    onDismiss: () => context.read<GameCubit>().generate(),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: BullpenGrid(gameState: state),
                   ),
-                ),
-            ],
+                  if (state.hasHint)
+                    _HintArrowOverlay(
+                      hintCell: state.hintCell!,
+                      boardSize: state.board.size,
+                      areaWidth: constraints.maxWidth,
+                      areaHeight: constraints.maxHeight,
+                    ),
+                  if (state.solved)
+                    Positioned.fill(
+                      child: CelebrationOverlay(
+                        onDismiss: () => context.read<GameCubit>().generate(),
+                      ),
+                    ),
+                ],
+              );
+            },
           );
         }
         return const SizedBox.shrink();
       },
     );
   }
+}
+
+// ---------------------------------------------------------------------------
+// Hint arrow overlay
+// ---------------------------------------------------------------------------
+
+class _HintArrowOverlay extends StatefulWidget {
+  final (int, int) hintCell;
+  final int boardSize;
+  final double areaWidth;
+  final double areaHeight;
+
+  const _HintArrowOverlay({
+    required this.hintCell,
+    required this.boardSize,
+    required this.areaWidth,
+    required this.areaHeight,
+  });
+
+  @override
+  State<_HintArrowOverlay> createState() => _HintArrowOverlayState();
+}
+
+class _HintArrowOverlayState extends State<_HintArrowOverlay>
+    with TickerProviderStateMixin {
+  late final AnimationController _bounceController;
+  late final Animation<double> _bounceOffset;
+  late final AnimationController _fadeController;
+  late final Animation<double> _fadeIn;
+
+  @override
+  void initState() {
+    super.initState();
+    _bounceController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    )..repeat(reverse: true);
+    _bounceOffset = Tween<double>(begin: 0, end: 10).animate(
+      CurvedAnimation(parent: _bounceController, curve: Curves.easeInOut),
+    );
+
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    )..forward();
+    _fadeIn = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
+  }
+
+  @override
+  void dispose() {
+    _bounceController.dispose();
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final (row, col) = widget.hintCell;
+    const padding = 12.0;
+    final availW = widget.areaWidth - padding * 2;
+    final availH = widget.areaHeight - padding * 2;
+    final maxSide = min(availW, availH);
+    final gridSide = maxSide * gridFraction;
+    final cellSize = gridSide / widget.boardSize;
+    final gridContainer = gridSide + outerBorderWidth * 2;
+
+    // Center offset within the padded area, then add the padding back.
+    final originX = padding + (availW - gridContainer) / 2 + outerBorderWidth;
+    final originY = padding + (availH - gridContainer) / 2 + outerBorderWidth;
+
+    final cellCenterX = originX + (col + 0.5) * cellSize;
+    final cellTopY = originY + row * cellSize;
+
+    final arrowW = cellSize * 0.5;
+    final arrowH = cellSize * 0.6;
+
+    return AnimatedBuilder(
+      animation: Listenable.merge([_bounceOffset, _fadeIn]),
+      builder: (context, child) {
+        return Positioned(
+          left: cellCenterX - arrowW / 2,
+          top: cellTopY - arrowH - 4 - _bounceOffset.value,
+          child: Opacity(
+            opacity: _fadeIn.value,
+            child: CustomPaint(
+              size: Size(arrowW, arrowH),
+              painter: _ArrowPainter(color: bullpenAccentColor),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ArrowPainter extends CustomPainter {
+  final Color color;
+  const _ArrowPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path()
+      ..moveTo(size.width / 2, size.height) // bottom center (tip)
+      ..lineTo(0, 0) // top left
+      ..lineTo(size.width, 0) // top right
+      ..close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_ArrowPainter oldDelegate) =>
+      oldDelegate.color != color;
 }

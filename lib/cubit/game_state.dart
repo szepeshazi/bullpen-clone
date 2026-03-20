@@ -52,6 +52,12 @@ class GamePlaying extends GameState {
   /// Redo stack: forward mark snapshots (most recent last).
   final List<List<List<CellMark>>> redoStack;
 
+  /// The cell currently highlighted by a hint, or `null`.
+  final (int, int)? hintCell;
+
+  /// Human-readable reason for the current hint, or `null`.
+  final String? hintReason;
+
   GamePlaying({
     required this.board,
     required this.solution,
@@ -62,7 +68,12 @@ class GamePlaying extends GameState {
     this.solved = false,
     this.undoStack = const [],
     this.redoStack = const [],
+    this.hintCell,
+    this.hintReason,
   });
+
+  /// Whether a hint is currently being displayed.
+  bool get hasHint => hintCell != null;
 
   /// Creates the initial playing state from a generated board and solution.
   factory GamePlaying.initial({
@@ -82,6 +93,9 @@ class GamePlaying extends GameState {
   }
 
   /// Creates a copy with updated fields.
+  ///
+  /// Set [clearHint] to `true` to reset [hintCell] and [hintReason] to `null`.
+  /// This sidesteps the `??` ambiguity for nullable fields.
   GamePlaying copyWith({
     List<List<CellMark>>? marks,
     Set<(int, int)>? violations,
@@ -89,6 +103,9 @@ class GamePlaying extends GameState {
     bool? solved,
     List<List<List<CellMark>>>? undoStack,
     List<List<List<CellMark>>>? redoStack,
+    (int, int)? hintCell,
+    String? hintReason,
+    bool clearHint = false,
   }) {
     return GamePlaying(
       board: board,
@@ -100,6 +117,8 @@ class GamePlaying extends GameState {
       solved: solved ?? this.solved,
       undoStack: undoStack ?? this.undoStack,
       redoStack: redoStack ?? this.redoStack,
+      hintCell: clearHint ? null : (hintCell ?? this.hintCell),
+      hintReason: clearHint ? null : (hintReason ?? this.hintReason),
     );
   }
 

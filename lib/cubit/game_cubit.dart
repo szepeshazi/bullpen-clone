@@ -83,6 +83,25 @@ class GameCubit extends Cubit<GameState> {
   }
 
   // ---------------------------------------------------------------------------
+  // Hints
+  // ---------------------------------------------------------------------------
+
+  /// Computes and displays a hint for the next excludable cell.
+  void requestHint() {
+    final current = state;
+    if (current is! GamePlaying || current.solved) return;
+
+    final hint = findHint(current.board, current.marks);
+    if (hint == null) return;
+
+    emit(current.copyWith(
+      hintCell: (hint.row, hint.col),
+      hintReason: hint.reason,
+      version: current.version + 1,
+    ));
+  }
+
+  // ---------------------------------------------------------------------------
   // Player interaction
   // ---------------------------------------------------------------------------
 
@@ -106,10 +125,11 @@ class GameCubit extends Cubit<GameState> {
 
     emit(current.copyWith(
       marks: newMarks,
-      violations: const {},
+      violations: _findViolations(current.board, newMarks),
       version: current.version + 1,
       undoStack: _pushUndo(current.undoStack, _cloneMarks(current.marks)),
       redoStack: const [],
+      clearHint: true,
     ));
   }
 
@@ -132,8 +152,9 @@ class GameCubit extends Cubit<GameState> {
 
     emit(current.copyWith(
       marks: newMarks,
-      violations: const {},
+      violations: _findViolations(current.board, newMarks),
       version: current.version + 1,
+      clearHint: true,
     ));
     return true;
   }
@@ -162,8 +183,9 @@ class GameCubit extends Cubit<GameState> {
 
     emit(current.copyWith(
       marks: newMarks,
-      violations: const {},
+      violations: _findViolations(current.board, newMarks),
       version: current.version + 1,
+      clearHint: true,
     ));
   }
 
@@ -181,6 +203,7 @@ class GameCubit extends Cubit<GameState> {
       undoStack: _pushUndo(current.undoStack, snapshot),
       redoStack: const [],
       version: current.version + 1,
+      clearHint: true,
     ));
   }
 
@@ -196,14 +219,16 @@ class GameCubit extends Cubit<GameState> {
     final newUndoStack = _pushUndo(current.undoStack, _cloneMarks(current.marks));
 
     if (mark == CellMark.bull) {
-      // Remove the bull.
+      // Remove the bull, then recheck for remaining violations.
       newMarks[row][col] = CellMark.empty;
+      final remaining = _findViolations(current.board, newMarks);
       emit(current.copyWith(
         marks: newMarks,
-        violations: const {},
+        violations: remaining,
         version: current.version + 1,
         undoStack: newUndoStack,
         redoStack: const [],
+        clearHint: true,
       ));
       return;
     }
@@ -221,6 +246,7 @@ class GameCubit extends Cubit<GameState> {
         version: current.version + 1,
         undoStack: newUndoStack,
         redoStack: const [],
+        clearHint: true,
       ));
       return;
     }
@@ -234,6 +260,7 @@ class GameCubit extends Cubit<GameState> {
       solved: solved,
       undoStack: newUndoStack,
       redoStack: const [],
+      clearHint: true,
     ));
   }
 
@@ -247,11 +274,12 @@ class GameCubit extends Cubit<GameState> {
 
     emit(current.copyWith(
       marks: previousMarks,
-      violations: const {},
+      violations: _findViolations(current.board, previousMarks),
       version: current.version + 1,
       solved: false,
       undoStack: newUndo,
       redoStack: [...current.redoStack, _cloneMarks(current.marks)],
+      clearHint: true,
     ));
   }
 
@@ -275,6 +303,7 @@ class GameCubit extends Cubit<GameState> {
       solved: solved,
       undoStack: _pushUndo(current.undoStack, _cloneMarks(current.marks)),
       redoStack: newRedo,
+      clearHint: true,
     ));
   }
 
@@ -286,6 +315,7 @@ class GameCubit extends Cubit<GameState> {
     emit(current.copyWith(
       violations: const {},
       version: current.version + 1,
+      clearHint: true,
     ));
   }
 

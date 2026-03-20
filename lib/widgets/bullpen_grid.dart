@@ -38,10 +38,10 @@ const _penColors = <Color>[
 const _penBorderColor = bullpenAccentColor;
 
 /// Grid layout constants.
-const _gridFraction = 0.9;
+const gridFraction = 0.9;
 const _penBorderWidth = 1.0;
 const _cellBorderWidth = 0.75;
-const _outerBorderWidth = 3.5;
+const outerBorderWidth = 3.5;
 const _outerBorderRadius = 12.0;
 const _bullPaddingFraction = 0.12;
 const _dotSizeFraction = 0.15;
@@ -224,10 +224,10 @@ class _BullpenGridState extends State<BullpenGrid> {
         final maxSide = constraints.maxWidth < constraints.maxHeight
             ? constraints.maxWidth
             : constraints.maxHeight;
-        final gridSide = maxSide * _gridFraction;
+        final gridSide = maxSide * gridFraction;
         _cellSize = gridSide / board.size;
         // The grid origin within the outer container (accounts for border).
-        _gridOrigin = Offset(_outerBorderWidth, _outerBorderWidth);
+        _gridOrigin = Offset(outerBorderWidth, outerBorderWidth);
 
         return Center(
           child: Listener(
@@ -236,18 +236,18 @@ class _BullpenGridState extends State<BullpenGrid> {
             onPointerUp: _onPointerUp,
             onPointerCancel: _onPointerCancel,
             child: Container(
-              width: gridSide + _outerBorderWidth * 2,
-              height: gridSide + _outerBorderWidth * 2,
+              width: gridSide + outerBorderWidth * 2,
+              height: gridSide + outerBorderWidth * 2,
               decoration: BoxDecoration(
                 border: Border.all(
                   color: _penBorderColor,
-                  width: _outerBorderWidth,
+                  width: outerBorderWidth,
                 ),
                 borderRadius: BorderRadius.circular(_outerBorderRadius),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(
-                    _outerBorderRadius - _outerBorderWidth),
+                    _outerBorderRadius - outerBorderWidth),
                 child: SizedBox(
                   width: gridSide,
                   height: gridSide,
@@ -317,7 +317,7 @@ class _CellWidget extends StatelessWidget {
     switch (mark) {
       case CellMark.bull:
         cellContent = isViolation
-            ? _ShakingBull(cellSize: cellSize)
+            ? _ShakingBull(cellSize: cellSize, version: gameState.version)
             : Padding(
                 padding: EdgeInsets.all(cellSize * _bullPaddingFraction),
                 child: SvgPicture.asset(_bullSvgAsset, fit: BoxFit.contain),
@@ -378,7 +378,8 @@ class _CellWidget extends StatelessWidget {
 
 class _ShakingBull extends StatefulWidget {
   final double cellSize;
-  const _ShakingBull({required this.cellSize});
+  final int version;
+  const _ShakingBull({required this.cellSize, required this.version});
 
   @override
   State<_ShakingBull> createState() => _ShakingBullState();
@@ -429,23 +430,23 @@ class _ShakingBullState extends State<_ShakingBull>
     super.initState();
     final rng = Random();
 
-    // Shake — randomised 2D tremor, matches smoke duration.
+    // Shake — short, intense tremor.
     _shakeController = AnimationController(
-      duration: const Duration(milliseconds: 2400),
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    _shakeX = _randomShake(rng, 18, 10).animate(
+    _shakeX = _randomShake(rng, 18, 16).animate(
       CurvedAnimation(parent: _shakeController, curve: Curves.easeOut),
     );
-    _shakeY = _randomShake(rng, 18, 5).animate(
+    _shakeY = _randomShake(rng, 18, 8).animate(
       CurvedAnimation(parent: _shakeController, curve: Curves.easeOut),
     );
 
-    // Red tint: ramps up fast, stays through most of animation, fades out.
+    // Red glow: ramps up instantly, holds at high intensity, stays until
+    // the conflict is resolved (widget unmounts).
     _redAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0, end: 0.45), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: 0.45, end: 0.45), weight: 5),
-      TweenSequenceItem(tween: Tween(begin: 0.45, end: 0), weight: 2),
+      TweenSequenceItem(tween: Tween(begin: 0, end: 0.75), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 0.75, end: 0.70), weight: 7),
     ]).animate(_shakeController);
 
     // Smoke puffs — 3 repeated bursts.
@@ -460,13 +461,16 @@ class _ShakingBullState extends State<_ShakingBull>
 
     _shakeController.forward();
     _smokeController.forward();
+  }
 
-    // Clear violations after both animations finish.
-    _smokeController.addStatusListener((status) {
-      if (status == AnimationStatus.completed && mounted) {
-        context.read<GameCubit>().clearViolations();
-      }
-    });
+  @override
+  void didUpdateWidget(covariant _ShakingBull oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.version != widget.version) {
+      // New violation event — restart the shake and smoke.
+      _shakeController.forward(from: 0);
+      _smokeController.forward(from: 0);
+    }
   }
 
   @override
@@ -491,17 +495,31 @@ class _ShakingBullState extends State<_ShakingBull>
             children: [
               // Smoke puffs — positioned near the nostrils (bottom-center).
               ..._buildSmokePuffs(size),
-              // Bull with shake + red tint.
+              // Bull with shake + glowing red tint.
               Transform.translate(
                 offset: Offset(_shakeX.value, _shakeY.value),
                 child: Padding(
                   padding: EdgeInsets.all(size * _bullPaddingFraction),
-                  child: ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                      Colors.red.withValues(alpha: _redAnimation.value),
-                      BlendMode.srcATop,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.red.withValues(
+                            alpha: _redAnimation.value * 0.8,
+                          ),
+                          blurRadius: size * 0.3,
+                          spreadRadius: size * 0.05,
+                        ),
+                      ],
                     ),
-                    child: child,
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        Colors.red.withValues(alpha: _redAnimation.value),
+                        BlendMode.srcATop,
+                      ),
+                      child: child,
+                    ),
                   ),
                 ),
               ),

@@ -1,5 +1,6 @@
 export 'adjacency.dart';
 export 'bull_location.dart';
+export 'hint_finder.dart';
 export 'cell.dart';
 export 'grid_generator.dart';
 export 'grid_solver.dart';
