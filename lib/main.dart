@@ -486,22 +486,27 @@ class _HintArrowOverlayState extends State<_HintArrowOverlay>
     final originY = padding + (availH - gridContainer) / 2 + outerBorderWidth;
 
     final cellCenterX = originX + (col + 0.5) * cellSize;
-    final cellTopY = originY + row * cellSize;
+    final cellCenterY = originY + (row + 0.5) * cellSize;
 
-    final arrowW = cellSize * 0.5;
-    final arrowH = cellSize * 0.6;
+    final arrowLen = cellSize * 0.55;
 
     return AnimatedBuilder(
       animation: Listenable.merge([_bounceOffset, _fadeIn]),
       builder: (context, child) {
+        // Bounce diagonally: arrow slides from bottom-right toward top-left.
+        // At rest (bounce=0) the tip sits exactly at cell center.
+        final bounce = _bounceOffset.value;
+        final dx = bounce * 0.707;
+        final dy = bounce * 0.707;
+
         return Positioned(
-          left: cellCenterX - arrowW / 2,
-          top: cellTopY - arrowH - 4 - _bounceOffset.value,
+          left: cellCenterX + dx,
+          top: cellCenterY + dy,
           child: Opacity(
             opacity: _fadeIn.value,
             child: CustomPaint(
-              size: Size(arrowW, arrowH),
-              painter: _ArrowPainter(color: bullpenAccentColor),
+              size: Size(arrowLen, arrowLen),
+              painter: _DiagonalArrowPainter(color: bullpenAccentColor),
             ),
           ),
         );
@@ -510,26 +515,49 @@ class _HintArrowOverlayState extends State<_HintArrowOverlay>
   }
 }
 
-class _ArrowPainter extends CustomPainter {
+class _DiagonalArrowPainter extends CustomPainter {
   final Color color;
-  const _ArrowPainter({required this.color});
+  const _DiagonalArrowPainter({required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
+    final s = size.width; // square canvas
 
+    // Mouse-pointer cursor shape pointing top-left, symmetric along
+    // the diagonal (y=x) axis. Tip at (0, 0), body extends down-right.
     final path = Path()
-      ..moveTo(size.width / 2, size.height) // bottom center (tip)
-      ..lineTo(0, 0) // top left
-      ..lineTo(size.width, 0) // top right
-      ..close();
+      ..moveTo(0, 0) // tip
+      // Left side — arrowhead.
+      ..lineTo(0, s * 0.58) // left edge down
+      ..lineTo(s * 0.18, s * 0.38) // left notch inward
+      // Tail — constant width, parallel to diagonal.
+      ..lineTo(s * 0.74, s * 0.94) // tail end left
+      ..lineTo(s * 0.94, s * 0.74) // tail end right
+      // Right side — arrowhead (mirrored).
+      ..lineTo(s * 0.38, s * 0.18) // right notch inward
+      ..lineTo(s * 0.58, 0) // right edge
+      ..close(); // back to tip
 
-    canvas.drawPath(path, paint);
+    // Fill.
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.fill,
+    );
+
+    // Outline for definition.
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = const Color(0xFF000000)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = s * 0.03
+        ..strokeJoin = StrokeJoin.round,
+    );
   }
 
   @override
-  bool shouldRepaint(_ArrowPainter oldDelegate) =>
+  bool shouldRepaint(_DiagonalArrowPainter oldDelegate) =>
       oldDelegate.color != color;
 }

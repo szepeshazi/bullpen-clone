@@ -196,5 +196,115 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
     }
   }
 
+  // Rule 6: Pen look-ahead — placing a bull in this cell would leave no valid
+  // spot for the pen's remaining bull(s), so it can be excluded.
+  for (final pen in board.pens) {
+    final needed = 2 - (penCounts[pen.id] ?? 0);
+    if (needed != 2) continue; // Only when pen still needs both bulls.
+
+    final validInPen = <(int, int)>[
+      for (final cell in pen.cells)
+        if (isValid(cell.row, cell.col)) (cell.row, cell.col),
+    ];
+
+    for (final (r, c) in validInPen) {
+      // Simulate placing a bull at (r, c). Check if any partner remains.
+      bool hasPartner = false;
+      for (final (r2, c2) in validInPen) {
+        if (r2 == r && c2 == c) continue;
+        // Adjacent to simulated bull → invalid partner.
+        if ((r2 - r).abs() <= 1 && (c2 - c).abs() <= 1) continue;
+        // Same row and row would be full → invalid partner.
+        if (r2 == r && rowCounts[r] + 1 >= 2) continue;
+        // Same col and col would be full → invalid partner.
+        if (c2 == c && colCounts[c] + 1 >= 2) continue;
+        hasPartner = true;
+        break;
+      }
+      if (!hasPartner) {
+        return Hint(
+          row: r,
+          col: c,
+          reason: 'Placing a bull here would leave no valid spot '
+              'for the second bull in this pen',
+        );
+      }
+    }
+  }
+
+  // Rule 7: Row look-ahead — placing a bull here would leave no valid spot
+  // for the row's remaining bull(s).
+  for (int r = 0; r < size; r++) {
+    final needed = 2 - rowCounts[r];
+    if (needed != 2) continue;
+
+    final validInRow = <(int, int)>[
+      for (int c = 0; c < size; c++)
+        if (isValid(r, c)) (r, c),
+    ];
+
+    for (final (_, c) in validInRow) {
+      bool hasPartner = false;
+      for (final (_, c2) in validInRow) {
+        if (c2 == c) continue;
+        // Adjacent in same row → invalid partner.
+        if ((c2 - c).abs() <= 1) continue;
+        // Partner's column already full → invalid partner.
+        if (colCounts[c2] >= 2) continue;
+        // Same pen and pen would be full after placing at (r, c).
+        final penId1 = board.cellAt(r, c).penId;
+        final penId2 = board.cellAt(r, c2).penId;
+        if (penId1 == penId2 && (penCounts[penId1] ?? 0) + 1 >= 2) continue;
+        hasPartner = true;
+        break;
+      }
+      if (!hasPartner) {
+        return Hint(
+          row: r,
+          col: c,
+          reason: 'Placing a bull here would leave no valid spot '
+              'for the second bull in row ${r + 1}',
+        );
+      }
+    }
+  }
+
+  // Rule 8: Column look-ahead — placing a bull here would leave no valid spot
+  // for the column's remaining bull(s).
+  for (int c = 0; c < size; c++) {
+    final needed = 2 - colCounts[c];
+    if (needed != 2) continue;
+
+    final validInCol = <(int, int)>[
+      for (int r = 0; r < size; r++)
+        if (isValid(r, c)) (r, c),
+    ];
+
+    for (final (r, _) in validInCol) {
+      bool hasPartner = false;
+      for (final (r2, _) in validInCol) {
+        if (r2 == r) continue;
+        // Adjacent in same column → invalid partner.
+        if ((r2 - r).abs() <= 1) continue;
+        // Partner's row already full → invalid partner.
+        if (rowCounts[r2] >= 2) continue;
+        // Same pen and pen would be full after placing at (r, c).
+        final penId1 = board.cellAt(r, c).penId;
+        final penId2 = board.cellAt(r2, c).penId;
+        if (penId1 == penId2 && (penCounts[penId1] ?? 0) + 1 >= 2) continue;
+        hasPartner = true;
+        break;
+      }
+      if (!hasPartner) {
+        return Hint(
+          row: r,
+          col: c,
+          reason: 'Placing a bull here would leave no valid spot '
+              'for the second bull in column ${c + 1}',
+        );
+      }
+    }
+  }
+
   return null;
 }
