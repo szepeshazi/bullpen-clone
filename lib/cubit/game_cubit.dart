@@ -97,8 +97,28 @@ class GameCubit extends Cubit<GameState> {
     emit(current.copyWith(
       hintCell: (hint.row, hint.col),
       hintReason: hint.reason,
+      hintType: hint.type,
       version: current.version + 1,
     ));
+  }
+
+  /// Applies the current hint (dot for exclude, bull for mustPlace),
+  /// then immediately requests the next hint.
+  void applyHint() {
+    final current = state;
+    if (current is! GamePlaying || current.solved || !current.hasHint) return;
+
+    final (row, col) = current.hintCell!;
+    final type = current.hintType;
+
+    if (type == HintType.mustPlace) {
+      toggleBull(row, col);
+    } else {
+      toggleDot(row, col);
+    }
+
+    // After applying, request the next hint.
+    requestHint();
   }
 
   // ---------------------------------------------------------------------------

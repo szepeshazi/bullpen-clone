@@ -5,6 +5,7 @@ import 'dart:math' show min;
 
 import 'cubit/game_cubit.dart';
 import 'cubit/game_state.dart';
+import 'models/hint_finder.dart' show HintType;
 import 'theme.dart';
 import 'widgets/bullpen_grid.dart';
 
@@ -51,7 +52,6 @@ class BullpenHomePage extends StatelessWidget {
             const Expanded(child: _GridArea()),
             const SizedBox(height: 8),
             const _RemainingBullsIndicator(),
-            const _HintReasonBanner(),
             const _UndoRedoRow(),
             const SizedBox(height: 12),
           ],
@@ -308,10 +308,16 @@ class _HintReasonBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<GameCubit, GameState, String?>(
-      selector: (state) =>
-          state is GamePlaying ? state.hintReason : null,
-      builder: (context, reason) {
+    return BlocSelector<GameCubit, GameState, ({String? reason, HintType? type})>(
+      selector: (state) => state is GamePlaying
+          ? (reason: state.hintReason, type: state.hintType)
+          : (reason: null, type: null),
+      builder: (context, hint) {
+        final reason = hint.reason;
+        final isMustPlace = hint.type == HintType.mustPlace;
+        final color = isMustPlace
+            ? const Color(0xFF2E7D32)
+            : bullpenAccentColor;
         return AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
           child: reason != null
@@ -325,24 +331,37 @@ class _HintReasonBanner extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.7),
                       border: Border.all(
-                        color: bullpenAccentColor.withValues(alpha: 0.3),
+                        color: color.withValues(alpha: 0.3),
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.lightbulb,
-                            size: 16, color: bullpenAccentColor),
+                        Icon(
+                          isMustPlace ? Icons.add_circle : Icons.lightbulb,
+                          size: 16,
+                          color: color,
+                        ),
                         const SizedBox(width: 6),
                         Flexible(
                           child: Text(
                             reason,
-                            style: const TextStyle(
-                              color: bullpenAccentColor,
+                            style: TextStyle(
+                              color: color,
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                             ),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        GestureDetector(
+                          onTap: () =>
+                              context.read<GameCubit>().applyHint(),
+                          child: Icon(
+                            Icons.play_circle_filled,
+                            size: 22,
+                            color: color,
                           ),
                         ),
                       ],
@@ -396,10 +415,17 @@ class _GridArea extends StatelessWidget {
                   if (state.hasHint)
                     _HintArrowOverlay(
                       hintCell: state.hintCell!,
+                      hintType: state.hintType ?? HintType.exclude,
                       boardSize: state.board.size,
                       areaWidth: constraints.maxWidth,
                       areaHeight: constraints.maxHeight,
                     ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: _HintReasonBanner(),
+                  ),
                   if (state.solved)
                     Positioned.fill(
                       child: CelebrationOverlay(
@@ -423,12 +449,14 @@ class _GridArea extends StatelessWidget {
 
 class _HintArrowOverlay extends StatefulWidget {
   final (int, int) hintCell;
+  final HintType hintType;
   final int boardSize;
   final double areaWidth;
   final double areaHeight;
 
   const _HintArrowOverlay({
     required this.hintCell,
+    required this.hintType,
     required this.boardSize,
     required this.areaWidth,
     required this.areaHeight,
@@ -506,7 +534,11 @@ class _HintArrowOverlayState extends State<_HintArrowOverlay>
             opacity: _fadeIn.value,
             child: CustomPaint(
               size: Size(arrowLen, arrowLen),
-              painter: _DiagonalArrowPainter(color: bullpenAccentColor),
+              painter: _DiagonalArrowPainter(
+                color: widget.hintType == HintType.mustPlace
+                    ? const Color(0xFF2E7D32)
+                    : bullpenAccentColor,
+              ),
             ),
           ),
         );

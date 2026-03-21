@@ -58,6 +58,9 @@ class GamePlaying extends GameState {
   /// Human-readable reason for the current hint, or `null`.
   final String? hintReason;
 
+  /// Whether the hint is an exclusion or a must-place hint.
+  final HintType? hintType;
+
   GamePlaying({
     required this.board,
     required this.solution,
@@ -70,6 +73,7 @@ class GamePlaying extends GameState {
     this.redoStack = const [],
     this.hintCell,
     this.hintReason,
+    this.hintType,
   });
 
   /// Whether a hint is currently being displayed.
@@ -105,6 +109,7 @@ class GamePlaying extends GameState {
     List<List<List<CellMark>>>? redoStack,
     (int, int)? hintCell,
     String? hintReason,
+    HintType? hintType,
     bool clearHint = false,
   }) {
     return GamePlaying(
@@ -119,6 +124,7 @@ class GamePlaying extends GameState {
       redoStack: redoStack ?? this.redoStack,
       hintCell: clearHint ? null : (hintCell ?? this.hintCell),
       hintReason: clearHint ? null : (hintReason ?? this.hintReason),
+      hintType: clearHint ? null : (hintType ?? this.hintType),
     );
   }
 
