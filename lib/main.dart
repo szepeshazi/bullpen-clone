@@ -6,10 +6,17 @@ import 'dart:math' show min;
 import 'cubit/game_cubit.dart';
 import 'cubit/game_state.dart';
 import 'models/hint_finder.dart' show HintType;
+import 'pages/main_page.dart';
 import 'theme.dart';
 import 'widgets/bullpen_grid.dart';
 
 void main() {
+  registerGamePageBuilder((gridSize) {
+    return BlocProvider(
+      create: (_) => GameCubit(initialSize: gridSize),
+      child: const BullpenHomePage(),
+    );
+  });
   runApp(const BullpenApp());
 }
 
@@ -29,10 +36,7 @@ class BullpenApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: BlocProvider(
-        create: (_) => GameCubit(),
-        child: const BullpenHomePage(),
-      ),
+      home: const MainPage(),
     );
   }
 }
@@ -47,12 +51,12 @@ class BullpenHomePage extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 12),
-            const _ControlsRow(),
-            const SizedBox(height: 8),
             const Expanded(child: _GridArea()),
             const SizedBox(height: 8),
             const _RemainingBullsIndicator(),
             const _UndoRedoRow(),
+            const SizedBox(height: 8),
+            _BackToMainButton(),
             const SizedBox(height: 12),
           ],
         ),
@@ -62,111 +66,34 @@ class BullpenHomePage extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Controls row
+// Back to main page
 // ---------------------------------------------------------------------------
 
-class _ControlsRow extends StatelessWidget {
-  const _ControlsRow();
-
+class _BackToMainButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          const Text(
-            'Grid size',
-            style: TextStyle(
-              color: bullpenAccentColor,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+    return TextButton.icon(
+      onPressed: () {
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const MainPage(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            transitionDuration: const Duration(milliseconds: 400),
           ),
-          const SizedBox(width: 12),
-          const _GridSizeDropdown(),
-          const Spacer(),
-          const _GenerateButton(),
-        ],
-      ),
-    );
-  }
-}
-
-class _GridSizeDropdown extends StatelessWidget {
-  const _GridSizeDropdown();
-
-  @override
-  Widget build(BuildContext context) {
-    final gridSize = context.select<GameCubit, int>((c) => c.gridSize);
-    final isGenerating = context.select<GameCubit, bool>(
-      (c) => c.state is GameGenerating,
-    );
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.7),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: bullpenAccentColor.withValues(alpha: 0.4)),
-      ),
-      child: DropdownButton<int>(
-        value: gridSize,
-        underline: const SizedBox.shrink(),
-        isDense: true,
-        dropdownColor: Colors.white,
-        style: const TextStyle(
-          color: bullpenAccentColor,
-          fontSize: 16,
+        );
+      },
+      icon: const Icon(Icons.arrow_back, size: 18),
+      label: const Text('Back to Main Page'),
+      style: TextButton.styleFrom(
+        foregroundColor: bullpenAccentColor,
+        textStyle: const TextStyle(
+          fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
-        items: List.generate(9, (i) {
-          final size = i + 8;
-          return DropdownMenuItem(
-            value: size,
-            child: Text('$size × $size'),
-          );
-        }),
-        onChanged: isGenerating
-            ? null
-            : (v) {
-                if (v != null) context.read<GameCubit>().setGridSize(v);
-              },
-      ),
-    );
-  }
-}
-
-class _GenerateButton extends StatelessWidget {
-  const _GenerateButton();
-
-  @override
-  Widget build(BuildContext context) {
-    final isGenerating = context.select<GameCubit, bool>(
-      (c) => c.state is GameGenerating,
-    );
-
-    return ElevatedButton.icon(
-      onPressed: isGenerating
-          ? null
-          : () => context.read<GameCubit>().generate(),
-      icon: isGenerating
-          ? const SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
-            )
-          : const Icon(Icons.refresh, size: 20),
-      label: Text(isGenerating ? 'Generating…' : 'Generate'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: bullpenAccentColor,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       ),
     );
   }
@@ -429,7 +356,22 @@ class _GridArea extends StatelessWidget {
                   if (state.solved)
                     Positioned.fill(
                       child: CelebrationOverlay(
-                        onDismiss: () => context.read<GameCubit>().generate(),
+                        onDismiss: () {
+                          Navigator.of(context).pushReplacement(
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation,
+                                      secondaryAnimation) =>
+                                  const MainPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                    opacity: animation, child: child);
+                              },
+                              transitionDuration:
+                                  const Duration(milliseconds: 400),
+                            ),
+                          );
+                        },
                       ),
                     ),
                 ],
