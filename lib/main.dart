@@ -253,8 +253,8 @@ class _HintReasonBanner extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.only(
+                        left: 12, top: 0, bottom: 0, right: 0),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.7),
                       border: Border.all(
@@ -263,7 +263,6 @@ class _HintReasonBanner extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
-                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           isMustPlace ? Icons.add_circle : Icons.lightbulb,
@@ -271,7 +270,7 @@ class _HintReasonBanner extends StatelessWidget {
                           color: color,
                         ),
                         const SizedBox(width: 6),
-                        Flexible(
+                        Expanded(
                           child: Text(
                             reason,
                             style: TextStyle(
@@ -281,14 +280,23 @@ class _HintReasonBanner extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 4),
                         GestureDetector(
+                          behavior: HitTestBehavior.opaque,
                           onTap: () =>
                               context.read<GameCubit>().applyHint(),
-                          child: Icon(
-                            Icons.play_circle_filled,
-                            size: 22,
-                            color: color,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: SizedBox(
+                              width: 48,
+                              height: 48,
+                              child: Center(
+                                child: Icon(
+                                  Icons.play_circle_filled,
+                                  size: 28,
+                                  color: color,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
