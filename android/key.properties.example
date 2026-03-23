@@ -1,0 +1,4 @@
+storeFile=bullpen-release.jks
+storePassword=YOUR_STORE_PASSWORD
+keyAlias=bullpen
+keyPassword=YOUR_KEY_PASSWORD

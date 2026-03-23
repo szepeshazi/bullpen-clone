@@ -8,7 +8,7 @@
 PRODUCT_NAME = bullpen
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.bullpen
+PRODUCT_BUNDLE_IDENTIFIER = org.notnoise.bullpen
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 org.notnoise. All rights reserved.

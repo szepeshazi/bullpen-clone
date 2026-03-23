@@ -1,4 +1,4 @@
-package com.example.bullpen
+package org.notnoise.bullpen
 
 import io.flutter.embedding.android.FlutterActivity
 
