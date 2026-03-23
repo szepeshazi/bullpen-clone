@@ -162,6 +162,99 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
     colToPens[c] = pens;
   }
 
+  // --- Essential cells: cells whose exclusion would break a group. ---
+  // These are implicitly forced and must not be returned as exclusion hints
+  // (they will be surfaced later as mustPlace hints in Rules 8–9).
+  //
+  // A cell is essential if removing it from its row, column, or pen would
+  // leave that group without enough valid cells or without any feasible
+  // non-adjacent pair.
+  bool groupFeasibleWithout(List<(int, int)> candidates, int needed) {
+    if (candidates.length < needed) return false;
+    if (needed <= 1) return true;
+    for (int i = 0; i < candidates.length; i++) {
+      final (r1, c1) = candidates[i];
+      for (int j = i + 1; j < candidates.length; j++) {
+        final (r2, c2) = candidates[j];
+        if ((r1 - r2).abs() <= 1 && (c1 - c2).abs() <= 1) continue;
+        if (r1 == r2 && rowCounts[r1] + 2 > 2) continue;
+        if (r1 != r2 && (rowCounts[r1] >= 2 || rowCounts[r2] >= 2)) continue;
+        if (c1 == c2 && colCounts[c1] + 2 > 2) continue;
+        if (c1 != c2 && (colCounts[c1] >= 2 || colCounts[c2] >= 2)) continue;
+        final p1 = board.cellAt(r1, c1).penId;
+        final p2 = board.cellAt(r2, c2).penId;
+        if (p1 == p2 && (penCounts[p1] ?? 0) + 2 > 2) continue;
+        if (p1 != p2 &&
+            ((penCounts[p1] ?? 0) >= 2 || (penCounts[p2] ?? 0) >= 2)) {
+          continue;
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  final essential = <(int, int)>{};
+  for (int r = 0; r < size; r++) {
+    for (int c = 0; c < size; c++) {
+      if (!valid[r][c]) continue;
+      final pid = board.cellAt(r, c).penId;
+
+      // A cell is essential for a group only if the group IS feasible
+      // with the cell but would NOT be feasible without it. If the group
+      // is already infeasible (e.g., all cells mutually adjacent), the
+      // cell can't be a bull anyway — don't protect it.
+
+      // Check row.
+      final rn = 2 - rowCounts[r];
+      if (rn > 0) {
+        final all = <(int, int)>[
+          for (int c2 = 0; c2 < size; c2++)
+            if (valid[r][c2]) (r, c2),
+        ];
+        final others = all.where((e) => e.$2 != c).toList();
+        if (groupFeasibleWithout(all, rn) &&
+            !groupFeasibleWithout(others, rn)) {
+          essential.add((r, c));
+          continue;
+        }
+      }
+
+      // Check column.
+      final cn = 2 - colCounts[c];
+      if (cn > 0) {
+        final all = <(int, int)>[
+          for (int r2 = 0; r2 < size; r2++)
+            if (valid[r2][c]) (r2, c),
+        ];
+        final others = all.where((e) => e.$1 != r).toList();
+        if (groupFeasibleWithout(all, cn) &&
+            !groupFeasibleWithout(others, cn)) {
+          essential.add((r, c));
+          continue;
+        }
+      }
+
+      // Check pen.
+      final pn = 2 - (penCounts[pid] ?? 0);
+      if (pn > 0) {
+        final pen = board.penById(pid);
+        final all = <(int, int)>[
+          for (final cell in pen.cells)
+            if (valid[cell.row][cell.col]) (cell.row, cell.col),
+        ];
+        final others = all
+            .where((e) => !(e.$1 == r && e.$2 == c))
+            .toList();
+        if (groupFeasibleWithout(all, pn) &&
+            !groupFeasibleWithout(others, pn)) {
+          essential.add((r, c));
+          continue;
+        }
+      }
+    }
+  }
+
   // Rule 5: Naked sets (pigeonhole) — if N pens are fully contained within
   // N rows (or columns), those pens exhaust all bull slots in those rows,
   // so no other pen can place bulls there.
@@ -189,7 +282,8 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
         for (final r in rowSubset) {
           for (int c = 0; c < size; c++) {
             if (marks[r][c] == CellMark.empty &&
-                !containedPenIds.contains(board.cellAt(r, c).penId)) {
+                !containedPenIds.contains(board.cellAt(r, c).penId) &&
+                !essential.contains((r, c))) {
               final rowLabels = rowSubset.map((r) => '${r + 1}').join(', ');
               final nPens = containedPenIds.length;
               final rowWord = rowSubset.length == 1 ? 'Row' : 'Rows';
@@ -233,7 +327,8 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
         for (final c in colSubset) {
           for (int r = 0; r < size; r++) {
             if (marks[r][c] == CellMark.empty &&
-                !containedPenIds.contains(board.cellAt(r, c).penId)) {
+                !containedPenIds.contains(board.cellAt(r, c).penId) &&
+                !essential.contains((r, c))) {
               final colLabels = colSubset.map((c) => '${c + 1}').join(', ');
               final nPens = containedPenIds.length;
               final colWord = colSubset.length == 1 ? 'Column' : 'Columns';
@@ -279,7 +374,8 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
           final pen = board.penById(penId);
           for (final cell in pen.cells) {
             if (!rowSet.contains(cell.row) &&
-                marks[cell.row][cell.col] == CellMark.empty) {
+                marks[cell.row][cell.col] == CellMark.empty &&
+                !essential.contains((cell.row, cell.col))) {
               final rowLabels = rowSubset.map((r) => '${r + 1}').join(', ');
               final rowWord = rowSubset.length == 1 ? 'Row' : 'Rows';
               return Hint(
@@ -317,7 +413,8 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
           final pen = board.penById(penId);
           for (final cell in pen.cells) {
             if (!colSet.contains(cell.col) &&
-                marks[cell.row][cell.col] == CellMark.empty) {
+                marks[cell.row][cell.col] == CellMark.empty &&
+                !essential.contains((cell.row, cell.col))) {
               final colLabels = colSubset.map((c) => '${c + 1}').join(', ');
               final colWord = colSubset.length == 1 ? 'Column' : 'Columns';
               return Hint(
@@ -352,7 +449,7 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
         hasPartner = true;
         break;
       }
-      if (!hasPartner) {
+      if (!hasPartner && !essential.contains((r, c))) {
         return Hint(
           row: r,
           col: c,
@@ -421,7 +518,12 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
 
   // Rule 7: Depth-2 look-ahead — simulate placing a bull at a valid cell,
   // then check if any row, column, or pen becomes impossible (needs k more
-  // bulls but has fewer than k valid positions).
+  // bulls but has fewer than k valid positions, or no feasible non-adjacent
+  // pair when 2 are needed).
+  //
+  // To prevent cascading exclusions from collapsing the board, skip any
+  // cell whose *removal* (exclusion) would itself make a group infeasible.
+  // Such cells are implicitly forced and will be reported by Rules 8–9.
 
   // Pre-compute list of valid cells.
   final validCellList = <(int, int)>[
@@ -430,7 +532,21 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
         if (valid[r][c]) (r, c),
   ];
 
+  // Pre-compute valid-cell counts per row, column, and pen.
+  final rowValidCounts = List.filled(size, 0);
+  final colValidCounts = List.filled(size, 0);
+  final penValidCounts = <int, int>{};
   for (final (r, c) in validCellList) {
+    rowValidCounts[r]++;
+    colValidCounts[c]++;
+    final pid = board.cellAt(r, c).penId;
+    penValidCounts[pid] = (penValidCounts[pid] ?? 0) + 1;
+  }
+
+  for (final (r, c) in validCellList) {
+    // Guard: skip essential cells (reported later by Rules 8–9).
+    if (essential.contains((r, c))) continue;
+
     // Simulate placing a bull at (r, c) using incremental counts.
     final simPenId = board.cellAt(r, c).penId;
     rowCounts[r]++;
@@ -447,19 +563,53 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
     bool impossible = false;
     String? reason;
 
+    // Helper: check whether a list of candidate cells can supply [needed]
+    // non-adjacent bulls without violating row/col/pen limits.
+    // When needed == 1, a simple count suffices. When needed == 2, we
+    // verify that at least one valid non-adjacent pair exists.
+    bool hasFeasiblePlacement(List<(int, int)> candidates, int needed) {
+      if (candidates.length < needed) return false;
+      if (needed <= 1) return true;
+      // needed == 2: check for a valid non-adjacent pair.
+      for (int i = 0; i < candidates.length; i++) {
+        final (r1, c1) = candidates[i];
+        for (int j = i + 1; j < candidates.length; j++) {
+          final (r2, c2) = candidates[j];
+          // Must not be king-adjacent.
+          if ((r1 - r2).abs() <= 1 && (c1 - c2).abs() <= 1) continue;
+          // Same row: would need 2 bulls in that row from this pair alone,
+          // so the row must have capacity for both.
+          if (r1 == r2 && rowCounts[r1] + 2 > 2) continue;
+          if (r1 != r2 && (rowCounts[r1] >= 2 || rowCounts[r2] >= 2)) continue;
+          // Same column: analogous.
+          if (c1 == c2 && colCounts[c1] + 2 > 2) continue;
+          if (c1 != c2 && (colCounts[c1] >= 2 || colCounts[c2] >= 2)) continue;
+          // Same pen: would need 2 more bulls there.
+          final p1 = board.cellAt(r1, c1).penId;
+          final p2 = board.cellAt(r2, c2).penId;
+          if (p1 == p2 && (penCounts[p1] ?? 0) + 2 > 2) continue;
+          if (p1 != p2 &&
+              ((penCounts[p1] ?? 0) >= 2 || (penCounts[p2] ?? 0) >= 2)) {
+            continue;
+          }
+          return true; // found a feasible pair
+        }
+      }
+      return false;
+    }
+
     // Check rows.
     for (int r2 = 0; r2 < size && !impossible; r2++) {
       final needed = 2 - rowCounts[r2];
       if (needed <= 0) continue;
-      int validCount = 0;
-      for (int c2 = 0; c2 < size; c2++) {
-        if (isSimValid(r2, c2) &&
-            colCounts[c2] < 2 &&
-            (penCounts[board.cellAt(r2, c2).penId] ?? 0) < 2) {
-          validCount++;
-        }
-      }
-      if (validCount < needed) {
+      final candidates = <(int, int)>[
+        for (int c2 = 0; c2 < size; c2++)
+          if (isSimValid(r2, c2) &&
+              colCounts[c2] < 2 &&
+              (penCounts[board.cellAt(r2, c2).penId] ?? 0) < 2)
+            (r2, c2),
+      ];
+      if (!hasFeasiblePlacement(candidates, needed)) {
         impossible = true;
         reason = 'Placing a bull here would make row ${r2 + 1} '
             'impossible to fill';
@@ -470,15 +620,14 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
     for (int c2 = 0; c2 < size && !impossible; c2++) {
       final needed = 2 - colCounts[c2];
       if (needed <= 0) continue;
-      int validCount = 0;
-      for (int r2 = 0; r2 < size; r2++) {
-        if (isSimValid(r2, c2) &&
-            rowCounts[r2] < 2 &&
-            (penCounts[board.cellAt(r2, c2).penId] ?? 0) < 2) {
-          validCount++;
-        }
-      }
-      if (validCount < needed) {
+      final candidates = <(int, int)>[
+        for (int r2 = 0; r2 < size; r2++)
+          if (isSimValid(r2, c2) &&
+              rowCounts[r2] < 2 &&
+              (penCounts[board.cellAt(r2, c2).penId] ?? 0) < 2)
+            (r2, c2),
+      ];
+      if (!hasFeasiblePlacement(candidates, needed)) {
         impossible = true;
         reason = 'Placing a bull here would make column ${c2 + 1} '
             'impossible to fill';
@@ -490,15 +639,14 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
       if (impossible) break;
       final needed = 2 - (penCounts[pen.id] ?? 0);
       if (needed <= 0) continue;
-      int validCount = 0;
-      for (final cell in pen.cells) {
-        if (isSimValid(cell.row, cell.col) &&
-            rowCounts[cell.row] < 2 &&
-            colCounts[cell.col] < 2) {
-          validCount++;
-        }
-      }
-      if (validCount < needed) {
+      final candidates = <(int, int)>[
+        for (final cell in pen.cells)
+          if (isSimValid(cell.row, cell.col) &&
+              rowCounts[cell.row] < 2 &&
+              colCounts[cell.col] < 2)
+            (cell.row, cell.col),
+      ];
+      if (!hasFeasiblePlacement(candidates, needed)) {
         impossible = true;
         reason = 'Placing a bull here would make a pen '
             'impossible to fill';
@@ -517,6 +665,7 @@ Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
 
   // Rule 8: Forced bull placement — a row/col/pen has exactly k valid
   // positions for k needed bulls. Those positions MUST contain bulls.
+  // (Last resort — only fires when no exclusion hint could be found.)
 
   // Helper for simple forced placement.
   Hint? forcedPlacement(
