@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:bullpen/models/cell.dart';
-import 'package:bullpen/models/grid_generator.dart';
-import 'package:bullpen/models/grid_solver.dart';
+import 'package:bullpen/logic/grid_generator.dart';
+import 'package:bullpen/logic/grid_solver.dart';
 import 'package:bullpen/models/pen.dart';
 import 'package:bullpen/models/puzzle_board.dart';
 import 'package:flutter_test/flutter_test.dart';

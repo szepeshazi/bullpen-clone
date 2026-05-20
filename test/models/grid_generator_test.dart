@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'dart:math';
 
-import 'package:bullpen/models/grid_generator.dart';
+import 'package:bullpen/logic/grid_generator.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

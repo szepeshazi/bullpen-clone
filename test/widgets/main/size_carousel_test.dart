@@ -1,0 +1,41 @@
+import 'package:bullpen/widgets/main/size_carousel.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('SizeCarousel', () {
+    testWidgets('emits new size when user swipes', (tester) async {
+      int? lastSize;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              height: 160,
+              child: SizeCarousel(
+                selectedSize: 8,
+                onSizeChanged: (size) => lastSize = size,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.fling(
+        find.byType(SizeCarousel),
+        const Offset(-300, 0),
+        1000,
+      );
+      for (int i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+
+      expect(lastSize, isNotNull);
+      expect(lastSize, isNot(8));
+    });
+
+    test('exposes all supported sizes 8..16', () {
+      expect(SizeCarousel.supportedSizes, [8, 9, 10, 11, 12, 13, 14, 15, 16]);
+    });
+  });
+}

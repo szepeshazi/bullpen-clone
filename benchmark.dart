@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
-import 'lib/models/grid_generator.dart';
-import 'lib/models/grid_solver.dart';
+import 'lib/logic/grid_generator.dart';
+import 'lib/logic/grid_solver.dart';
 
 void main() {
   final sw = Stopwatch();

@@ -1,6 +1,6 @@
 import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/models/cell.dart';
-import 'package:bullpen/models/hint_finder.dart';
+import 'package:bullpen/logic/hint_finder.dart';
 import 'package:bullpen/models/pen.dart';
 import 'package:bullpen/models/puzzle_board.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -343,7 +343,9 @@ void main() {
       // Place bull at (0,0).
       marks[0][0] = CellMark.bull;
       // Dot all other row 0 cells and adjacency neighbors.
-      for (int c = 1; c < 8; c++) marks[0][c] = CellMark.dot;
+      for (int c = 1; c < 8; c++) {
+        marks[0][c] = CellMark.dot;
+      }
       // Dot (1,0) and (1,1) — adjacent to (0,0).
       marks[1][0] = CellMark.dot;
       marks[1][1] = CellMark.dot;
@@ -354,9 +356,13 @@ void main() {
       // Set up row 4 with valid cells only at col 0.
 
       // Dot row 2 except cols 0 and 1.
-      for (int c = 2; c < 8; c++) marks[2][c] = CellMark.dot;
+      for (int c = 2; c < 8; c++) {
+        marks[2][c] = CellMark.dot;
+      }
       // Dot row 4 except col 0.
-      for (int c = 1; c < 8; c++) marks[4][c] = CellMark.dot;
+      for (int c = 1; c < 8; c++) {
+        marks[4][c] = CellMark.dot;
+      }
 
       // Now: placing at (2,0) would fill col 0 to 2 (already has 1 from
       // (0,0)). Row 4 only has (4,0), which is in col 0 that would be
@@ -419,7 +425,9 @@ void main() {
 
       // Set up col 0 with 1 bull at (0,0).
       marks[0][0] = CellMark.bull;
-      for (int c = 1; c < 8; c++) marks[0][c] = CellMark.dot;
+      for (int c = 1; c < 8; c++) {
+        marks[0][c] = CellMark.dot;
+      }
       marks[1][0] = CellMark.dot;
       marks[1][1] = CellMark.dot;
 
@@ -685,7 +693,9 @@ void main() {
       final board = _rowPenBoard();
       final marks = _emptyMarks(8);
 
-      for (int c = 2; c < 8; c++) marks[0][c] = CellMark.dot;
+      for (int c = 2; c < 8; c++) {
+        marks[0][c] = CellMark.dot;
+      }
 
       final hint = findHint(board, marks);
       expect(hint, isNotNull);
@@ -927,11 +937,15 @@ PuzzleBoard _hiddenSetTestBoard() {
   final grid = List.generate(size, (_) => List.filled(size, -1));
 
   // Pen 0: row 0 all + (2,0)
-  for (int c = 0; c < 8; c++) grid[0][c] = 0;
+  for (int c = 0; c < 8; c++) {
+    grid[0][c] = 0;
+  }
   grid[2][0] = 0;
 
   // Pen 1: row 1 all + (2,7)
-  for (int c = 0; c < 8; c++) grid[1][c] = 1;
+  for (int c = 0; c < 8; c++) {
+    grid[1][c] = 1;
+  }
   grid[2][7] = 1;
 
   // Pens 2-7 fill rows 2-7 (excluding (2,0) and (2,7)).

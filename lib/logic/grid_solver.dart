@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'puzzle_board.dart';
-import 'puzzle_state.dart';
+import '../models/puzzle_board.dart';
+import '../models/puzzle_state.dart';
 
 /// Solves a Bullpen hard-mode grid by placing exactly 2 bulls per row, column,
 /// and pen with no two bulls adjacent (including diagonals).

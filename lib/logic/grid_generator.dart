@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'cell.dart';
-import 'pen.dart';
-import 'puzzle_board.dart';
+import '../models/cell.dart';
+import '../models/pen.dart';
+import '../models/puzzle_board.dart';
 
 /// Generates a random Bullpen grid by partitioning the grid into
 /// [size] contiguous pens of approximately equal size.
