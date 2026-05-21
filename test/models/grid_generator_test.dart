@@ -1,23 +1,17 @@
 import 'dart:collection';
 import 'dart:math';
 
-import 'package:bullpen/models/grid_generator.dart';
+import 'package:bullpen/logic/grid_generator.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('GridGenerator', () {
     test('rejects size below 8', () {
-      expect(
-        () => GridGenerator.generate(7),
-        throwsA(isA<ArgumentError>()),
-      );
+      expect(() => GridGenerator.generate(7), throwsA(isA<ArgumentError>()));
     });
 
     test('rejects size above 16', () {
-      expect(
-        () => GridGenerator.generate(17),
-        throwsA(isA<ArgumentError>()),
-      );
+      expect(() => GridGenerator.generate(17), throwsA(isA<ArgumentError>()));
     });
 
     test('generates exactly size pens', () {
@@ -32,11 +26,13 @@ void main() {
       for (final pen in board.pens) {
         for (final cell in pen.cells) {
           final key = (cell.row, cell.col);
-          expect(assignedCells.contains(key), isFalse,
-              reason: 'Cell ($key) assigned to multiple pens');
+          expect(
+            assignedCells.contains(key),
+            isFalse,
+            reason: 'Cell ($key) assigned to multiple pens',
+          );
           assignedCells.add(key);
-          expect(cell.penId, pen.id,
-              reason: 'Cell penId should match pen.id');
+          expect(cell.penId, pen.id, reason: 'Cell penId should match pen.id');
         }
       }
 
@@ -76,24 +72,34 @@ void main() {
           }
         }
 
-        expect(visited.length, pen.cells.length,
-            reason: 'Pen ${pen.id} is not fully contiguous: '
-                'reached ${visited.length} of ${pen.cells.length} cells');
+        expect(
+          visited.length,
+          pen.cells.length,
+          reason:
+              'Pen ${pen.id} is not fully contiguous: '
+              'reached ${visited.length} of ${pen.cells.length} cells',
+        );
       }
     });
 
     test('pens have valid sizes (some small, all at least 5)', () {
       final board = GridGenerator.generate(8, random: Random(42));
-      final avgSize = 64 ~/ 8; // 8
+      const avgSize = 64 ~/ 8; // 8
 
-      bool hasSmall = false;
+      var hasSmall = false;
       for (final pen in board.pens) {
-        expect(pen.size, greaterThanOrEqualTo(5),
-            reason: 'Pen ${pen.id} has only ${pen.size} cells (min 5)');
+        expect(
+          pen.size,
+          greaterThanOrEqualTo(5),
+          reason: 'Pen ${pen.id} has only ${pen.size} cells (min 5)',
+        );
         if (pen.size < avgSize) hasSmall = true;
       }
-      expect(hasSmall, isTrue,
-          reason: 'Expected at least one pen smaller than average');
+      expect(
+        hasSmall,
+        isTrue,
+        reason: 'Expected at least one pen smaller than average',
+      );
     });
 
     test('works for boundary size 8', () {
@@ -101,7 +107,7 @@ void main() {
       expect(board.size, 8);
       expect(board.pens, hasLength(8));
 
-      int totalCells = board.pens.fold(0, (sum, pen) => sum + pen.size);
+      final totalCells = board.pens.fold(0, (sum, pen) => sum + pen.size);
       expect(totalCells, 64);
     });
 
@@ -110,7 +116,7 @@ void main() {
       expect(board.size, 16);
       expect(board.pens, hasLength(16));
 
-      int totalCells = board.pens.fold(0, (sum, pen) => sum + pen.size);
+      final totalCells = board.pens.fold(0, (sum, pen) => sum + pen.size);
       expect(totalCells, 256);
     });
 
@@ -129,10 +135,13 @@ void main() {
       final board1 = GridGenerator.generate(8, random: Random(99));
       final board2 = GridGenerator.generate(8, random: Random(99));
 
-      for (int r = 0; r < 8; r++) {
-        for (int c = 0; c < 8; c++) {
-          expect(board1.cellAt(r, c).penId, board2.cellAt(r, c).penId,
-              reason: 'Cell ($r, $c) should have same penId with same seed');
+      for (var r = 0; r < 8; r++) {
+        for (var c = 0; c < 8; c++) {
+          expect(
+            board1.cellAt(r, c).penId,
+            board2.cellAt(r, c).penId,
+            reason: 'Cell ($r, $c) should have same penId with same seed',
+          );
         }
       }
     });

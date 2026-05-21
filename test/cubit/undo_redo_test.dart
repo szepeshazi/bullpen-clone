@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// Creates a simple 8x8 board where each row is its own pen.
 PuzzleBoard _makeBoard({int size = 8}) {
   final pens = <Pen>[];
-  for (int penId = 0; penId < size; penId++) {
+  for (var penId = 0; penId < size; penId++) {
     final cells = List.generate(
       size,
       (col) => Cell(row: penId, col: col, penId: penId),

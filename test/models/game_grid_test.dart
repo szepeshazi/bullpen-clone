@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// Helper: creates a simple 8×8 board with 8 pens, each pen being one row.
 PuzzleBoard _makeRowBasedBoard({int size = 8}) {
   final pens = <Pen>[];
-  for (int penId = 0; penId < size; penId++) {
+  for (var penId = 0; penId < size; penId++) {
     final cells = List.generate(
       size,
       (col) => Cell(row: penId, col: col, penId: penId),
@@ -220,14 +220,22 @@ void main() {
 
     test('correctly solved grid returns true', () {
       final validPlacements = [
-        (0, 1), (0, 3),
-        (1, 5), (1, 7),
-        (2, 1), (2, 3),
-        (3, 5), (3, 7),
-        (4, 0), (4, 2),
-        (5, 4), (5, 6),
-        (6, 0), (6, 2),
-        (7, 4), (7, 6),
+        (0, 1),
+        (0, 3),
+        (1, 5),
+        (1, 7),
+        (2, 1),
+        (2, 3),
+        (3, 5),
+        (3, 7),
+        (4, 0),
+        (4, 2),
+        (5, 4),
+        (5, 6),
+        (6, 0),
+        (6, 2),
+        (7, 4),
+        (7, 6),
       ];
 
       final state = PuzzleState(board: _makeRowBasedBoard());

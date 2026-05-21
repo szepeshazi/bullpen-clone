@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'cell.dart';
-import 'pen.dart';
-import 'puzzle_board.dart';
+import 'package:bullpen/models/cell.dart';
+import 'package:bullpen/models/pen.dart';
+import 'package:bullpen/models/puzzle_board.dart';
 
 /// Generates a random Bullpen grid by partitioning the grid into
 /// [size] contiguous pens of approximately equal size.
@@ -29,30 +29,29 @@ class GridGenerator {
     final targetSizes = _assignTargetSizes(numPens, totalCells, rng);
 
     // penAssignment[row][col] = penId or -1 if unassigned.
-    final penAssignment = List.generate(
-      size,
-      (_) => List.filled(size, -1),
-    );
+    final penAssignment = List.generate(size, (_) => List.filled(size, -1));
 
     // Place seeds: spread them as evenly as possible across the grid.
     final seeds = _placeSeedsRandomly(size, numPens, rng);
     final frontiers = <int, List<(int, int)>>{};
     final penSizes = List.filled(numPens, 1); // seeds count as 1
 
-    for (int penId = 0; penId < numPens; penId++) {
+    for (var penId = 0; penId < numPens; penId++) {
       final (r, c) = seeds[penId];
       penAssignment[r][c] = penId;
-      frontiers[penId] = _neighbors(r, c, size)
-          .where((n) => penAssignment[n.$1][n.$2] == -1)
-          .toList();
+      frontiers[penId] = _neighbors(
+        r,
+        c,
+        size,
+      ).where((n) => penAssignment[n.$1][n.$2] == -1).toList();
     }
 
     // Phase 1: grow pens respecting target sizes.
-    int assigned = numPens; // seeds are already assigned.
-    int maxIterations = totalCells * 10; // safety valve
+    var assigned = numPens; // seeds are already assigned.
+    var maxIterations = totalCells * 10; // safety valve
     while (assigned < totalCells && maxIterations-- > 0) {
-      bool grew = false;
-      for (int penId = 0; penId < numPens; penId++) {
+      var grew = false;
+      for (var penId = 0; penId < numPens; penId++) {
         if (penSizes[penId] >= targetSizes[penId]) continue;
         if (_growPen(penId, penAssignment, frontiers, penSizes, size, rng)) {
           assigned++;
@@ -69,7 +68,7 @@ class GridGenerator {
       // Sort pen IDs by current size (smallest first).
       final order = List.generate(numPens, (i) => i)
         ..sort((a, b) => penSizes[a].compareTo(penSizes[b]));
-      bool grew = false;
+      var grew = false;
       for (final penId in order) {
         if (_growPen(penId, penAssignment, frontiers, penSizes, size, rng)) {
           assigned++;
@@ -81,11 +80,11 @@ class GridGenerator {
 
     // Fallback: assign any remaining unassigned cells (run multiple passes
     // to handle clusters of unassigned cells).
-    bool changed = true;
+    var changed = true;
     while (changed) {
       changed = false;
-      for (int r = 0; r < size; r++) {
-        for (int c = 0; c < size; c++) {
+      for (var r = 0; r < size; r++) {
+        for (var c = 0; c < size; c++) {
           if (penAssignment[r][c] != -1) continue;
           for (final (nr, nc) in _neighbors(r, c, size)) {
             if (penAssignment[nr][nc] != -1) {
@@ -100,12 +99,12 @@ class GridGenerator {
 
     // Build Cell and Pen objects.
     final penCells = <int, List<Cell>>{};
-    for (int penId = 0; penId < numPens; penId++) {
+    for (var penId = 0; penId < numPens; penId++) {
       penCells[penId] = [];
     }
 
-    for (int r = 0; r < size; r++) {
-      for (int c = 0; c < size; c++) {
+    for (var r = 0; r < size; r++) {
+      for (var c = 0; c < size; c++) {
         final penId = penAssignment[r][c];
         final cell = Cell(row: r, col: c, penId: penId);
         penCells[penId]!.add(cell);
@@ -113,7 +112,7 @@ class GridGenerator {
     }
 
     final pens = <Pen>[];
-    for (int penId = 0; penId < numPens; penId++) {
+    for (var penId = 0; penId < numPens; penId++) {
       pens.add(Pen(id: penId, cells: penCells[penId]!));
     }
 
@@ -175,7 +174,7 @@ class GridGenerator {
     final smallIndices = indices.sublist(0, numSmall).toSet();
 
     final targets = List.filled(numPens, 0);
-    int usedCells = 0;
+    var usedCells = 0;
 
     // Assign small pen sizes (5–6 cells each).
     for (final i in smallIndices) {
@@ -187,9 +186,9 @@ class GridGenerator {
     final numLarge = numPens - numSmall;
     final remaining = totalCells - usedCells;
     final baseSize = remaining ~/ numLarge;
-    int extra = remaining - baseSize * numLarge;
+    var extra = remaining - baseSize * numLarge;
 
-    for (int i = 0; i < numPens; i++) {
+    for (var i = 0; i < numPens; i++) {
       if (smallIndices.contains(i)) continue;
       targets[i] = baseSize + (extra > 0 ? 1 : 0);
       if (extra > 0) extra--;
@@ -201,7 +200,7 @@ class GridGenerator {
   /// Returns uniform target sizes when the grid is too small for variation.
   static List<int> _uniformTargets(int numPens, int totalCells) {
     final baseSize = totalCells ~/ numPens;
-    int extra = totalCells - baseSize * numPens;
+    var extra = totalCells - baseSize * numPens;
     return List.generate(numPens, (i) {
       final size = baseSize + (extra > 0 ? 1 : 0);
       if (extra > 0) extra--;
@@ -211,11 +210,7 @@ class GridGenerator {
 
   /// Places [count] seed positions spread across the grid with some
   /// randomness so pens don't look too uniform.
-  static List<(int, int)> _placeSeedsRandomly(
-    int size,
-    int count,
-    Random rng,
-  ) {
+  static List<(int, int)> _placeSeedsRandomly(int size, int count, Random rng) {
     final seeds = <(int, int)>{};
 
     // Use a grid-based approach: divide into roughly sqrt(count) × sqrt(count)
@@ -223,8 +218,8 @@ class GridGenerator {
     final divisions = sqrt(count).ceil();
     final cellSize = size / divisions;
 
-    for (int gr = 0; gr < divisions && seeds.length < count; gr++) {
-      for (int gc = 0; gc < divisions && seeds.length < count; gc++) {
+    for (var gr = 0; gr < divisions && seeds.length < count; gr++) {
+      for (var gc = 0; gc < divisions && seeds.length < count; gc++) {
         final rStart = (gr * cellSize).floor();
         final rEnd = ((gr + 1) * cellSize).floor().clamp(0, size);
         final cStart = (gc * cellSize).floor();
@@ -247,12 +242,10 @@ class GridGenerator {
   }
 
   /// Returns orthogonal (4-connected) neighbors of (r, c) within the grid.
-  static List<(int, int)> _neighbors(int r, int c, int size) {
-    return [
-      if (r > 0) (r - 1, c),
-      if (r < size - 1) (r + 1, c),
-      if (c > 0) (r, c - 1),
-      if (c < size - 1) (r, c + 1),
-    ];
-  }
+  static List<(int, int)> _neighbors(int r, int c, int size) => [
+    if (r > 0) (r - 1, c),
+    if (r < size - 1) (r + 1, c),
+    if (c > 0) (r, c - 1),
+    if (c < size - 1) (r, c + 1),
+  ];
 }

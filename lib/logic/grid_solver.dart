@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'puzzle_board.dart';
-import 'puzzle_state.dart';
+import 'package:bullpen/models/puzzle_board.dart';
+import 'package:bullpen/models/puzzle_state.dart';
 
 /// Solves a Bullpen hard-mode grid by placing exactly 2 bulls per row, column,
 /// and pen with no two bulls adjacent (including diagonals).
@@ -35,8 +35,8 @@ class GridSolver {
     // Pre-compute shuffled column-pairs for every row.
     final pairsPerRow = List.generate(size, (r) {
       final pairs = <(int, int)>[];
-      for (int c1 = 0; c1 < size - 1; c1++) {
-        for (int c2 = c1 + 2; c2 < size; c2++) {
+      for (var c1 = 0; c1 < size - 1; c1++) {
+        for (var c2 = c1 + 2; c2 < size; c2++) {
           pairs.add((c1, c2));
         }
       }
@@ -54,7 +54,7 @@ class GridSolver {
       penCellsByRow[pen.id] = byRow;
     }
 
-    int nodeCount = 0;
+    var nodeCount = 0;
 
     bool solveRow(int row) {
       if (++nodeCount > _maxNodes) return false;
@@ -116,12 +116,12 @@ class GridSolver {
     final size = board.size;
 
     // --- Column feasibility ---
-    for (int col = 0; col < size; col++) {
+    for (var col = 0; col < size; col++) {
       final need = 2 - state.bullsInCol(col);
       if (need <= 0) continue;
 
-      int available = 0;
-      for (int r = startRow; r < size; r++) {
+      var available = 0;
+      for (var r = startRow; r < size; r++) {
         final cell = board.cellAt(r, col);
         if (!state.hasAdjacentBull(cell)) {
           if (++available >= need) break;
@@ -136,9 +136,9 @@ class GridSolver {
       if (need <= 0) continue;
 
       final byRow = penCellsByRow[pen.id]!;
-      int available = 0;
+      var available = 0;
 
-      for (int r = startRow; r < size; r++) {
+      for (var r = startRow; r < size; r++) {
         final cols = byRow[r];
         if (cols == null) continue;
         for (final c in cols) {

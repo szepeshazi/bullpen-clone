@@ -1,6 +1,6 @@
 import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/logic/hint_finder.dart';
 import 'package:bullpen/models/cell.dart';
-import 'package:bullpen/models/hint_finder.dart';
 import 'package:bullpen/models/pen.dart';
 import 'package:bullpen/models/puzzle_board.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// 8x8 board where each row is its own pen.
 PuzzleBoard _rowPenBoard({int size = 8}) {
   final pens = <Pen>[];
-  for (int id = 0; id < size; id++) {
+  for (var id = 0; id < size; id++) {
     final cells = List.generate(
       size,
       (col) => Cell(row: id, col: col, penId: id),
@@ -59,7 +59,7 @@ void main() {
       marks[0][0] = CellMark.bull;
       marks[4][0] = CellMark.bull;
       // Dot remaining cells in those rows so rule 1 doesn't fire.
-      for (int c = 1; c < 8; c++) {
+      for (var c = 1; c < 8; c++) {
         marks[0][c] = CellMark.dot;
         marks[4][c] = CellMark.dot;
       }
@@ -211,7 +211,7 @@ void main() {
       // but they're adjacent → no partner → Rule 7 fires.
       final board = _rowPenBoard();
       final marks = _emptyMarks(8);
-      for (int c = 2; c < 8; c++) {
+      for (var c = 2; c < 8; c++) {
         marks[0][c] = CellMark.dot;
       }
 
@@ -245,7 +245,7 @@ void main() {
       // except two adjacent ones, and make sure earlier rules don't fire.
 
       // Dot all of row 2 except cols 3 and 4 (adjacent pair).
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 3 && c != 4) marks[2][c] = CellMark.dot;
       }
 
@@ -265,7 +265,7 @@ void main() {
       marks[0][5] = CellMark.bull;
       marks[4][5] = CellMark.bull;
       // Dot remaining cells in rows 0,4 so rule 1 doesn't fire.
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 5) {
           marks[0][c] = CellMark.dot;
           marks[4][c] = CellMark.dot;
@@ -273,12 +273,12 @@ void main() {
       }
       // Col 5 is now full (2 bulls). Rule 2 fires first on empty cells
       // in col 5. Dot all col-5 empty cells so rule 2 is satisfied.
-      for (int r = 0; r < 8; r++) {
+      for (var r = 0; r < 8; r++) {
         if (marks[r][5] == CellMark.empty) marks[r][5] = CellMark.dot;
       }
 
       // Now dot row 2 leaving only cols 3 and 4 (adjacent).
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 3 && c != 4) {
           if (marks[2][c] == CellMark.empty) marks[2][c] = CellMark.dot;
         }
@@ -306,7 +306,7 @@ void main() {
       // Row-pen board. Dot all of col 3 except rows 2-3 (adjacent pair).
       final board = _rowPenBoard();
       final marks = _emptyMarks(8);
-      for (int r = 0; r < 8; r++) {
+      for (var r = 0; r < 8; r++) {
         if (r != 2 && r != 3) marks[r][3] = CellMark.dot;
       }
       // Col 3 now has 2 valid cells at (2,3) and (3,3), which are adjacent.
@@ -343,7 +343,9 @@ void main() {
       // Place bull at (0,0).
       marks[0][0] = CellMark.bull;
       // Dot all other row 0 cells and adjacency neighbors.
-      for (int c = 1; c < 8; c++) marks[0][c] = CellMark.dot;
+      for (var c = 1; c < 8; c++) {
+        marks[0][c] = CellMark.dot;
+      }
       // Dot (1,0) and (1,1) — adjacent to (0,0).
       marks[1][0] = CellMark.dot;
       marks[1][1] = CellMark.dot;
@@ -354,9 +356,13 @@ void main() {
       // Set up row 4 with valid cells only at col 0.
 
       // Dot row 2 except cols 0 and 1.
-      for (int c = 2; c < 8; c++) marks[2][c] = CellMark.dot;
+      for (var c = 2; c < 8; c++) {
+        marks[2][c] = CellMark.dot;
+      }
       // Dot row 4 except col 0.
-      for (int c = 1; c < 8; c++) marks[4][c] = CellMark.dot;
+      for (var c = 1; c < 8; c++) {
+        marks[4][c] = CellMark.dot;
+      }
 
       // Now: placing at (2,0) would fill col 0 to 2 (already has 1 from
       // (0,0)). Row 4 only has (4,0), which is in col 0 that would be
@@ -419,17 +425,19 @@ void main() {
 
       // Set up col 0 with 1 bull at (0,0).
       marks[0][0] = CellMark.bull;
-      for (int c = 1; c < 8; c++) marks[0][c] = CellMark.dot;
+      for (var c = 1; c < 8; c++) {
+        marks[0][c] = CellMark.dot;
+      }
       marks[1][0] = CellMark.dot;
       marks[1][1] = CellMark.dot;
 
       // Row 4: only valid cells at (4,0) and (4,4). Rest dotted.
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 0 && c != 4) marks[4][c] = CellMark.dot;
       }
 
       // Row 2: valid cells at (2,0) and (2,4). Rest dotted.
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 0 && c != 4) marks[2][c] = CellMark.dot;
       }
 
@@ -465,7 +473,7 @@ void main() {
       final board = _rowPenBoard();
       final marks = _emptyMarks(8);
 
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 0 && c != 4) marks[2][c] = CellMark.dot;
       }
 
@@ -493,7 +501,7 @@ void main() {
       final marks = _emptyMarks(8);
 
       marks[0][0] = CellMark.bull;
-      for (int c = 1; c < 8; c++) {
+      for (var c = 1; c < 8; c++) {
         if (c != 4) marks[0][c] = CellMark.dot;
       }
 
@@ -534,7 +542,7 @@ void main() {
       final board = _rowPenBoard();
       final marks = _emptyMarks(8);
 
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 0 && c != 1 && c != 4) marks[0][c] = CellMark.dot;
       }
 
@@ -558,7 +566,7 @@ void main() {
       final board = _rowPenBoard();
       final marks = _emptyMarks(8);
 
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 0 && c != 3 && c != 6) marks[0][c] = CellMark.dot;
       }
 
@@ -587,7 +595,7 @@ void main() {
       final board = _rowPenBoard();
       final marks = _emptyMarks(8);
 
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 0 && c != 3 && c != 5 && c != 7) marks[0][c] = CellMark.dot;
       }
 
@@ -623,7 +631,7 @@ void main() {
       final marks = _emptyMarks(8);
 
       // Restrict row 0 to cols 0, 1, 4.
-      for (int c = 2; c < 8; c++) {
+      for (var c = 2; c < 8; c++) {
         if (c != 4) marks[0][c] = CellMark.dot;
       }
 
@@ -657,7 +665,7 @@ void main() {
       final marks = _emptyMarks(8);
 
       // Row 0: only cols 0 and 4.
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 0 && c != 4) marks[0][c] = CellMark.dot;
       }
 
@@ -672,10 +680,16 @@ void main() {
         iterations++;
       }
 
-      expect(excludedCells.contains((0, 0)), isFalse,
-          reason: '(0,0) is essential for row 0 and should not be excluded');
-      expect(excludedCells.contains((0, 4)), isFalse,
-          reason: '(0,4) is essential for row 0 and should not be excluded');
+      expect(
+        excludedCells.contains((0, 0)),
+        isFalse,
+        reason: '(0,0) is essential for row 0 and should not be excluded',
+      );
+      expect(
+        excludedCells.contains((0, 4)),
+        isFalse,
+        reason: '(0,4) is essential for row 0 and should not be excluded',
+      );
     });
 
     test('non-essential cell in broken group is not protected', () {
@@ -685,7 +699,9 @@ void main() {
       final board = _rowPenBoard();
       final marks = _emptyMarks(8);
 
-      for (int c = 2; c < 8; c++) marks[0][c] = CellMark.dot;
+      for (var c = 2; c < 8; c++) {
+        marks[0][c] = CellMark.dot;
+      }
 
       final hint = findHint(board, marks);
       expect(hint, isNotNull);
@@ -704,11 +720,11 @@ void main() {
       final marks = _emptyMarks(8);
 
       // Row 0: forced placement (2 cells for 2 needed).
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 0 && c != 4) marks[0][c] = CellMark.dot;
       }
       // Row 2: only adjacent cells at cols 3,4 → look-ahead exclusion.
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 3 && c != 4) marks[2][c] = CellMark.dot;
       }
 
@@ -750,7 +766,7 @@ void main() {
       final marks = _emptyMarks(8);
 
       // Row 2: only cols 0 and 4 valid.
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         if (c != 0 && c != 4) marks[2][c] = CellMark.dot;
       }
       // Row 3: leave many cells open so (3,1) is NOT essential.
@@ -762,7 +778,8 @@ void main() {
         final hint = findHint(board, marks);
         if (hint == null || hint.type == HintType.mustPlace) break;
         if (hint.reason.contains('impossible') &&
-            hint.row == 3 && hint.col == 1) {
+            hint.row == 3 &&
+            hint.col == 1) {
           depthHint = hint;
           break;
         }
@@ -784,8 +801,7 @@ void main() {
 
     test('returns null when all cells are dotted', () {
       final board = _rowPenBoard();
-      final marks = List.generate(
-          8, (_) => List.filled(8, CellMark.dot));
+      final marks = List.generate(8, (_) => List.filled(8, CellMark.dot));
       expect(findHint(board, marks), isNull);
     });
   });
@@ -809,7 +825,7 @@ void main() {
       marks[0][0] = CellMark.bull;
       marks[4][0] = CellMark.bull;
       // Dot rows 0 and 4 so rule 1 doesn't find empty cells.
-      for (int c = 1; c < 8; c++) {
+      for (var c = 1; c < 8; c++) {
         marks[0][c] = CellMark.dot;
         marks[4][c] = CellMark.dot;
       }
@@ -829,9 +845,7 @@ PuzzleBoard _intersectionTestBoard() {
   final cells = <int, List<Cell>>{};
 
   // Pen 0: row 0 cols 0-3 (4 cells, fully in row 0)
-  cells[0] = [
-    for (int c = 0; c < 4; c++) Cell(row: 0, col: c, penId: 0),
-  ];
+  cells[0] = [for (int c = 0; c < 4; c++) Cell(row: 0, col: c, penId: 0)];
   // Pen 1: row 0 cols 4-7 + row 1 cols 0-3 (spans rows 0-1)
   cells[1] = [
     for (int c = 4; c < 8; c++) Cell(row: 0, col: c, penId: 1),
@@ -868,9 +882,7 @@ PuzzleBoard _intersectionTestBoard() {
     for (int c = 0; c < 8; c++) Cell(row: 7, col: c, penId: 7),
   ];
 
-  final pens = [
-    for (final e in cells.entries) Pen(id: e.key, cells: e.value),
-  ];
+  final pens = [for (final e in cells.entries) Pen(id: e.key, cells: e.value)];
   return PuzzleBoard(size: size, pens: pens);
 }
 
@@ -882,17 +894,17 @@ PuzzleBoard _nakedSetTestBoard() {
 
   // Pen 0: rows 0-1, cols 0-1 (4 cells, fully in rows 0-1)
   cells[0] = [
-    Cell(row: 0, col: 0, penId: 0),
-    Cell(row: 0, col: 1, penId: 0),
-    Cell(row: 1, col: 0, penId: 0),
-    Cell(row: 1, col: 1, penId: 0),
+    const Cell(row: 0, col: 0, penId: 0),
+    const Cell(row: 0, col: 1, penId: 0),
+    const Cell(row: 1, col: 0, penId: 0),
+    const Cell(row: 1, col: 1, penId: 0),
   ];
   // Pen 1: rows 0-1, cols 2-3 (4 cells, fully in rows 0-1)
   cells[1] = [
-    Cell(row: 0, col: 2, penId: 1),
-    Cell(row: 0, col: 3, penId: 1),
-    Cell(row: 1, col: 2, penId: 1),
-    Cell(row: 1, col: 3, penId: 1),
+    const Cell(row: 0, col: 2, penId: 1),
+    const Cell(row: 0, col: 3, penId: 1),
+    const Cell(row: 1, col: 2, penId: 1),
+    const Cell(row: 1, col: 3, penId: 1),
   ];
   // Pen 2: rows 0-1 cols 4-7 + row 2 all (spans rows 0-2)
   cells[2] = [
@@ -901,15 +913,11 @@ PuzzleBoard _nakedSetTestBoard() {
     for (int c = 0; c < 8; c++) Cell(row: 2, col: c, penId: 2),
   ];
   // Pens 3-7: one row each for rows 3-7
-  for (int p = 3; p <= 7; p++) {
-    cells[p] = [
-      for (int c = 0; c < 8; c++) Cell(row: p, col: c, penId: p),
-    ];
+  for (var p = 3; p <= 7; p++) {
+    cells[p] = [for (int c = 0; c < 8; c++) Cell(row: p, col: c, penId: p)];
   }
 
-  final pens = [
-    for (final e in cells.entries) Pen(id: e.key, cells: e.value),
-  ];
+  final pens = [for (final e in cells.entries) Pen(id: e.key, cells: e.value)];
   return PuzzleBoard(size: size, pens: pens);
 }
 
@@ -927,23 +935,25 @@ PuzzleBoard _hiddenSetTestBoard() {
   final grid = List.generate(size, (_) => List.filled(size, -1));
 
   // Pen 0: row 0 all + (2,0)
-  for (int c = 0; c < 8; c++) grid[0][c] = 0;
+  for (var c = 0; c < 8; c++) {
+    grid[0][c] = 0;
+  }
   grid[2][0] = 0;
 
   // Pen 1: row 1 all + (2,7)
-  for (int c = 0; c < 8; c++) grid[1][c] = 1;
+  for (var c = 0; c < 8; c++) {
+    grid[1][c] = 1;
+  }
   grid[2][7] = 1;
 
   // Pens 2-7 fill rows 2-7 (excluding (2,0) and (2,7)).
   // Diagonal-shifted pattern so each pen touches all 6 rows.
   // Row 2: cols 1-6 → 6 cells, one per pen
   // Rows 3-7: cols 0-7 → 8 cells each, distributed among 6 pens
-  final penCells = <int, List<(int, int)>>{
-    for (int p = 2; p <= 7; p++) p: [],
-  };
+  final penCells = <int, List<(int, int)>>{for (int p = 2; p <= 7; p++) p: []};
 
   // Row 2: pen (col-1)+2 for cols 1-6
-  for (int c = 1; c <= 6; c++) {
+  for (var c = 1; c <= 6; c++) {
     final p = c + 1; // pens 2-7
     grid[2][c] = p;
     penCells[p]!.add((2, c));
@@ -952,8 +962,8 @@ PuzzleBoard _hiddenSetTestBoard() {
   // Rows 3-7: diagonal pattern shifted per row
   // Each row has 8 cells, 6 pens → some pens get 2 cells per row.
   // Use a rotating assignment to keep pens balanced and spanning all rows.
-  for (int r = 3; r <= 7; r++) {
-    for (int c = 0; c < 8; c++) {
+  for (var r = 3; r <= 7; r++) {
+    for (var c = 0; c < 8; c++) {
       // Rotate pen assignment: pen = ((c + r) % 6) + 2
       final p = ((c + r) % 6) + 2;
       grid[r][c] = p;
@@ -963,27 +973,25 @@ PuzzleBoard _hiddenSetTestBoard() {
 
   // Build cell list per pen
   final cells = <int, List<Cell>>{};
-  for (int p = 0; p <= 7; p++) {
+  for (var p = 0; p <= 7; p++) {
     cells[p] = [];
   }
-  for (int r = 0; r < size; r++) {
-    for (int c = 0; c < size; c++) {
+  for (var r = 0; r < size; r++) {
+    for (var c = 0; c < size; c++) {
       cells[grid[r][c]]!.add(Cell(row: r, col: c, penId: grid[r][c]));
     }
   }
 
-  final pens = [
-    for (final e in cells.entries) Pen(id: e.key, cells: e.value),
-  ];
+  final pens = [for (final e in cells.entries) Pen(id: e.key, cells: e.value)];
   return PuzzleBoard(size: size, pens: pens);
 }
 
 /// 8x8 board with 2x2 pen blocks.
 PuzzleBoard _blockPenBoard({int size = 8}) {
   final pens = <Pen>[];
-  int penId = 0;
-  for (int r = 0; r < size; r += 2) {
-    for (int c = 0; c < size; c += 2) {
+  var penId = 0;
+  for (var r = 0; r < size; r += 2) {
+    for (var c = 0; c < size; c += 2) {
       final cells = [
         Cell(row: r, col: c, penId: penId),
         Cell(row: r, col: c + 1, penId: penId),
