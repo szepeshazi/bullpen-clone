@@ -34,7 +34,7 @@ void main() {
     });
 
     test('accepts valid sizes', () {
-      for (final size in [8, 10, 16]) {
+      for (final size in [8, 10, 12]) {
         final board = _makeRowBasedBoard(size: size);
         expect(board.size, size);
         expect(board.pens, hasLength(size));

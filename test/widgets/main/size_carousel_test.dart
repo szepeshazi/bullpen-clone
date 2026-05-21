@@ -35,8 +35,8 @@ void main() {
       expect(lastSize, isNot(8));
     });
 
-    test('supported sizes run 8..16', () {
-      expect(puzzleSupportedSizes, [8, 9, 10, 11, 12, 13, 14, 15, 16]);
+    test('supported sizes are 8, 10, 12', () {
+      expect(puzzleSupportedSizes, [8, 10, 12]);
     });
   });
 }

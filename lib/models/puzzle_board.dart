@@ -1,3 +1,4 @@
+import 'package:bullpen/logic/puzzle_config.dart';
 import 'package:bullpen/models/cell.dart';
 import 'package:bullpen/models/models.dart' show PuzzleState;
 import 'package:bullpen/models/pen.dart';
@@ -8,7 +9,8 @@ import 'package:bullpen/models/puzzle_state.dart' show PuzzleState;
 /// This is the "template" that never changes. Mutable game state (placed bulls,
 /// counters) lives in [PuzzleState].
 class PuzzleBoard {
-  /// Grid dimension (rows = cols = size). Must be between 8 and 16.
+  /// Grid dimension (rows = cols = size). Must be one of
+  /// [puzzleSupportedSizes].
   final int size;
 
   /// The pen regions that partition the grid.
@@ -21,8 +23,10 @@ class PuzzleBoard {
   late final Map<int, Pen> _penMap;
 
   PuzzleBoard({required this.size, required this.pens}) {
-    if (size < 8 || size > 16) {
-      throw ArgumentError('Grid size must be between 8 and 16, got $size');
+    if (!isPuzzleSizeSupported(size)) {
+      throw ArgumentError(
+        'Grid size must be one of $puzzleSupportedSizes, got $size',
+      );
     }
 
     _cells = List.generate(
