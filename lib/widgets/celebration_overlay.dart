@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:bullpen/theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CelebrationOverlay extends StatefulWidget {
@@ -48,8 +50,8 @@ class _CelebrationOverlayState extends State<CelebrationOverlay>
 
     _confetti = List.generate(80, (_) => _ConfettiPiece.random(_random));
 
-    _fadeController.forward();
-    _confettiController.repeat();
+    unawaited(_fadeController.forward());
+    unawaited(_confettiController.repeat());
   }
 
   @override
@@ -197,21 +199,22 @@ class _ConfettiPainter extends CustomPainter {
       final x = (piece.x + wobble) * size.width;
 
       final paint = Paint()..color = piece.color;
-      canvas.save();
-      canvas.translate(x, y);
-      canvas.rotate(piece.rotation + progress * pi * 2 * piece.speed);
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromCenter(
-            center: Offset.zero,
-            width: piece.size,
-            height: piece.size * 0.6,
+      canvas
+        ..save()
+        ..translate(x, y)
+        ..rotate(piece.rotation + progress * pi * 2 * piece.speed)
+        ..drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromCenter(
+              center: Offset.zero,
+              width: piece.size,
+              height: piece.size * 0.6,
+            ),
+            Radius.circular(piece.size * 0.1),
           ),
-          Radius.circular(piece.size * 0.1),
-        ),
-        paint,
-      );
-      canvas.restore();
+          paint,
+        )
+        ..restore();
     }
   }
 

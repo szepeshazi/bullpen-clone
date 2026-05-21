@@ -65,7 +65,9 @@ void main() {
         // Check all 8 neighbors.
         for (var dr = -1; dr <= 1; dr++) {
           for (var dc = -1; dc <= 1; dc++) {
-            if (dr == 0 && dc == 0) continue;
+            if (dr == 0 && dc == 0) {
+              continue;
+            }
             final nr = bull.row + dr;
             final nc = bull.col + dc;
             if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
@@ -92,7 +94,9 @@ void main() {
       for (var attempt = 0; attempt < 500 && !solved; attempt++) {
         final board = GridGenerator.generate(8, random: Random(attempt));
         final state = GridSolver.solve(board, random: Random(attempt));
-        if (state != null && state.isSolved) solved = true;
+        if (state != null && state.isSolved) {
+          solved = true;
+        }
       }
       expect(
         solved,
@@ -106,7 +110,9 @@ void main() {
       for (var attempt = 0; attempt < 500 && !solved; attempt++) {
         final board = GridGenerator.generate(10, random: Random(attempt));
         final state = GridSolver.solve(board, random: Random(attempt));
-        if (state != null && state.isSolved) solved = true;
+        if (state != null && state.isSolved) {
+          solved = true;
+        }
       }
       expect(
         solved,
@@ -134,7 +140,9 @@ void main() {
       // All other cells go to pen 0.
       for (var r = 0; r < 8; r++) {
         for (var c = 0; c < 8; c++) {
-          if (r == 0 && c >= 1 && c < 8) continue;
+          if (r == 0 && c >= 1 && c < 8) {
+            continue;
+          }
           penCells[0]!.add(Cell(row: r, col: c, penId: 0));
         }
       }

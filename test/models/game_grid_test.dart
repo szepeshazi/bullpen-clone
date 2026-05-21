@@ -110,9 +110,10 @@ void main() {
 
     test('clear removes all bulls', () {
       final state = PuzzleState(board: _makeRowBasedBoard());
-      state.placeBull(state.board.cellAt(0, 0));
-      state.placeBull(state.board.cellAt(1, 3));
-      state.clear();
+      state
+        ..placeBull(state.board.cellAt(0, 0))
+        ..placeBull(state.board.cellAt(1, 3))
+        ..clear();
       expect(state.bullCount, 0);
       expect(state.hasBullAt(0, 0), isFalse);
       expect(state.hasBullAt(1, 3), isFalse);
@@ -122,24 +123,27 @@ void main() {
   group('PuzzleState counting', () {
     test('bullsInRow returns correct count', () {
       final state = PuzzleState(board: _makeRowBasedBoard());
-      state.placeBull(state.board.cellAt(0, 0));
-      state.placeBull(state.board.cellAt(0, 3));
+      state
+        ..placeBull(state.board.cellAt(0, 0))
+        ..placeBull(state.board.cellAt(0, 3));
       expect(state.bullsInRow(0), 2);
       expect(state.bullsInRow(1), 0);
     });
 
     test('bullsInCol returns correct count', () {
       final state = PuzzleState(board: _makeRowBasedBoard());
-      state.placeBull(state.board.cellAt(0, 2));
-      state.placeBull(state.board.cellAt(5, 2));
+      state
+        ..placeBull(state.board.cellAt(0, 2))
+        ..placeBull(state.board.cellAt(5, 2));
       expect(state.bullsInCol(2), 2);
       expect(state.bullsInCol(0), 0);
     });
 
     test('bullsInPen returns correct count', () {
       final state = PuzzleState(board: _makeRowBasedBoard());
-      state.placeBull(state.board.cellAt(0, 0));
-      state.placeBull(state.board.cellAt(0, 4));
+      state
+        ..placeBull(state.board.cellAt(0, 0))
+        ..placeBull(state.board.cellAt(0, 4));
       expect(state.bullsInPen(0), 2);
       expect(state.bullsInPen(1), 0);
     });
@@ -190,24 +194,27 @@ void main() {
 
     test('valid partial placement is valid', () {
       final state = PuzzleState(board: _makeRowBasedBoard());
-      state.placeBull(state.board.cellAt(0, 0));
-      state.placeBull(state.board.cellAt(0, 5));
+      state
+        ..placeBull(state.board.cellAt(0, 0))
+        ..placeBull(state.board.cellAt(0, 5));
       expect(state.isValid, isTrue);
     });
 
     test('three bulls in same row is invalid', () {
       final state = PuzzleState(board: _makeRowBasedBoard());
-      state.placeBull(state.board.cellAt(0, 0));
-      state.placeBull(state.board.cellAt(0, 3));
-      state.placeBull(state.board.cellAt(0, 6));
+      state
+        ..placeBull(state.board.cellAt(0, 0))
+        ..placeBull(state.board.cellAt(0, 3))
+        ..placeBull(state.board.cellAt(0, 6));
       expect(state.isValid, isFalse);
     });
 
     test('three bulls in same column is invalid', () {
       final state = PuzzleState(board: _makeRowBasedBoard());
-      state.placeBull(state.board.cellAt(0, 0));
-      state.placeBull(state.board.cellAt(3, 0));
-      state.placeBull(state.board.cellAt(6, 0));
+      state
+        ..placeBull(state.board.cellAt(0, 0))
+        ..placeBull(state.board.cellAt(3, 0))
+        ..placeBull(state.board.cellAt(6, 0));
       expect(state.isValid, isFalse);
     });
   });
@@ -274,8 +281,9 @@ void main() {
   group('PuzzleState removeBull stack optimization', () {
     test('removeLast path works when removing most recent bull', () {
       final state = PuzzleState(board: _makeRowBasedBoard());
-      state.placeBull(state.board.cellAt(0, 0));
-      state.placeBull(state.board.cellAt(1, 3));
+      state
+        ..placeBull(state.board.cellAt(0, 0))
+        ..placeBull(state.board.cellAt(1, 3));
       // Remove in reverse order (backtracking pattern).
       expect(state.removeBull(state.board.cellAt(1, 3)), isTrue);
       expect(state.bullCount, 1);
@@ -285,8 +293,9 @@ void main() {
 
     test('removeWhere path works when removing non-last bull', () {
       final state = PuzzleState(board: _makeRowBasedBoard());
-      state.placeBull(state.board.cellAt(0, 0));
-      state.placeBull(state.board.cellAt(1, 3));
+      state
+        ..placeBull(state.board.cellAt(0, 0))
+        ..placeBull(state.board.cellAt(1, 3));
       // Remove first placed (not the last) — exercises the fallback path.
       expect(state.removeBull(state.board.cellAt(0, 0)), isTrue);
       expect(state.bullCount, 1);

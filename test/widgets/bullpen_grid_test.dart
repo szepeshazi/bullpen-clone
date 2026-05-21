@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bullpen/cubit/game_cubit.dart';
 import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/widgets/bullpen_grid.dart';
@@ -19,7 +21,9 @@ void main() {
             value: cubit,
             child: BlocBuilder<GameCubit, GameState>(
               builder: (_, state) {
-                if (state is! GamePlaying) return const SizedBox();
+                if (state is! GamePlaying) {
+                  return const SizedBox();
+                }
                 return SizedBox(
                   width: 400,
                   height: 400,
@@ -52,7 +56,7 @@ void main() {
         reason: 'A short tap should place at least one dot',
       );
 
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     testWidgets('long press places a bull', (tester) async {
@@ -70,7 +74,7 @@ void main() {
       final hasAnyBull = state.marks.any((row) => row.contains(CellMark.bull));
       expect(hasAnyBull, isTrue, reason: 'A long press should place a bull');
 
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     testWidgets('drag streams dots across cells', (tester) async {
@@ -106,7 +110,7 @@ void main() {
         reason: 'Drag should mark multiple cells',
       );
 
-      cubit.close();
+      unawaited(cubit.close());
     });
   });
 }

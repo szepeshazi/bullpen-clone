@@ -29,7 +29,9 @@ class BoardEvaluator {
 
     for (var r = 0; r < size; r++) {
       for (var c = 0; c < size; c++) {
-        if (marks[r][c] != CellMark.bull) continue;
+        if (marks[r][c] != CellMark.bull) {
+          continue;
+        }
         bulls.add((r, c));
         rowCounts[r]++;
         colCounts[c]++;
@@ -47,7 +49,7 @@ class BoardEvaluator {
   }
 
   /// Returns every bull involved in a rule violation: over-capacity rows,
-  /// columns, or pens, plus any bull with an adjacent bull (including diagonals).
+  /// columns, or pens, plus any bull adjacent to another (incl. diagonals).
   static Set<(int, int)> findViolations(
     PuzzleBoard board,
     List<List<CellMark>> marks,
@@ -57,10 +59,16 @@ class BoardEvaluator {
     final counts = countBulls(board, marks);
 
     for (final (r, c) in counts.bulls) {
-      if (counts.rowCounts[r] > 2) violations.add((r, c));
-      if (counts.colCounts[c] > 2) violations.add((r, c));
+      if (counts.rowCounts[r] > 2) {
+        violations.add((r, c));
+      }
+      if (counts.colCounts[c] > 2) {
+        violations.add((r, c));
+      }
       final penId = board.cellAt(r, c).penId;
-      if ((counts.penCounts[penId] ?? 0) > 2) violations.add((r, c));
+      if ((counts.penCounts[penId] ?? 0) > 2) {
+        violations.add((r, c));
+      }
     }
 
     for (final (r, c) in counts.bulls) {
@@ -70,7 +78,9 @@ class BoardEvaluator {
         size,
         (nr, nc) => marks[nr][nc] == CellMark.bull,
       );
-      if (hasNeighbour) violations.add((r, c));
+      if (hasNeighbour) {
+        violations.add((r, c));
+      }
     }
 
     return violations;
@@ -81,14 +91,22 @@ class BoardEvaluator {
     final size = board.size;
     final counts = countBulls(board, marks);
 
-    if (counts.bulls.length != 2 * size) return false;
+    if (counts.bulls.length != 2 * size) {
+      return false;
+    }
 
     for (var i = 0; i < size; i++) {
-      if (counts.rowCounts[i] != 2) return false;
-      if (counts.colCounts[i] != 2) return false;
+      if (counts.rowCounts[i] != 2) {
+        return false;
+      }
+      if (counts.colCounts[i] != 2) {
+        return false;
+      }
     }
     for (final pen in board.pens) {
-      if ((counts.penCounts[pen.id] ?? 0) != 2) return false;
+      if ((counts.penCounts[pen.id] ?? 0) != 2) {
+        return false;
+      }
     }
 
     for (final (r, c) in counts.bulls) {
@@ -98,7 +116,9 @@ class BoardEvaluator {
         size,
         (nr, nc) => marks[nr][nc] == CellMark.bull,
       );
-      if (hasNeighbour) return false;
+      if (hasNeighbour) {
+        return false;
+      }
     }
 
     return true;

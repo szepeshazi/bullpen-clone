@@ -2,6 +2,7 @@ import 'package:bullpen/cubit/game_cubit.dart';
 import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/logic/hint_finder.dart';
 import 'package:bullpen/theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -91,10 +92,11 @@ class _Banner extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(StringProperty('reason', reason));
-    properties.add(ColorProperty('color', color));
-    properties.add(DiagnosticsProperty<bool>('isMustPlace', isMustPlace));
-    properties.add(ObjectFlagProperty<VoidCallback>.has('onApply', onApply));
+    properties
+      ..add(StringProperty('reason', reason))
+      ..add(ColorProperty('color', color))
+      ..add(DiagnosticsProperty<bool>('isMustPlace', isMustPlace))
+      ..add(ObjectFlagProperty<VoidCallback>.has('onApply', onApply));
   }
 }
 
@@ -123,7 +125,8 @@ class _ApplyButton extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(ColorProperty('color', color));
-    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
+    properties
+      ..add(ColorProperty('color', color))
+      ..add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
   }
 }

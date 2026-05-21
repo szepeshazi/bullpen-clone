@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:bullpen/logic/hint_finder.dart';
 import 'package:bullpen/theme.dart';
 import 'package:bullpen/widgets/grid_constants.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 const _mustPlaceColor = Color(0xFF2E7D32);
@@ -29,11 +31,12 @@ class HintArrowOverlay extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<(int, int)>('hintCell', hintCell));
-    properties.add(EnumProperty<HintType>('hintType', hintType));
-    properties.add(IntProperty('boardSize', boardSize));
-    properties.add(DoubleProperty('areaWidth', areaWidth));
-    properties.add(DoubleProperty('areaHeight', areaHeight));
+    properties
+      ..add(DiagnosticsProperty<(int, int)>('hintCell', hintCell))
+      ..add(EnumProperty<HintType>('hintType', hintType))
+      ..add(IntProperty('boardSize', boardSize))
+      ..add(DoubleProperty('areaWidth', areaWidth))
+      ..add(DoubleProperty('areaHeight', areaHeight));
   }
 }
 
@@ -50,7 +53,8 @@ class _HintArrowOverlayState extends State<HintArrowOverlay>
     _bounceController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
-    )..repeat(reverse: true);
+    );
+    unawaited(_bounceController.repeat(reverse: true));
     _bounceOffset = Tween<double>(begin: 0, end: 10).animate(
       CurvedAnimation(parent: _bounceController, curve: Curves.easeInOut),
     );
@@ -58,7 +62,8 @@ class _HintArrowOverlayState extends State<HintArrowOverlay>
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
-    )..forward();
+    );
+    unawaited(_fadeController.forward());
     _fadeIn = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
   }
 
@@ -163,20 +168,21 @@ class _DiagonalArrowPainter extends CustomPainter {
       ..lineTo(s * 0.58, 0)
       ..close();
 
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = color
-        ..style = PaintingStyle.fill,
-    );
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = const Color(0xFF000000)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = s * 0.03
-        ..strokeJoin = StrokeJoin.round,
-    );
+    canvas
+      ..drawPath(
+        path,
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.fill,
+      )
+      ..drawPath(
+        path,
+        Paint()
+          ..color = const Color(0xFF000000)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = s * 0.03
+          ..strokeJoin = StrokeJoin.round,
+      );
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bullpen/cubit/game_cubit.dart';
 import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/widgets/game/hint_reason_banner.dart';
@@ -28,27 +30,27 @@ void main() {
       await pump(tester, cubit);
 
       expect(find.byIcon(Icons.lightbulb), findsNothing);
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     testWidgets('shows reason once a hint is requested', (tester) async {
-      final cubit = makePlayingCubit();
-      cubit.toggleBull(0, 0);
-      cubit.toggleBull(0, 2);
-      cubit.requestHint();
+      final cubit = makePlayingCubit()
+        ..toggleBull(0, 0)
+        ..toggleBull(0, 2)
+        ..requestHint();
       await pump(tester, cubit);
       await tester.pump(const Duration(milliseconds: 350));
 
       final state = cubit.state as GamePlaying;
       expect(find.text(state.hintReason!), findsOneWidget);
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     testWidgets('apply button triggers applyHint', (tester) async {
-      final cubit = makePlayingCubit();
-      cubit.toggleBull(0, 0);
-      cubit.toggleBull(0, 2);
-      cubit.requestHint();
+      final cubit = makePlayingCubit()
+        ..toggleBull(0, 0)
+        ..toggleBull(0, 2)
+        ..requestHint();
       await pump(tester, cubit);
       await tester.pump(const Duration(milliseconds: 350));
 
@@ -61,7 +63,7 @@ void main() {
       final stateAfter = cubit.state as GamePlaying;
       // The hint cell should have been filled (dot for exclude).
       expect(stateAfter.markAt(hintRow, hintCol), isNot(CellMark.empty));
-      cubit.close();
+      unawaited(cubit.close());
     });
   });
 }

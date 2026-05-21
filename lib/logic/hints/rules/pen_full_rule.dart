@@ -1,26 +1,22 @@
 import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/logic/hints/hint.dart';
 import 'package:bullpen/logic/hints/hint_context.dart';
-import 'package:bullpen/logic/hints/hint_rule.dart';
 
 /// Pen already holds 2 bulls → exclude remaining empty cells in it.
-class PenFullRule extends HintRule {
-  const PenFullRule();
-
-  @override
-  Hint? evaluate(HintContext ctx) {
-    for (final pen in ctx.board.pens) {
-      if ((ctx.penCounts[pen.id] ?? 0) < 2) continue;
-      for (final cell in pen.cells) {
-        if (ctx.marks[cell.row][cell.col] == CellMark.empty) {
-          return Hint(
-            row: cell.row,
-            col: cell.col,
-            reason: 'This pen already has 2 bulls',
-          );
-        }
+Hint? penFullRule(HintContext ctx) {
+  for (final pen in ctx.board.pens) {
+    if ((ctx.penCounts[pen.id] ?? 0) < 2) {
+      continue;
+    }
+    for (final cell in pen.cells) {
+      if (ctx.marks[cell.row][cell.col] == CellMark.empty) {
+        return Hint(
+          row: cell.row,
+          col: cell.col,
+          reason: 'This pen already has 2 bulls',
+        );
       }
     }
-    return null;
   }
+  return null;
 }

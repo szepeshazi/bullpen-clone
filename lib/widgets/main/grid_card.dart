@@ -1,5 +1,6 @@
 import 'package:bullpen/theme.dart';
 import 'package:bullpen/widgets/main/mini_grid.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class GridCard extends StatelessWidget {
@@ -36,7 +37,8 @@ class GridCard extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IntProperty('size', size));
-    properties.add(DiagnosticsProperty<bool>('isSelected', isSelected));
+    properties
+      ..add(IntProperty('size', size))
+      ..add(DiagnosticsProperty<bool>('isSelected', isSelected));
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bullpen/cubit/game_cubit.dart';
 import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/widgets/game/undo_redo_row.dart';
@@ -31,12 +33,11 @@ void main() {
         ),
       );
       expect(undo.onPressed, isNull);
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     testWidgets('undo is enabled after a move', (tester) async {
-      final cubit = makePlayingCubit();
-      cubit.toggleDot(0, 0);
+      final cubit = makePlayingCubit()..toggleDot(0, 0);
       await pump(tester, cubit);
 
       final undo = tester.widget<IconButton>(
@@ -46,14 +47,14 @@ void main() {
         ),
       );
       expect(undo.onPressed, isNotNull);
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     testWidgets('tapping hint requests a hint', (tester) async {
-      final cubit = makePlayingCubit();
       // Place 2 bulls in row 0 to make a hint available.
-      cubit.toggleBull(0, 0);
-      cubit.toggleBull(0, 2);
+      final cubit = makePlayingCubit()
+        ..toggleBull(0, 0)
+        ..toggleBull(0, 2);
       await pump(tester, cubit);
 
       await tester.tap(find.byIcon(Icons.lightbulb_outline));
@@ -61,7 +62,7 @@ void main() {
 
       final state = cubit.state as GamePlaying;
       expect(state.hasHint, isTrue);
-      cubit.close();
+      unawaited(cubit.close());
     });
   });
 }

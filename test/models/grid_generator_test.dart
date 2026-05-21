@@ -43,7 +43,9 @@ void main() {
       final board = GridGenerator.generate(8, random: Random(42));
 
       for (final pen in board.pens) {
-        if (pen.cells.isEmpty) continue;
+        if (pen.cells.isEmpty) {
+          continue;
+        }
 
         final cellSet = <(int, int)>{};
         for (final c in pen.cells) {
@@ -93,7 +95,9 @@ void main() {
           greaterThanOrEqualTo(5),
           reason: 'Pen ${pen.id} has only ${pen.size} cells (min 5)',
         );
-        if (pen.size < avgSize) hasSmall = true;
+        if (pen.size < avgSize) {
+          hasSmall = true;
+        }
       }
       expect(
         hasSmall,

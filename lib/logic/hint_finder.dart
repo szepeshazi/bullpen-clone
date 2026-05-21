@@ -8,4 +8,4 @@ export 'hints/hint.dart';
 /// Scans the board for the first hint, checking rules in priority order.
 /// Returns `null` when no hint can be found.
 Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) =>
-    HintEngine.defaultRules().findHint(board, marks);
+    HintEngine.defaultRules.findHint(board, marks);

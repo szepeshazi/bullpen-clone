@@ -1,6 +1,7 @@
 import 'package:bullpen/cubit/game_cubit.dart';
 import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,7 +17,9 @@ class UndoRedoRow extends StatelessWidget {
       >(
         selector: _select,
         builder: (context, s) {
-          if (!s.visible) return const SizedBox.shrink();
+          if (!s.visible) {
+            return const SizedBox.shrink();
+          }
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -81,9 +84,10 @@ class _ActionButton extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<IconData>('icon', icon));
-    properties.add(StringProperty('tooltip', tooltip));
-    properties.add(
+    properties
+      ..add(DiagnosticsProperty<IconData>('icon', icon))
+      ..add(StringProperty('tooltip', tooltip))
+      ..add(
       ObjectFlagProperty<VoidCallback?>.has('onPressed', onPressed),
     );
   }

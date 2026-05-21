@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bullpen/cubit/game_cubit.dart';
 import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/models/cell.dart';
@@ -23,15 +25,16 @@ PuzzleBoard _makeBoard({int size = 8}) {
 GameCubit _makeCubit() {
   final board = _makeBoard();
   final solution = PuzzleState(board: board);
-  final cubit = GameCubit(skipGenerate: true);
-  cubit.startPlaying(board: board, solution: solution);
-  return cubit;
+  return GameCubit(skipGenerate: true)
+    ..startPlaying(board: board, solution: solution);
 }
 
 /// Returns the current GamePlaying state from the cubit, or fails.
 GamePlaying _playing(GameCubit cubit) {
   final s = cubit.state;
-  if (s is GamePlaying) return s;
+  if (s is GamePlaying) {
+    return s;
+  }
   fail('Expected GamePlaying, got ${s.runtimeType}');
 }
 
@@ -43,9 +46,7 @@ void main() {
       cubit = _makeCubit();
     });
 
-    tearDown(() {
-      cubit.close();
-    });
+    tearDown(() => unawaited(cubit.close()));
 
     test('initial state has no undo or redo available', () {
       final s = _playing(cubit);
@@ -102,8 +103,9 @@ void main() {
     });
 
     test('redo restores undone action', () {
-      cubit.toggleDot(0, 0);
-      cubit.undo();
+      cubit
+        ..toggleDot(0, 0)
+        ..undo();
       expect(_playing(cubit).markAt(0, 0), CellMark.empty);
 
       cubit.redo();
@@ -113,8 +115,9 @@ void main() {
     });
 
     test('new action after undo clears redo stack', () {
-      cubit.toggleDot(0, 0);
-      cubit.undo();
+      cubit
+        ..toggleDot(0, 0)
+        ..undo();
       expect(_playing(cubit).canRedo, isTrue);
 
       // New action should clear redo.
@@ -123,9 +126,10 @@ void main() {
     });
 
     test('multiple undo steps work correctly', () {
-      cubit.toggleDot(0, 0);
-      cubit.toggleDot(1, 1);
-      cubit.toggleDot(2, 2);
+      cubit
+        ..toggleDot(0, 0)
+        ..toggleDot(1, 1)
+        ..toggleDot(2, 2);
 
       expect(_playing(cubit).undoStack.length, 3);
 
@@ -146,13 +150,12 @@ void main() {
     });
 
     test('multiple redo steps work correctly', () {
-      cubit.toggleDot(0, 0);
-      cubit.toggleDot(1, 1);
-
-      cubit.undo();
-      cubit.undo();
-
-      cubit.redo();
+      cubit
+        ..toggleDot(0, 0)
+        ..toggleDot(1, 1)
+        ..undo()
+        ..undo()
+        ..redo();
       expect(_playing(cubit).markAt(0, 0), CellMark.dot);
       expect(_playing(cubit).markAt(1, 1), CellMark.empty);
 
@@ -162,12 +165,11 @@ void main() {
     });
 
     test('undo/redo cycle preserves marks exactly', () {
-      cubit.toggleDot(0, 0);
-      cubit.toggleBull(3, 3);
-      cubit.toggleDot(5, 5);
-
-      // Capture the state at each step by undoing.
-      cubit.undo(); // undo dot at 5,5
+      cubit
+        ..toggleDot(0, 0)
+        ..toggleBull(3, 3)
+        ..toggleDot(5, 5)
+        ..undo(); // undo dot at 5,5
       expect(_playing(cubit).markAt(5, 5), CellMark.empty);
       expect(_playing(cubit).markAt(3, 3), CellMark.bull);
 
@@ -178,8 +180,9 @@ void main() {
     });
 
     test('toggleDot then toggle same dot again both create undo entries', () {
-      cubit.toggleDot(0, 0); // empty -> dot
-      cubit.toggleDot(0, 0); // dot -> empty
+      cubit
+        ..toggleDot(0, 0) // empty -> dot
+        ..toggleDot(0, 0); // dot -> empty
 
       expect(_playing(cubit).markAt(0, 0), CellMark.empty);
       expect(_playing(cubit).undoStack.length, 2);
@@ -210,9 +213,7 @@ void main() {
       cubit = _makeCubit();
     });
 
-    tearDown(() {
-      cubit.close();
-    });
+    tearDown(() => unawaited(cubit.close()));
 
     test('startDotDrag places dot on empty cell', () {
       expect(cubit.startDotDrag(0, 0), isTrue);
@@ -234,9 +235,10 @@ void main() {
     });
 
     test('continueDotDrag places dots on subsequent cells', () {
-      cubit.startDotDrag(0, 0);
-      cubit.continueDotDrag(0, 1);
-      cubit.continueDotDrag(0, 2);
+      cubit
+        ..startDotDrag(0, 0)
+        ..continueDotDrag(0, 1)
+        ..continueDotDrag(0, 2);
 
       expect(_playing(cubit).markAt(0, 0), CellMark.dot);
       expect(_playing(cubit).markAt(0, 1), CellMark.dot);
@@ -244,10 +246,11 @@ void main() {
     });
 
     test('placing mode skips bull cells during drag', () {
-      cubit.toggleBull(0, 1);
-      cubit.startDotDrag(0, 0); // starts on empty → placing mode
-      cubit.continueDotDrag(0, 1); // bull — should be skipped in placing mode
-      cubit.continueDotDrag(0, 2);
+      cubit
+        ..toggleBull(0, 1)
+        ..startDotDrag(0, 0) // starts on empty → placing mode
+        ..continueDotDrag(0, 1) // bull — should be skipped in placing mode
+        ..continueDotDrag(0, 2);
 
       expect(_playing(cubit).markAt(0, 0), CellMark.dot);
       expect(_playing(cubit).markAt(0, 1), CellMark.bull);
@@ -255,14 +258,14 @@ void main() {
     });
 
     test('clearing mode removes bulls during drag', () {
-      cubit.toggleBull(0, 0);
-      cubit.toggleBull(0, 2);
-      cubit.toggleDot(0, 1);
-
-      cubit.startDotDrag(0, 0); // starts on bull → clearing mode
-      cubit.continueDotDrag(0, 1); // dot → cleared
-      cubit.continueDotDrag(0, 2); // bull → cleared
-      cubit.endDotDrag();
+      cubit
+        ..toggleBull(0, 0)
+        ..toggleBull(0, 2)
+        ..toggleDot(0, 1)
+        ..startDotDrag(0, 0) // starts on bull → clearing mode
+        ..continueDotDrag(0, 1) // dot → cleared
+        ..continueDotDrag(0, 2) // bull → cleared
+        ..endDotDrag();
 
       expect(_playing(cubit).markAt(0, 0), CellMark.empty);
       expect(_playing(cubit).markAt(0, 1), CellMark.empty);
@@ -270,14 +273,14 @@ void main() {
     });
 
     test('drag starting on dot removes dots and bulls during drag', () {
-      cubit.toggleDot(0, 0);
-      cubit.toggleBull(0, 1);
-      cubit.toggleDot(0, 2);
-
-      cubit.startDotDrag(0, 0); // starts on dot → clearing mode
-      cubit.continueDotDrag(0, 1); // bull → cleared
-      cubit.continueDotDrag(0, 2); // dot → cleared
-      cubit.endDotDrag();
+      cubit
+        ..toggleDot(0, 0)
+        ..toggleBull(0, 1)
+        ..toggleDot(0, 2)
+        ..startDotDrag(0, 0) // starts on dot → clearing mode
+        ..continueDotDrag(0, 1) // bull → cleared
+        ..continueDotDrag(0, 2) // dot → cleared
+        ..endDotDrag();
 
       expect(_playing(cubit).markAt(0, 0), CellMark.empty);
       expect(_playing(cubit).markAt(0, 1), CellMark.empty);
@@ -285,14 +288,14 @@ void main() {
     });
 
     test('clearing mode skips empty cells during drag', () {
-      cubit.toggleBull(0, 0);
-      // 0,1 is empty
-      cubit.toggleDot(0, 2);
-
-      cubit.startDotDrag(0, 0); // starts on bull → clearing mode
-      cubit.continueDotDrag(0, 1); // empty → skipped
-      cubit.continueDotDrag(0, 2); // dot → cleared
-      cubit.endDotDrag();
+      cubit
+        ..toggleBull(0, 0)
+        // 0,1 is empty
+        ..toggleDot(0, 2)
+        ..startDotDrag(0, 0) // starts on bull → clearing mode
+        ..continueDotDrag(0, 1) // empty → skipped
+        ..continueDotDrag(0, 2) // dot → cleared
+        ..endDotDrag();
 
       expect(_playing(cubit).markAt(0, 0), CellMark.empty);
       expect(_playing(cubit).markAt(0, 1), CellMark.empty); // still empty
@@ -302,10 +305,11 @@ void main() {
     test('entire drag is a single undo entry', () {
       final undoBefore = _playing(cubit).undoStack.length;
 
-      cubit.startDotDrag(0, 0);
-      cubit.continueDotDrag(0, 1);
-      cubit.continueDotDrag(0, 2);
-      cubit.endDotDrag();
+      cubit
+        ..startDotDrag(0, 0)
+        ..continueDotDrag(0, 1)
+        ..continueDotDrag(0, 2)
+        ..endDotDrag();
 
       // Should have exactly one more undo entry.
       expect(_playing(cubit).undoStack.length, undoBefore + 1);
@@ -318,12 +322,14 @@ void main() {
     });
 
     test('drag clears redo stack', () {
-      cubit.toggleDot(1, 1);
-      cubit.undo();
+      cubit
+        ..toggleDot(1, 1)
+        ..undo();
       expect(_playing(cubit).canRedo, isTrue);
 
-      cubit.startDotDrag(0, 0);
-      cubit.endDotDrag();
+      cubit
+        ..startDotDrag(0, 0)
+        ..endDotDrag();
 
       expect(_playing(cubit).canRedo, isFalse);
     });

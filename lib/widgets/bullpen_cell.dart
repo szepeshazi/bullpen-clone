@@ -2,6 +2,7 @@ import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/widgets/grid_constants.dart';
 import 'package:bullpen/widgets/pen_palette.dart';
 import 'package:bullpen/widgets/shaking_bull.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -97,9 +98,10 @@ class BullpenCell extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<GamePlaying>('gameState', gameState));
-    properties.add(IntProperty('row', row));
-    properties.add(IntProperty('col', col));
-    properties.add(DoubleProperty('cellSize', cellSize));
+    properties
+      ..add(DiagnosticsProperty<GamePlaying>('gameState', gameState))
+      ..add(IntProperty('row', row))
+      ..add(IntProperty('col', col))
+      ..add(DoubleProperty('cellSize', cellSize));
   }
 }

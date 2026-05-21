@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bullpen/cubit/game_cubit.dart';
 import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/models/cell.dart';
@@ -22,14 +24,15 @@ PuzzleBoard _makeBoard({int size = 8}) {
 GameCubit _makeCubit() {
   final board = _makeBoard();
   final solution = PuzzleState(board: board);
-  final cubit = GameCubit(skipGenerate: true);
-  cubit.startPlaying(board: board, solution: solution);
-  return cubit;
+  return GameCubit(skipGenerate: true)
+    ..startPlaying(board: board, solution: solution);
 }
 
 GamePlaying _playing(GameCubit cubit) {
   final s = cubit.state;
-  if (s is GamePlaying) return s;
+  if (s is GamePlaying) {
+    return s;
+  }
   fail('Expected GamePlaying, got ${s.runtimeType}');
 }
 
@@ -38,13 +41,13 @@ void main() {
     test('starts in GameInitial when skipGenerate is true', () {
       final cubit = GameCubit(skipGenerate: true);
       expect(cubit.state, isA<GameInitial>());
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     test('startPlaying transitions to GamePlaying', () {
       final cubit = _makeCubit();
       expect(cubit.state, isA<GamePlaying>());
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     test('setGridSize updates gridSize', () {
@@ -52,16 +55,15 @@ void main() {
       expect(cubit.gridSize, 8);
       cubit.setGridSize(10);
       expect(cubit.gridSize, 10);
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     test('setGridSize rejects out-of-range values', () {
-      final cubit = _makeCubit();
-      cubit.setGridSize(7);
-      expect(cubit.gridSize, 8);
-      cubit.setGridSize(17);
-      expect(cubit.gridSize, 8);
-      cubit.close();
+      final cubit = _makeCubit()
+        ..setGridSize(7) // below min
+        ..setGridSize(17); // above max
+      expect(cubit.gridSize, 8); // unchanged
+      unawaited(cubit.close());
     });
 
     test('setGridSize ignores same size', () {
@@ -70,7 +72,7 @@ void main() {
       cubit.setGridSize(8);
       // Should not emit a new state.
       expect(_playing(cubit).version, vBefore);
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     test('generate produces GamePlaying or GameError', () async {
@@ -78,7 +80,7 @@ void main() {
       await cubit.generate();
 
       expect(cubit.state, anyOf(isA<GamePlaying>(), isA<GameError>()));
-      cubit.close();
+      await cubit.close();
     });
   });
 
@@ -90,9 +92,10 @@ void main() {
 
     test('placing 3 bulls in same row creates violations', () {
       // Row 0: place at cols 0, 2, 4 (non-adjacent, same row).
-      cubit.toggleBull(0, 0);
-      cubit.toggleBull(0, 2);
-      cubit.toggleBull(0, 4);
+      cubit
+        ..toggleBull(0, 0)
+        ..toggleBull(0, 2)
+        ..toggleBull(0, 4);
 
       final s = _playing(cubit);
       expect(s.violations, isNotEmpty);
@@ -103,9 +106,10 @@ void main() {
     });
 
     test('placing 3 bulls in same column creates violations', () {
-      cubit.toggleBull(0, 0);
-      cubit.toggleBull(2, 0);
-      cubit.toggleBull(4, 0);
+      cubit
+        ..toggleBull(0, 0)
+        ..toggleBull(2, 0)
+        ..toggleBull(4, 0);
 
       final s = _playing(cubit);
       expect(s.violations, isNotEmpty);
@@ -115,8 +119,9 @@ void main() {
     });
 
     test('placing adjacent bulls creates violations', () {
-      cubit.toggleBull(0, 0);
-      cubit.toggleBull(0, 1); // adjacent horizontally
+      cubit
+        ..toggleBull(0, 0)
+        ..toggleBull(0, 1); // adjacent horizontally
 
       final s = _playing(cubit);
       expect(s.violations, isNotEmpty);
@@ -125,8 +130,9 @@ void main() {
     });
 
     test('placing diagonally adjacent bulls creates violations', () {
-      cubit.toggleBull(0, 0);
-      cubit.toggleBull(1, 1); // diagonally adjacent
+      cubit
+        ..toggleBull(0, 0)
+        ..toggleBull(1, 1); // diagonally adjacent
 
       final s = _playing(cubit);
       expect(s.violations, isNotEmpty);
@@ -141,8 +147,9 @@ void main() {
     });
 
     test('clearViolations removes violations', () {
-      cubit.toggleBull(0, 0);
-      cubit.toggleBull(0, 1); // adjacent → violation
+      cubit
+        ..toggleBull(0, 0)
+        ..toggleBull(0, 1); // adjacent → violation
       expect(_playing(cubit).violations, isNotEmpty);
 
       cubit.clearViolations();
@@ -167,7 +174,9 @@ void main() {
       for (var i = 0; i < 110; i++) {
         final row = i ~/ 8;
         final col = i % 8;
-        if (row >= 8) break;
+        if (row >= 8) {
+          break;
+        }
         cubit.toggleDot(row, col);
       }
 
@@ -188,29 +197,30 @@ void main() {
     });
 
     test('toggleDot on dot removes it', () {
-      cubit.toggleDot(0, 0);
-      cubit.toggleDot(0, 0);
+      cubit
+        ..toggleDot(0, 0)
+        ..toggleDot(0, 0);
       expect(_playing(cubit).markAt(0, 0), CellMark.empty);
     });
 
     test('toggleDot on bull removes it', () {
-      cubit.toggleBull(0, 0);
-      cubit.toggleDot(0, 0);
+      cubit
+        ..toggleBull(0, 0)
+        ..toggleDot(0, 0);
       expect(_playing(cubit).markAt(0, 0), CellMark.empty);
     });
 
     test('toggleDot ignored when solved', () {
-      final cubit = GameCubit(skipGenerate: true);
       final board = _makeBoard();
       final solution = PuzzleState(board: board);
-      cubit.startPlaying(board: board, solution: solution);
-
       // Manually emit a solved state.
       // We can't easily solve the puzzle, so just test that the guard works
       // by checking it doesn't throw on an already-playing state.
-      cubit.toggleDot(0, 0);
+      final cubit = GameCubit(skipGenerate: true)
+        ..startPlaying(board: board, solution: solution)
+        ..toggleDot(0, 0);
       expect(_playing(cubit).markAt(0, 0), CellMark.dot);
-      cubit.close();
+      unawaited(cubit.close());
     });
   });
 
@@ -226,14 +236,16 @@ void main() {
     });
 
     test('toggleBull on bull removes it', () {
-      cubit.toggleBull(0, 0);
-      cubit.toggleBull(0, 0);
+      cubit
+        ..toggleBull(0, 0)
+        ..toggleBull(0, 0);
       expect(_playing(cubit).markAt(0, 0), CellMark.empty);
     });
 
     test('toggleBull on dot places bull', () {
-      cubit.toggleDot(0, 0);
-      cubit.toggleBull(0, 0);
+      cubit
+        ..toggleDot(0, 0)
+        ..toggleBull(0, 0);
       expect(_playing(cubit).markAt(0, 0), CellMark.bull);
     });
   });

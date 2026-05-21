@@ -49,7 +49,9 @@ class HintContext {
 
     for (var r = 0; r < size; r++) {
       for (var c = 0; c < size; c++) {
-        if (marks[r][c] != CellMark.bull) continue;
+        if (marks[r][c] != CellMark.bull) {
+          continue;
+        }
         rowCounts[r]++;
         colCounts[c]++;
         final penId = board.cellAt(r, c).penId;
@@ -90,7 +92,9 @@ class HintContext {
     for (final r in activeRows) {
       final pens = <int>{};
       for (var c = 0; c < size; c++) {
-        if (valid[r][c]) pens.add(board.cellAt(r, c).penId);
+        if (valid[r][c]) {
+          pens.add(board.cellAt(r, c).penId);
+        }
       }
       rowToPens[r] = pens;
     }
@@ -98,12 +102,14 @@ class HintContext {
     for (final c in activeCols) {
       final pens = <int>{};
       for (var r = 0; r < size; r++) {
-        if (valid[r][c]) pens.add(board.cellAt(r, c).penId);
+        if (valid[r][c]) {
+          pens.add(board.cellAt(r, c).penId);
+        }
       }
       colToPens[c] = pens;
     }
 
-    final ctx = HintContext._(
+    return HintContext._(
       board: board,
       marks: marks,
       rowCounts: rowCounts,
@@ -117,9 +123,7 @@ class HintContext {
       rowToPens: rowToPens,
       colToPens: colToPens,
       essential: <(int, int)>{},
-    );
-    ctx._populateEssential();
-    return ctx;
+    ).._populateEssential();
   }
 
   int get size => board.size;
@@ -127,13 +131,19 @@ class HintContext {
   /// Whether [candidates] can supply [needed] non-adjacent bulls without
   /// busting any row/col/pen cap.
   bool groupFeasible(List<(int, int)> candidates, int needed) {
-    if (candidates.length < needed) return false;
-    if (needed <= 1) return true;
+    if (candidates.length < needed) {
+      return false;
+    }
+    if (needed <= 1) {
+      return true;
+    }
     for (var i = 0; i < candidates.length; i++) {
       final (r1, c1) = candidates[i];
       for (var j = i + 1; j < candidates.length; j++) {
         final (r2, c2) = candidates[j];
-        if (!_pairFeasible(r1, c1, r2, c2)) continue;
+        if (!_pairFeasible(r1, c1, r2, c2)) {
+          continue;
+        }
         return true;
       }
     }
@@ -141,15 +151,28 @@ class HintContext {
   }
 
   bool _pairFeasible(int r1, int c1, int r2, int c2) {
-    if ((r1 - r2).abs() <= 1 && (c1 - c2).abs() <= 1) return false;
-    if (r1 == r2 && rowCounts[r1] + 2 > 2) return false;
-    if (r1 != r2 && (rowCounts[r1] >= 2 || rowCounts[r2] >= 2)) return false;
-    if (c1 == c2 && colCounts[c1] + 2 > 2) return false;
-    if (c1 != c2 && (colCounts[c1] >= 2 || colCounts[c2] >= 2)) return false;
+    if ((r1 - r2).abs() <= 1 && (c1 - c2).abs() <= 1) {
+      return false;
+    }
+    if (r1 == r2 && rowCounts[r1] + 2 > 2) {
+      return false;
+    }
+    if (r1 != r2 && (rowCounts[r1] >= 2 || rowCounts[r2] >= 2)) {
+      return false;
+    }
+    if (c1 == c2 && colCounts[c1] + 2 > 2) {
+      return false;
+    }
+    if (c1 != c2 && (colCounts[c1] >= 2 || colCounts[c2] >= 2)) {
+      return false;
+    }
     final p1 = board.cellAt(r1, c1).penId;
     final p2 = board.cellAt(r2, c2).penId;
-    if (p1 == p2 && (penCounts[p1] ?? 0) + 2 > 2) return false;
-    if (p1 != p2 && ((penCounts[p1] ?? 0) >= 2 || (penCounts[p2] ?? 0) >= 2)) {
+    if (p1 == p2 && (penCounts[p1] ?? 0) + 2 > 2) {
+      return false;
+    }
+    if (p1 != p2 &&
+        ((penCounts[p1] ?? 0) >= 2 || (penCounts[p2] ?? 0) >= 2)) {
       return false;
     }
     return true;
@@ -160,8 +183,12 @@ class HintContext {
   void _populateEssential() {
     for (var r = 0; r < size; r++) {
       for (var c = 0; c < size; c++) {
-        if (!valid[r][c]) continue;
-        if (_isEssentialFor(r, c)) essential.add((r, c));
+        if (!valid[r][c]) {
+          continue;
+        }
+        if (_isEssentialFor(r, c)) {
+          essential.add((r, c));
+        }
       }
     }
   }
@@ -169,11 +196,17 @@ class HintContext {
   bool _isEssentialFor(int r, int c) {
     final pid = board.cellAt(r, c).penId;
     final rn = 2 - rowCounts[r];
-    if (rn > 0 && _essentialInRow(r, c, rn)) return true;
+    if (rn > 0 && _essentialInRow(r, c, rn)) {
+      return true;
+    }
     final cn = 2 - colCounts[c];
-    if (cn > 0 && _essentialInCol(r, c, cn)) return true;
+    if (cn > 0 && _essentialInCol(r, c, cn)) {
+      return true;
+    }
     final pn = 2 - (penCounts[pid] ?? 0);
-    if (pn > 0 && _essentialInPen(r, c, pid, pn)) return true;
+    if (pn > 0 && _essentialInPen(r, c, pid, pn)) {
+      return true;
+    }
     return false;
   }
 

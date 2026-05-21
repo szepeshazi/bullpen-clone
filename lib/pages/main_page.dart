@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bullpen/pages/game_page.dart';
 import 'package:bullpen/widgets/grid_constants.dart';
 import 'package:bullpen/widgets/main/bullpen_title.dart';
@@ -24,7 +26,9 @@ class _MainPageState extends State<MainPage> {
   var _selectedSize = 8;
 
   void _startGame() {
-    Navigator.of(context).pushReplacement(GamePage.route(_selectedSize));
+    unawaited(
+      Navigator.of(context).pushReplacement(GamePage.route(_selectedSize)),
+    );
   }
 
   @override

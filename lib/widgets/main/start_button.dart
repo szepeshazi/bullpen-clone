@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:bullpen/theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class StartButton extends StatefulWidget {
@@ -29,7 +32,8 @@ class _StartButtonState extends State<StartButton>
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 1800),
       vsync: this,
-    )..repeat(reverse: true);
+    );
+    unawaited(_pulseController.repeat(reverse: true));
     _pulseAnimation = Tween<double>(begin: 1, end: 1.08).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/cubit/marks_history.dart';
 import 'package:bullpen/logic/board_evaluator.dart';
@@ -22,7 +24,9 @@ class GameCubit extends Cubit<GameState> {
   GameCubit({int initialSize = 8, bool skipGenerate = false})
     : _gridSize = initialSize,
       super(const GameInitial()) {
-    if (!skipGenerate) generate();
+    if (!skipGenerate) {
+      unawaited(generate());
+    }
   }
 
   int get gridSize => _gridSize;
@@ -30,7 +34,9 @@ class GameCubit extends Cubit<GameState> {
   /// Updates the grid size and re-emits the current state so the UI rebuilds.
   /// Does NOT regenerate — call [generate] explicitly.
   void setGridSize(int size) {
-    if (size < 8 || size > 16 || size == _gridSize) return;
+    if (size < 8 || size > 16 || size == _gridSize) {
+      return;
+    }
     _gridSize = size;
     final current = state;
     switch (current) {
@@ -84,17 +90,21 @@ class GameCubit extends Cubit<GameState> {
           ),
         );
       }
-    } catch (e) {
+    } on Exception catch (e) {
       emit(GameError(gridSize: size, message: e.toString()));
     }
   }
 
   void requestHint() {
     final current = state;
-    if (current is! GamePlaying || current.solved) return;
+    if (current is! GamePlaying || current.solved) {
+      return;
+    }
 
     final hint = findHint(current.board, current.marks);
-    if (hint == null) return;
+    if (hint == null) {
+      return;
+    }
 
     emit(
       current.copyWith(
@@ -110,7 +120,9 @@ class GameCubit extends Cubit<GameState> {
   /// immediately requests the next hint.
   void applyHint() {
     final current = state;
-    if (current is! GamePlaying || current.solved || !current.hasHint) return;
+    if (current is! GamePlaying || current.solved || !current.hasHint) {
+      return;
+    }
 
     final (row, col) = current.hintCell!;
     if (current.hintType == HintType.mustPlace) {
@@ -128,7 +140,9 @@ class GameCubit extends Cubit<GameState> {
 
   void toggleDot(int row, int col) {
     final current = state;
-    if (current is! GamePlaying || current.solved) return;
+    if (current is! GamePlaying || current.solved) {
+      return;
+    }
 
     final mark = current.markAt(row, col);
     final newMarks = MarksHistory.clone(current.marks);
@@ -153,7 +167,9 @@ class GameCubit extends Cubit<GameState> {
   /// Returns true if the drag started.
   bool startDotDrag(int row, int col) {
     final current = state;
-    if (current is! GamePlaying || current.solved) return false;
+    if (current is! GamePlaying || current.solved) {
+      return false;
+    }
 
     final mark = current.markAt(row, col);
     _dragUndoSnapshot = MarksHistory.clone(current.marks);
@@ -177,14 +193,22 @@ class GameCubit extends Cubit<GameState> {
   /// empty cells (bulls are skipped); clearing removes dots and bulls only.
   void continueDotDrag(int row, int col) {
     final current = state;
-    if (current is! GamePlaying || current.solved) return;
-    if (_dragUndoSnapshot == null) return;
+    if (current is! GamePlaying || current.solved) {
+      return;
+    }
+    if (_dragUndoSnapshot == null) {
+      return;
+    }
 
     final mark = current.markAt(row, col);
     if (_dragPlacing) {
-      if (mark != CellMark.empty) return;
+      if (mark != CellMark.empty) {
+        return;
+      }
     } else {
-      if (mark == CellMark.empty) return;
+      if (mark == CellMark.empty) {
+        return;
+      }
     }
 
     final target = _dragPlacing ? CellMark.dot : CellMark.empty;
@@ -204,12 +228,16 @@ class GameCubit extends Cubit<GameState> {
   /// Ends a drag. Pushes the saved snapshot as a single undo entry.
   void endDotDrag() {
     final current = state;
-    if (_dragUndoSnapshot == null) return;
+    if (_dragUndoSnapshot == null) {
+      return;
+    }
 
     final snapshot = _dragUndoSnapshot!;
     _dragUndoSnapshot = null;
 
-    if (current is! GamePlaying) return;
+    if (current is! GamePlaying) {
+      return;
+    }
 
     emit(
       current.copyWith(
@@ -223,7 +251,9 @@ class GameCubit extends Cubit<GameState> {
 
   void toggleBull(int row, int col) {
     final current = state;
-    if (current is! GamePlaying || current.solved) return;
+    if (current is! GamePlaying || current.solved) {
+      return;
+    }
 
     final mark = current.markAt(row, col);
     final newMarks = MarksHistory.clone(current.marks);
@@ -279,7 +309,9 @@ class GameCubit extends Cubit<GameState> {
 
   void undo() {
     final current = state;
-    if (current is! GamePlaying || !current.canUndo) return;
+    if (current is! GamePlaying || !current.canUndo) {
+      return;
+    }
 
     final newUndo = [...current.undoStack];
     final previousMarks = newUndo.removeLast();
@@ -287,7 +319,10 @@ class GameCubit extends Cubit<GameState> {
     emit(
       current.copyWith(
         marks: previousMarks,
-        violations: BoardEvaluator.findViolations(current.board, previousMarks),
+        violations: BoardEvaluator.findViolations(
+          current.board,
+          previousMarks,
+        ),
         version: current.version + 1,
         solved: false,
         undoStack: newUndo,
@@ -299,7 +334,9 @@ class GameCubit extends Cubit<GameState> {
 
   void redo() {
     final current = state;
-    if (current is! GamePlaying || !current.canRedo) return;
+    if (current is! GamePlaying || !current.canRedo) {
+      return;
+    }
 
     final newRedo = [...current.redoStack];
     final nextMarks = newRedo.removeLast();
@@ -327,8 +364,12 @@ class GameCubit extends Cubit<GameState> {
   /// Clears violations (after shake animation finishes).
   void clearViolations() {
     final current = state;
-    if (current is! GamePlaying) return;
-    if (current.violations.isEmpty) return;
+    if (current is! GamePlaying) {
+      return;
+    }
+    if (current.violations.isEmpty) {
+      return;
+    }
     emit(
       current.copyWith(
         violations: const {},
@@ -344,7 +385,9 @@ _SolveResult? _generateAndSolve(int size) {
   for (var attempt = 0; attempt < maxAttempts; attempt++) {
     final board = GridGenerator.generate(size);
     final state = GridSolver.solve(board);
-    if (state != null) return _SolveResult(board, state);
+    if (state != null) {
+      return _SolveResult(board, state);
+    }
   }
   return null;
 }

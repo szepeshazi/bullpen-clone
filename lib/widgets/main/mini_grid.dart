@@ -1,4 +1,5 @@
 import 'package:bullpen/theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Tiny preview of an N×N grid used inside size carousel cards.
@@ -77,7 +78,9 @@ class _MiniGridPainter extends CustomPainter {
   }
 
   List<(int, int)> _decorativeBullPositions(int n) {
-    if (n <= 9) return [(0, 2), (2, 0), (1, n - 1), (n - 1, 1)];
+    if (n <= 9) {
+      return [(0, 2), (2, 0), (1, n - 1), (n - 1, 1)];
+    }
     if (n <= 12) {
       return [(0, 3), (2, 0), (1, n - 2), (n - 1, 2), (n - 2, n - 1)];
     }
