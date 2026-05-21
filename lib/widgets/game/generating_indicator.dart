@@ -60,67 +60,121 @@ class _GeneratingIndicatorState extends State<GeneratingIndicator>
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
-          width: 140,
-          height: 140,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              AnimatedBuilder(
-                animation: _sweepController,
-                builder: (context, _) => CustomPaint(
-                  size: const Size(140, 140),
-                  painter: _SweepRingPainter(progress: _sweepController.value),
-                ),
-              ),
-              AnimatedBuilder(
-                animation: _breathController,
-                builder: (context, child) {
-                  final t = Curves.easeInOut.transform(_breathController.value);
-                  final scale = 0.94 + t * 0.12;
-                  final tilt = sin(t * pi * 2) * 0.05;
-                  return Transform.rotate(
-                    angle: tilt,
-                    child: Transform.scale(scale: scale, child: child),
-                  );
-                },
-                child: SvgPicture.asset(
-                  bullSvgAsset,
-                  width: 84,
-                  height: 84,
-                  colorFilter: const ColorFilter.mode(
-                    bullpenAccentColor,
-                    BlendMode.srcIn,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        _RingWithBull(sweep: _sweepController, breath: _breathController),
         const SizedBox(height: 16),
-        AnimatedBuilder(
-          animation: _dotsController,
-          builder: (context, _) {
-            final dotCount = 1 + (_dotsController.value * 3).floor() % 3;
-            return Text(
-              'Building ${widget.gridSize}×${widget.gridSize} pen'
-              '${'.' * dotCount}',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: bullpenAccentColor,
-              ),
-            );
-          },
+        _BuildingLabel(
+          controller: _dotsController,
+          gridSize: widget.gridSize,
         ),
       ],
     ),
   );
 }
 
+class _RingWithBull extends StatelessWidget {
+  final AnimationController sweep;
+  final AnimationController breath;
+  const _RingWithBull({required this.sweep, required this.breath});
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 140,
+    height: 140,
+    child: Stack(
+      alignment: Alignment.center,
+      children: [
+        AnimatedBuilder(
+          animation: sweep,
+          builder: (context, _) => CustomPaint(
+            size: const Size(140, 140),
+            painter: _SweepRingPainter(progress: sweep.value),
+          ),
+        ),
+        AnimatedBuilder(
+          animation: breath,
+          builder: (context, child) {
+            final t = Curves.easeInOut.transform(breath.value);
+            final scale = 0.94 + t * 0.12;
+            final tilt = sin(t * pi * 2) * 0.05;
+            return Transform.rotate(
+              angle: tilt,
+              child: Transform.scale(scale: scale, child: child),
+            );
+          },
+          child: SvgPicture.asset(
+            bullSvgAsset,
+            width: 84,
+            height: 84,
+            colorFilter: const ColorFilter.mode(
+              bullpenAccentColor,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('sweep', sweep))
+      ..add(DiagnosticsProperty('breath', breath));
+  }
+}
+
+class _BuildingLabel extends StatelessWidget {
+  final AnimationController controller;
+  final int gridSize;
+  const _BuildingLabel({required this.controller, required this.gridSize});
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: controller,
+    builder: (context, _) {
+      final dotCount = 1 + (controller.value * 3).floor() % 3;
+      return Text(
+        'Building $gridSize×$gridSize pen${'.' * dotCount}',
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: bullpenAccentColor,
+        ),
+      );
+    },
+  );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('controller', controller))
+      ..add(IntProperty('gridSize', gridSize));
+  }
+}
+
 class _SweepRingPainter extends CustomPainter {
   final double progress;
   _SweepRingPainter({required this.progress});
+
+  // Sweep gradient is angle-only, so a single shader works for every frame —
+  // we rotate the canvas instead of rebuilding the gradient each paint.
+  static Shader? _shader;
+  static double _shaderRadius = -1;
+
+  static Shader _ensureShader(double radius) {
+    if (_shader == null || _shaderRadius != radius) {
+      _shader = SweepGradient(
+        colors: [
+          bullpenAccentColor.withValues(alpha: 0),
+          bullpenAccentColor.withValues(alpha: 0.9),
+        ],
+      ).createShader(Rect.fromCircle(center: Offset.zero, radius: radius));
+      _shaderRadius = radius;
+    }
+    return _shader!;
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -137,21 +191,20 @@ class _SweepRingPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4
       ..strokeCap = StrokeCap.round
-      ..shader = SweepGradient(
-        transform: GradientRotation(progress * pi * 2),
-        colors: [
-          bullpenAccentColor.withValues(alpha: 0),
-          bullpenAccentColor.withValues(alpha: 0.9),
-        ],
-      ).createShader(Rect.fromCircle(center: center, radius: radius));
+      ..shader = _ensureShader(radius);
 
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      progress * pi * 2,
-      pi * 1.4,
-      false,
-      sweepPaint,
-    );
+    canvas
+      ..save()
+      ..translate(center.dx, center.dy)
+      ..rotate(progress * pi * 2)
+      ..drawArc(
+        Rect.fromCircle(center: Offset.zero, radius: radius),
+        0,
+        pi * 1.4,
+        false,
+        sweepPaint,
+      )
+      ..restore();
   }
 
   @override

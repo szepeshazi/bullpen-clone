@@ -73,30 +73,51 @@ class GameCubit extends Cubit<GameState> {
     final token = ++_generateToken;
     emit(GameGenerating(gridSize: size));
 
-    while (!isClosed && token == _generateToken) {
-      try {
-        final result = await compute(_generateAndSolve, size);
-        if (isClosed || token != _generateToken) {
-          return;
-        }
-        if (result != null) {
-          emit(
-            GamePlaying.initial(
-              board: result.board,
-              solution: result.state,
-              gridSize: size,
-            ),
-          );
-          return;
-        }
-      } on Exception catch (e) {
-        if (isClosed || token != _generateToken) {
-          return;
-        }
-        emit(GameError(gridSize: size, message: e.toString()));
+    try {
+      final result = await _runGenerationLoop(
+        size,
+        token,
+      ).timeout(_generateTimeout);
+      if (isClosed || token != _generateToken) {
         return;
       }
+      emit(
+        GamePlaying.initial(
+          board: result.board,
+          solution: result.state,
+          gridSize: size,
+        ),
+      );
+    } on TimeoutException {
+      if (isClosed || token != _generateToken) {
+        return;
+      }
+      _generateToken++;
+      emit(
+        GameError(
+          gridSize: size,
+          message: 'Could not generate a puzzle in time.',
+        ),
+      );
+    } on Exception catch (e) {
+      if (isClosed || token != _generateToken) {
+        return;
+      }
+      emit(GameError(gridSize: size, message: e.toString()));
     }
+  }
+
+  Future<_SolveResult> _runGenerationLoop(int size, int token) async {
+    while (!isClosed && token == _generateToken) {
+      final result = await compute(_generateAndSolve, size);
+      if (isClosed || token != _generateToken) {
+        throw const _GenerationCancelled();
+      }
+      if (result != null) {
+        return result;
+      }
+    }
+    throw const _GenerationCancelled();
   }
 
   @override
@@ -405,3 +426,8 @@ _SolveResult? _generateAndSolve(int size) {
 }
 
 const _attemptsPerBatch = 50;
+const _generateTimeout = Duration(seconds: 10);
+
+class _GenerationCancelled implements Exception {
+  const _GenerationCancelled();
+}
