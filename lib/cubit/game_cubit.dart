@@ -6,6 +6,7 @@ import 'package:bullpen/logic/board_evaluator.dart';
 import 'package:bullpen/logic/grid_generator.dart';
 import 'package:bullpen/logic/grid_solver.dart';
 import 'package:bullpen/logic/hint_finder.dart';
+import 'package:bullpen/logic/puzzle_config.dart';
 import 'package:bullpen/models/puzzle_board.dart';
 import 'package:bullpen/models/puzzle_state.dart';
 import 'package:flutter/foundation.dart';
@@ -20,6 +21,7 @@ class _SolveResult {
 /// Manages the game lifecycle: size selection, generation, player interaction.
 class GameCubit extends Cubit<GameState> {
   int _gridSize;
+  var _generateToken = 0;
 
   GameCubit({int initialSize = 8, bool skipGenerate = false})
     : _gridSize = initialSize,
@@ -34,7 +36,7 @@ class GameCubit extends Cubit<GameState> {
   /// Updates the grid size and re-emits the current state so the UI rebuilds.
   /// Does NOT regenerate — call [generate] explicitly.
   void setGridSize(int size) {
-    if (size < 8 || size > 16 || size == _gridSize) {
+    if (!isPuzzleSizeSupported(size) || size == _gridSize) {
       return;
     }
     _gridSize = size;
@@ -68,31 +70,60 @@ class GameCubit extends Cubit<GameState> {
 
   Future<void> generate() async {
     final size = _gridSize;
+    final token = ++_generateToken;
     emit(GameGenerating(gridSize: size));
 
     try {
-      final result = await compute(_generateAndSolve, size);
-      if (result != null) {
-        emit(
-          GamePlaying.initial(
-            board: result.board,
-            solution: result.state,
-            gridSize: size,
-          ),
-        );
-      } else {
-        emit(
-          GameError(
-            gridSize: size,
-            message:
-                'Could not generate a solvable $size×$size grid. '
-                'Try again or pick a different size.',
-          ),
-        );
+      final result = await _runGenerationLoop(
+        size,
+        token,
+      ).timeout(_generateTimeout);
+      if (isClosed || token != _generateToken) {
+        return;
       }
+      emit(
+        GamePlaying.initial(
+          board: result.board,
+          solution: result.state,
+          gridSize: size,
+        ),
+      );
+    } on TimeoutException {
+      if (isClosed || token != _generateToken) {
+        return;
+      }
+      _generateToken++;
+      emit(
+        GameError(
+          gridSize: size,
+          message: 'Could not generate a puzzle in time.',
+        ),
+      );
     } on Exception catch (e) {
+      if (isClosed || token != _generateToken) {
+        return;
+      }
       emit(GameError(gridSize: size, message: e.toString()));
     }
+  }
+
+  Future<_SolveResult> _runGenerationLoop(int size, int token) async {
+    while (!isClosed && token == _generateToken) {
+      final result = await compute(_generateAndSolve, size);
+      if (isClosed || token != _generateToken) {
+        throw const _GenerationCancelled();
+      }
+      if (result != null) {
+        return result;
+      }
+    }
+    throw const _GenerationCancelled();
+  }
+
+  @override
+  Future<void> close() {
+    _generateToken++;
+    return super.close();
   }
 
   void requestHint() {
@@ -380,9 +411,11 @@ class GameCubit extends Cubit<GameState> {
   }
 }
 
+/// Tries up to [_attemptsPerBatch] times to generate and solve a board.
+/// Returns the first success, or null so the caller can dispatch another batch
+/// (kept bounded so the calling cubit can observe cancellation between runs).
 _SolveResult? _generateAndSolve(int size) {
-  const maxAttempts = 200;
-  for (var attempt = 0; attempt < maxAttempts; attempt++) {
+  for (var attempt = 0; attempt < _attemptsPerBatch; attempt++) {
     final board = GridGenerator.generate(size);
     final state = GridSolver.solve(board);
     if (state != null) {
@@ -390,4 +423,11 @@ _SolveResult? _generateAndSolve(int size) {
     }
   }
   return null;
+}
+
+const _attemptsPerBatch = 50;
+const _generateTimeout = Duration(seconds: 10);
+
+class _GenerationCancelled implements Exception {
+  const _GenerationCancelled();
 }

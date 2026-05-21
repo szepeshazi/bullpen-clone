@@ -84,6 +84,57 @@ void main() {
     });
   });
 
+  group('Generation cancellation', () {
+    test('second generate supersedes a prior in-flight one', () async {
+      final cubit = GameCubit(skipGenerate: true);
+      final emitted = <GameState>[];
+      final sub = cubit.stream.listen(emitted.add);
+
+      final first = cubit.generate();
+      cubit.setGridSize(10);
+      final second = cubit.generate();
+
+      await Future.wait([first, second]);
+      // Drain microtasks so the final emit reaches the stream listener.
+      await Future<void>.delayed(Duration.zero);
+      await sub.cancel();
+
+      final terminal = emitted
+          .where((s) => s is GamePlaying || s is GameError)
+          .toList();
+      expect(
+        terminal.length,
+        1,
+        reason: 'first generate result should be cancelled, only second emits',
+      );
+      if (cubit.state is GamePlaying) {
+        expect((cubit.state as GamePlaying).gridSize, 10);
+      }
+
+      await cubit.close();
+    });
+
+    test('closing during in-flight generate suppresses post-close emits',
+        () async {
+      final cubit = GameCubit(skipGenerate: true);
+      final emitted = <GameState>[];
+      final sub = cubit.stream.listen(emitted.add);
+
+      final pending = cubit.generate();
+      await cubit.close();
+      await pending; // should not throw despite the closed cubit
+
+      await sub.cancel();
+
+      // No GamePlaying/GameError emitted after close() landed.
+      expect(
+        emitted.any((s) => s is GamePlaying || s is GameError),
+        isFalse,
+      );
+      expect(cubit.isClosed, isTrue);
+    });
+  });
+
   group('Violation detection', () {
     late GameCubit cubit;
 

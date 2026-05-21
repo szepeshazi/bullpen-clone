@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:bullpen/logic/puzzle_config.dart';
 import 'package:bullpen/models/cell.dart';
 import 'package:bullpen/models/pen.dart';
 import 'package:bullpen/models/puzzle_board.dart';
@@ -16,8 +17,10 @@ class GridGenerator {
   /// approach: it places one seed per pen, then iteratively grows each
   /// pen by claiming adjacent unassigned cells until the grid is full.
   static PuzzleBoard generate(int size, {Random? random}) {
-    if (size < 8 || size > 16) {
-      throw ArgumentError('Grid size must be between 8 and 16, got $size');
+    if (!isPuzzleSizeSupported(size)) {
+      throw ArgumentError(
+        'Grid size must be one of $puzzleSupportedSizes, got $size',
+      );
     }
 
     final rng = random ?? Random();

@@ -6,12 +6,16 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('GridGenerator', () {
-    test('rejects size below 8', () {
+    test('rejects unsupported small size', () {
       expect(() => GridGenerator.generate(7), throwsA(isA<ArgumentError>()));
     });
 
-    test('rejects size above 16', () {
+    test('rejects unsupported large size', () {
       expect(() => GridGenerator.generate(17), throwsA(isA<ArgumentError>()));
+    });
+
+    test('rejects in-range but unsupported size', () {
+      expect(() => GridGenerator.generate(9), throwsA(isA<ArgumentError>()));
     });
 
     test('generates exactly size pens', () {
@@ -115,13 +119,13 @@ void main() {
       expect(totalCells, 64);
     });
 
-    test('works for boundary size 16', () {
-      final board = GridGenerator.generate(16, random: Random(1));
-      expect(board.size, 16);
-      expect(board.pens, hasLength(16));
+    test('works for boundary size 12', () {
+      final board = GridGenerator.generate(12, random: Random(1));
+      expect(board.size, 12);
+      expect(board.pens, hasLength(12));
 
       final totalCells = board.pens.fold(0, (sum, pen) => sum + pen.size);
-      expect(totalCells, 256);
+      expect(totalCells, 144);
     });
 
     test('cellAt returns cells with correct penId from generator', () {

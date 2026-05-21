@@ -2,9 +2,9 @@ import 'package:bullpen/cubit/game_cubit.dart';
 import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/logic/hint_finder.dart';
 import 'package:bullpen/pages/main_page.dart';
-import 'package:bullpen/theme.dart';
 import 'package:bullpen/widgets/bullpen_grid.dart';
 import 'package:bullpen/widgets/celebration_overlay.dart';
+import 'package:bullpen/widgets/game/generating_indicator.dart';
 import 'package:bullpen/widgets/game/hint_arrow_overlay.dart';
 import 'package:bullpen/widgets/game/hint_reason_banner.dart';
 import 'package:flutter/foundation.dart';
@@ -20,9 +20,7 @@ class GridArea extends StatelessWidget {
     listener: _onError,
     builder: (context, state) {
       if (state is GameGenerating) {
-        return const Center(
-          child: CircularProgressIndicator(color: bullpenAccentColor),
-        );
+        return GeneratingIndicator(gridSize: state.gridSize);
       }
       if (state is GamePlaying) {
         return _PlayingArea(state: state);
