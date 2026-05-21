@@ -57,15 +57,25 @@ class GridSolver {
     var nodeCount = 0;
 
     bool solveRow(int row) {
-      if (++nodeCount > _maxNodes) return false;
-      if (row == size) return state.isSolved;
+      if (++nodeCount > _maxNodes) {
+        return false;
+      }
+      if (row == size) {
+        return state.isSolved;
+      }
 
       for (final (c1, c2) in pairsPerRow[row]) {
-        if (nodeCount > _maxNodes) return false;
+        if (nodeCount > _maxNodes) {
+          return false;
+        }
 
         // --- Incremental constraint checks (all O(1)) ---
-        if (state.bullsInCol(c1) >= 2) continue;
-        if (state.bullsInCol(c2) >= 2) continue;
+        if (state.bullsInCol(c1) >= 2) {
+          continue;
+        }
+        if (state.bullsInCol(c2) >= 2) {
+          continue;
+        }
 
         final cell1 = board.cellAt(row, c1);
         final cell2 = board.cellAt(row, c2);
@@ -73,25 +83,39 @@ class GridSolver {
         final pen1 = cell1.penId;
         final pen2 = cell2.penId;
 
-        if (state.bullsInPen(pen1) >= 2) continue;
-        if (state.bullsInPen(pen2) >= 2) continue;
-        if (pen1 == pen2 && state.bullsInPen(pen1) > 0) continue;
+        if (state.bullsInPen(pen1) >= 2) {
+          continue;
+        }
+        if (state.bullsInPen(pen2) >= 2) {
+          continue;
+        }
+        if (pen1 == pen2 && state.bullsInPen(pen1) > 0) {
+          continue;
+        }
 
-        if (state.hasAdjacentBull(cell1)) continue;
-        if (state.hasAdjacentBull(cell2)) continue;
+        if (state.hasAdjacentBull(cell1)) {
+          continue;
+        }
+        if (state.hasAdjacentBull(cell2)) {
+          continue;
+        }
 
         // --- Place ---
-        state.placeBull(cell1);
-        state.placeBull(cell2);
+        state
+          ..placeBull(cell1)
+          ..placeBull(cell2);
 
         // --- Forward check ---
         if (_forwardCheck(board, state, row + 1, penCellsByRow)) {
-          if (solveRow(row + 1)) return true;
+          if (solveRow(row + 1)) {
+            return true;
+          }
         }
 
         // --- Backtrack ---
-        state.removeBull(cell2);
-        state.removeBull(cell1);
+        state
+          ..removeBull(cell2)
+          ..removeBull(cell1);
       }
 
       return false;
@@ -118,38 +142,54 @@ class GridSolver {
     // --- Column feasibility ---
     for (var col = 0; col < size; col++) {
       final need = 2 - state.bullsInCol(col);
-      if (need <= 0) continue;
+      if (need <= 0) {
+        continue;
+      }
 
       var available = 0;
       for (var r = startRow; r < size; r++) {
         final cell = board.cellAt(r, col);
         if (!state.hasAdjacentBull(cell)) {
-          if (++available >= need) break;
+          if (++available >= need) {
+            break;
+          }
         }
       }
-      if (available < need) return false;
+      if (available < need) {
+        return false;
+      }
     }
 
     // --- Pen feasibility ---
     for (final pen in board.pens) {
       final need = 2 - state.bullsInPen(pen.id);
-      if (need <= 0) continue;
+      if (need <= 0) {
+        continue;
+      }
 
       final byRow = penCellsByRow[pen.id]!;
       var available = 0;
 
       for (var r = startRow; r < size; r++) {
         final cols = byRow[r];
-        if (cols == null) continue;
+        if (cols == null) {
+          continue;
+        }
         for (final c in cols) {
           if (state.bullsInCol(c) < 2 &&
               !state.hasAdjacentBull(board.cellAt(r, c))) {
-            if (++available >= need) break;
+            if (++available >= need) {
+              break;
+            }
           }
         }
-        if (available >= need) break;
+        if (available >= need) {
+          break;
+        }
       }
-      if (available < need) return false;
+      if (available < need) {
+        return false;
+      }
     }
 
     return true;

@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
+
 /// Represents a single cell on the Bullpen game grid.
 ///
 /// Equality is based solely on grid position ([row], [col]), NOT on [penId].
 /// Two cells at the same position are considered equal even if they belong to
 /// different pens. This is intentional: a cell's identity is its coordinate.
+@immutable
 class Cell {
   final int row;
   final int col;

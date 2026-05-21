@@ -92,10 +92,11 @@ class _Banner extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(StringProperty('reason', reason));
-    properties.add(ColorProperty('color', color));
-    properties.add(DiagnosticsProperty<bool>('isMustPlace', isMustPlace));
-    properties.add(ObjectFlagProperty<VoidCallback>.has('onApply', onApply));
+    properties
+      ..add(StringProperty('reason', reason))
+      ..add(ColorProperty('color', color))
+      ..add(DiagnosticsProperty<bool>('isMustPlace', isMustPlace))
+      ..add(ObjectFlagProperty<VoidCallback>.has('onApply', onApply));
   }
 }
 
@@ -124,7 +125,8 @@ class _ApplyButton extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(ColorProperty('color', color));
-    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
+    properties
+      ..add(ColorProperty('color', color))
+      ..add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
   }
 }

@@ -1,5 +1,7 @@
 import 'package:bullpen/models/cell.dart';
+import 'package:flutter/foundation.dart';
 
+@immutable
 class BullLocation {
   final Cell cell;
 

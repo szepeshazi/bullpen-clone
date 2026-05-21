@@ -5,7 +5,7 @@ import 'package:bullpen/models/pen.dart';
 import 'package:bullpen/models/puzzle_board.dart';
 
 /// Generates a random Bullpen grid by partitioning the grid into
-/// [size] contiguous pens of approximately equal size.
+/// `size` contiguous pens of approximately equal size.
 class GridGenerator {
   GridGenerator._();
 
@@ -52,13 +52,17 @@ class GridGenerator {
     while (assigned < totalCells && maxIterations-- > 0) {
       var grew = false;
       for (var penId = 0; penId < numPens; penId++) {
-        if (penSizes[penId] >= targetSizes[penId]) continue;
+        if (penSizes[penId] >= targetSizes[penId]) {
+          continue;
+        }
         if (_growPen(penId, penAssignment, frontiers, penSizes, size, rng)) {
           assigned++;
           grew = true;
         }
       }
-      if (!grew) break; // no pen could grow — move to phase 2
+      if (!grew) {
+        break; // no pen could grow — move to phase 2
+      }
     }
 
     // Phase 2: fill remaining cells ignoring target sizes.
@@ -75,7 +79,9 @@ class GridGenerator {
           grew = true;
         }
       }
-      if (!grew) break;
+      if (!grew) {
+        break;
+      }
     }
 
     // Fallback: assign any remaining unassigned cells (run multiple passes
@@ -85,7 +91,9 @@ class GridGenerator {
       changed = false;
       for (var r = 0; r < size; r++) {
         for (var c = 0; c < size; c++) {
-          if (penAssignment[r][c] != -1) continue;
+          if (penAssignment[r][c] != -1) {
+            continue;
+          }
           for (final (nr, nc) in _neighbors(r, c, size)) {
             if (penAssignment[nr][nc] != -1) {
               penAssignment[r][c] = penAssignment[nr][nc];
@@ -128,13 +136,17 @@ class GridGenerator {
     int size,
     Random rng,
   ) {
-    final frontier = frontiers[penId]!;
-    frontier.removeWhere((n) => penAssignment[n.$1][n.$2] != -1);
-    if (frontier.isEmpty) return false;
+    final frontier = frontiers[penId]!
+      ..removeWhere((n) => penAssignment[n.$1][n.$2] != -1);
+    if (frontier.isEmpty) {
+      return false;
+    }
 
     final idx = rng.nextInt(frontier.length);
     final (r, c) = frontier[idx];
-    if (penAssignment[r][c] != -1) return false;
+    if (penAssignment[r][c] != -1) {
+      return false;
+    }
 
     penAssignment[r][c] = penId;
     penSizes[penId]++;
@@ -189,9 +201,13 @@ class GridGenerator {
     var extra = remaining - baseSize * numLarge;
 
     for (var i = 0; i < numPens; i++) {
-      if (smallIndices.contains(i)) continue;
+      if (smallIndices.contains(i)) {
+        continue;
+      }
       targets[i] = baseSize + (extra > 0 ? 1 : 0);
-      if (extra > 0) extra--;
+      if (extra > 0) {
+        extra--;
+      }
     }
 
     return targets;
@@ -203,7 +219,9 @@ class GridGenerator {
     var extra = totalCells - baseSize * numPens;
     return List.generate(numPens, (i) {
       final size = baseSize + (extra > 0 ? 1 : 0);
-      if (extra > 0) extra--;
+      if (extra > 0) {
+        extra--;
+      }
       return size;
     });
   }
@@ -225,7 +243,9 @@ class GridGenerator {
         final cStart = (gc * cellSize).floor();
         final cEnd = ((gc + 1) * cellSize).floor().clamp(0, size);
 
-        if (rEnd <= rStart || cEnd <= cStart) continue;
+        if (rEnd <= rStart || cEnd <= cStart) {
+          continue;
+        }
 
         final r = rStart + rng.nextInt(rEnd - rStart);
         final c = cStart + rng.nextInt(cEnd - cStart);

@@ -12,7 +12,9 @@ class RemainingBullsIndicator extends StatelessWidget {
       BlocSelector<GameCubit, GameState, ({int remaining, bool visible})>(
         selector: _select,
         builder: (context, s) {
-          if (!s.visible) return const SizedBox.shrink();
+          if (!s.visible) {
+            return const SizedBox.shrink();
+          }
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -45,7 +47,9 @@ class RemainingBullsIndicator extends StatelessWidget {
       var placed = 0;
       for (final row in state.marks) {
         for (final cell in row) {
-          if (cell == CellMark.bull) placed++;
+          if (cell == CellMark.bull) {
+            placed++;
+          }
         }
       }
       return (remaining: total - placed, visible: true);

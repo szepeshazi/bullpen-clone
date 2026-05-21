@@ -32,7 +32,9 @@ class GridArea extends StatelessWidget {
   );
 
   void _onError(BuildContext context, GameState state) {
-    if (state is! GameError) return;
+    if (state is! GameError) {
+      return;
+    }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(state.message),

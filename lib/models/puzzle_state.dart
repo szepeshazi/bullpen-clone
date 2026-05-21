@@ -30,7 +30,9 @@ class PuzzleState {
   bool placeBull(Cell cell) {
     final r = cell.row;
     final c = cell.col;
-    if (_occupied[r][c]) return false;
+    if (_occupied[r][c]) {
+      return false;
+    }
     _bulls.add(BullLocation(cell: board.cellAt(r, c)));
     _occupied[r][c] = true;
     _rowCounts[r]++;
@@ -44,7 +46,9 @@ class PuzzleState {
   bool removeBull(Cell cell) {
     final r = cell.row;
     final c = cell.col;
-    if (!_occupied[r][c]) return false;
+    if (!_occupied[r][c]) {
+      return false;
+    }
 
     // Fast path: backtracking almost always removes the most recent bull.
     if (_bulls.isNotEmpty && _bulls.last.row == r && _bulls.last.col == c) {
@@ -88,25 +92,39 @@ class PuzzleState {
   /// [isSolved] still re-checks adjacency as a safety net.
   bool get isValid {
     for (var i = 0; i < board.size; i++) {
-      if (_rowCounts[i] > 2) return false;
-      if (_colCounts[i] > 2) return false;
+      if (_rowCounts[i] > 2) {
+        return false;
+      }
+      if (_colCounts[i] > 2) {
+        return false;
+      }
     }
     for (final pen in board.pens) {
-      if (bullsInPen(pen.id) > 2) return false;
+      if (bullsInPen(pen.id) > 2) {
+        return false;
+      }
     }
     return true;
   }
 
   bool get isSolved {
     final s = board.size;
-    if (_bulls.length != 2 * s) return false;
+    if (_bulls.length != 2 * s) {
+      return false;
+    }
 
     for (var i = 0; i < s; i++) {
-      if (_rowCounts[i] != 2) return false;
-      if (_colCounts[i] != 2) return false;
+      if (_rowCounts[i] != 2) {
+        return false;
+      }
+      if (_colCounts[i] != 2) {
+        return false;
+      }
     }
     for (final pen in board.pens) {
-      if (bullsInPen(pen.id) != 2) return false;
+      if (bullsInPen(pen.id) != 2) {
+        return false;
+      }
     }
 
     for (final bull in _bulls) {

@@ -21,7 +21,7 @@ PuzzleBoard makeRowPenBoard({int size = 8}) {
 GameCubit makePlayingCubit({int size = 8}) {
   final board = makeRowPenBoard(size: size);
   final solution = PuzzleState(board: board);
-  final cubit = GameCubit(skipGenerate: true);
-  cubit.startPlaying(board: board, solution: solution);
+  final cubit = GameCubit(skipGenerate: true)
+    ..startPlaying(board: board, solution: solution);
   return cubit;
 }

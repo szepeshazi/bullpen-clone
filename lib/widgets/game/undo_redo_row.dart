@@ -17,7 +17,9 @@ class UndoRedoRow extends StatelessWidget {
       >(
         selector: _select,
         builder: (context, s) {
-          if (!s.visible) return const SizedBox.shrink();
+          if (!s.visible) {
+            return const SizedBox.shrink();
+          }
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -82,9 +84,10 @@ class _ActionButton extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<IconData>('icon', icon));
-    properties.add(StringProperty('tooltip', tooltip));
-    properties.add(
+    properties
+      ..add(DiagnosticsProperty<IconData>('icon', icon))
+      ..add(StringProperty('tooltip', tooltip))
+      ..add(
       ObjectFlagProperty<VoidCallback?>.has('onPressed', onPressed),
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bullpen/logic/puzzle_config.dart';
 import 'package:bullpen/widgets/main/grid_card.dart';
 import 'package:flutter/foundation.dart';
@@ -19,10 +21,12 @@ class SizeCarousel extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IntProperty('selectedSize', selectedSize));
-    properties.add(
-      ObjectFlagProperty<ValueChanged<int>>.has('onSizeChanged', onSizeChanged),
-    );
+    properties
+      ..add(IntProperty('selectedSize', selectedSize))
+      ..add(ObjectFlagProperty<ValueChanged<int>>.has(
+        'onSizeChanged',
+        onSizeChanged,
+      ));
   }
 }
 
@@ -63,10 +67,12 @@ class _SizeCarouselState extends State<SizeCarousel> {
   );
 
   void _animateToSize(int size) {
-    _controller.animateToPage(
-      puzzleSupportedSizes.indexOf(size),
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
+    unawaited(
+      _controller.animateToPage(
+        puzzleSupportedSizes.indexOf(size),
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      ),
     );
   }
 }
@@ -100,8 +106,9 @@ class _CarouselItem extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IntProperty('size', size));
-    properties.add(DiagnosticsProperty<bool>('isSelected', isSelected));
-    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
+    properties
+      ..add(IntProperty('size', size))
+      ..add(DiagnosticsProperty<bool>('isSelected', isSelected))
+      ..add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
   }
 }

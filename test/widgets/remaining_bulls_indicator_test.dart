@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bullpen/cubit/game_cubit.dart';
 import 'package:bullpen/widgets/game/remaining_bulls_indicator.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +29,7 @@ void main() {
       await pump(tester, cubit);
 
       expect(find.text('Remaining bulls'), findsOneWidget);
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     testWidgets('decrements after placing a bull', (tester) async {
@@ -38,7 +40,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('Remaining bulls'), findsOneWidget);
-      cubit.close();
+      unawaited(cubit.close());
     });
 
     testWidgets('is hidden when not playing', (tester) async {
@@ -46,7 +48,7 @@ void main() {
       await pump(tester, cubit);
 
       expect(find.text('Remaining bulls'), findsNothing);
-      cubit.close();
+      unawaited(cubit.close());
     });
   });
 }

@@ -37,7 +37,8 @@ class GridCard extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IntProperty('size', size));
-    properties.add(DiagnosticsProperty<bool>('isSelected', isSelected));
+    properties
+      ..add(IntProperty('size', size))
+      ..add(DiagnosticsProperty<bool>('isSelected', isSelected));
   }
 }

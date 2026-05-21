@@ -246,7 +246,9 @@ void main() {
 
       // Dot all of row 2 except cols 3 and 4 (adjacent pair).
       for (var c = 0; c < 8; c++) {
-        if (c != 3 && c != 4) marks[2][c] = CellMark.dot;
+        if (c != 3 && c != 4) {
+          marks[2][c] = CellMark.dot;
+        }
       }
 
       final hint = findHint(board, marks);
@@ -274,13 +276,17 @@ void main() {
       // Col 5 is now full (2 bulls). Rule 2 fires first on empty cells
       // in col 5. Dot all col-5 empty cells so rule 2 is satisfied.
       for (var r = 0; r < 8; r++) {
-        if (marks[r][5] == CellMark.empty) marks[r][5] = CellMark.dot;
+        if (marks[r][5] == CellMark.empty) {
+          marks[r][5] = CellMark.dot;
+        }
       }
 
       // Now dot row 2 leaving only cols 3 and 4 (adjacent).
       for (var c = 0; c < 8; c++) {
         if (c != 3 && c != 4) {
-          if (marks[2][c] == CellMark.empty) marks[2][c] = CellMark.dot;
+          if (marks[2][c] == CellMark.empty) {
+            marks[2][c] = CellMark.dot;
+          }
         }
       }
 
@@ -289,7 +295,9 @@ void main() {
       // (1,4),(1,5),(1,6) are adjacent to (0,5). Already (1,5) dotted.
       // (3,4),(3,5),(3,6) are adjacent to (4,5). Already (3,5) dotted.
       for (final (r, c) in [(1, 4), (1, 6), (3, 4), (3, 6)]) {
-        if (marks[r][c] == CellMark.empty) marks[r][c] = CellMark.dot;
+        if (marks[r][c] == CellMark.empty) {
+          marks[r][c] = CellMark.dot;
+        }
       }
 
       final hint = findHint(board, marks);
@@ -307,7 +315,9 @@ void main() {
       final board = _rowPenBoard();
       final marks = _emptyMarks(8);
       for (var r = 0; r < 8; r++) {
-        if (r != 2 && r != 3) marks[r][3] = CellMark.dot;
+        if (r != 2 && r != 3) {
+          marks[r][3] = CellMark.dot;
+        }
       }
       // Col 3 now has 2 valid cells at (2,3) and (3,3), which are adjacent.
       // Rule 9 should fire (no valid partner in col 3).
@@ -433,12 +443,16 @@ void main() {
 
       // Row 4: only valid cells at (4,0) and (4,4). Rest dotted.
       for (var c = 0; c < 8; c++) {
-        if (c != 0 && c != 4) marks[4][c] = CellMark.dot;
+        if (c != 0 && c != 4) {
+          marks[4][c] = CellMark.dot;
+        }
       }
 
       // Row 2: valid cells at (2,0) and (2,4). Rest dotted.
       for (var c = 0; c < 8; c++) {
-        if (c != 0 && c != 4) marks[2][c] = CellMark.dot;
+        if (c != 0 && c != 4) {
+          marks[2][c] = CellMark.dot;
+        }
       }
 
       // Now if we place at (2,0): col 0 fills (was 1, becomes 2).
@@ -474,7 +488,9 @@ void main() {
       final marks = _emptyMarks(8);
 
       for (var c = 0; c < 8; c++) {
-        if (c != 0 && c != 4) marks[2][c] = CellMark.dot;
+        if (c != 0 && c != 4) {
+          marks[2][c] = CellMark.dot;
+        }
       }
 
       Hint? hint;
@@ -482,7 +498,9 @@ void main() {
       const maxIterations = 200;
       while (iterations < maxIterations) {
         hint = findHint(board, marks);
-        if (hint == null || hint.type == HintType.mustPlace) break;
+        if (hint == null || hint.type == HintType.mustPlace) {
+          break;
+        }
         // Apply the exclusion hint as a dot.
         marks[hint.row][hint.col] = CellMark.dot;
         iterations++;
@@ -502,7 +520,9 @@ void main() {
 
       marks[0][0] = CellMark.bull;
       for (var c = 1; c < 8; c++) {
-        if (c != 4) marks[0][c] = CellMark.dot;
+        if (c != 4) {
+          marks[0][c] = CellMark.dot;
+        }
       }
 
       Hint? hint;
@@ -510,7 +530,9 @@ void main() {
       const maxIterations = 200;
       while (iterations < maxIterations) {
         hint = findHint(board, marks);
-        if (hint == null || hint.type == HintType.mustPlace) break;
+        if (hint == null || hint.type == HintType.mustPlace) {
+          break;
+        }
         marks[hint.row][hint.col] = CellMark.dot;
         iterations++;
       }
@@ -543,14 +565,18 @@ void main() {
       final marks = _emptyMarks(8);
 
       for (var c = 0; c < 8; c++) {
-        if (c != 0 && c != 1 && c != 4) marks[0][c] = CellMark.dot;
+        if (c != 0 && c != 1 && c != 4) {
+          marks[0][c] = CellMark.dot;
+        }
       }
 
       Hint? hint;
       var iterations = 0;
       while (iterations < 200) {
         hint = findHint(board, marks);
-        if (hint == null || hint.type == HintType.mustPlace) break;
+        if (hint == null || hint.type == HintType.mustPlace) {
+          break;
+        }
         marks[hint.row][hint.col] = CellMark.dot;
         iterations++;
       }
@@ -567,14 +593,18 @@ void main() {
       final marks = _emptyMarks(8);
 
       for (var c = 0; c < 8; c++) {
-        if (c != 0 && c != 3 && c != 6) marks[0][c] = CellMark.dot;
+        if (c != 0 && c != 3 && c != 6) {
+          marks[0][c] = CellMark.dot;
+        }
       }
 
       Hint? hint;
       var iterations = 0;
       while (iterations < 200) {
         hint = findHint(board, marks);
-        if (hint == null || hint.type == HintType.mustPlace) break;
+        if (hint == null || hint.type == HintType.mustPlace) {
+          break;
+        }
         marks[hint.row][hint.col] = CellMark.dot;
         iterations++;
       }
@@ -596,14 +626,18 @@ void main() {
       final marks = _emptyMarks(8);
 
       for (var c = 0; c < 8; c++) {
-        if (c != 0 && c != 3 && c != 5 && c != 7) marks[0][c] = CellMark.dot;
+        if (c != 0 && c != 3 && c != 5 && c != 7) {
+          marks[0][c] = CellMark.dot;
+        }
       }
 
       Hint? hint;
       var iterations = 0;
       while (iterations < 200) {
         hint = findHint(board, marks);
-        if (hint == null || hint.type == HintType.mustPlace) break;
+        if (hint == null || hint.type == HintType.mustPlace) {
+          break;
+        }
         marks[hint.row][hint.col] = CellMark.dot;
         iterations++;
       }
@@ -632,7 +666,9 @@ void main() {
 
       // Restrict row 0 to cols 0, 1, 4.
       for (var c = 2; c < 8; c++) {
-        if (c != 4) marks[0][c] = CellMark.dot;
+        if (c != 4) {
+          marks[0][c] = CellMark.dot;
+        }
       }
 
       // Apply adjacency/exclusion hints until depth-2 fires for (1,4) or
@@ -641,9 +677,13 @@ void main() {
       var iterations = 0;
       while (iterations < 200) {
         hint = findHint(board, marks);
-        if (hint == null || hint.type == HintType.mustPlace) break;
+        if (hint == null || hint.type == HintType.mustPlace) {
+          break;
+        }
         // Look for a depth-2 hint that mentions "impossible".
-        if (hint.reason.contains('impossible') && hint.row == 1) break;
+        if (hint.reason.contains('impossible') && hint.row == 1) {
+          break;
+        }
         marks[hint.row][hint.col] = CellMark.dot;
         iterations++;
       }
@@ -666,7 +706,9 @@ void main() {
 
       // Row 0: only cols 0 and 4.
       for (var c = 0; c < 8; c++) {
-        if (c != 0 && c != 4) marks[0][c] = CellMark.dot;
+        if (c != 0 && c != 4) {
+          marks[0][c] = CellMark.dot;
+        }
       }
 
       // Apply hints in a loop. (0,0) and (0,4) should never be excluded.
@@ -674,7 +716,9 @@ void main() {
       var iterations = 0;
       while (iterations < 200) {
         final hint = findHint(board, marks);
-        if (hint == null || hint.type == HintType.mustPlace) break;
+        if (hint == null || hint.type == HintType.mustPlace) {
+          break;
+        }
         excludedCells.add((hint.row, hint.col));
         marks[hint.row][hint.col] = CellMark.dot;
         iterations++;
@@ -721,11 +765,15 @@ void main() {
 
       // Row 0: forced placement (2 cells for 2 needed).
       for (var c = 0; c < 8; c++) {
-        if (c != 0 && c != 4) marks[0][c] = CellMark.dot;
+        if (c != 0 && c != 4) {
+          marks[0][c] = CellMark.dot;
+        }
       }
       // Row 2: only adjacent cells at cols 3,4 → look-ahead exclusion.
       for (var c = 0; c < 8; c++) {
-        if (c != 3 && c != 4) marks[2][c] = CellMark.dot;
+        if (c != 3 && c != 4) {
+          marks[2][c] = CellMark.dot;
+        }
       }
 
       final hint = findHint(board, marks);
@@ -767,7 +815,9 @@ void main() {
 
       // Row 2: only cols 0 and 4 valid.
       for (var c = 0; c < 8; c++) {
-        if (c != 0 && c != 4) marks[2][c] = CellMark.dot;
+        if (c != 0 && c != 4) {
+          marks[2][c] = CellMark.dot;
+        }
       }
       // Row 3: leave many cells open so (3,1) is NOT essential.
 
@@ -776,7 +826,9 @@ void main() {
       var iterations = 0;
       while (iterations < 200) {
         final hint = findHint(board, marks);
-        if (hint == null || hint.type == HintType.mustPlace) break;
+        if (hint == null || hint.type == HintType.mustPlace) {
+          break;
+        }
         if (hint.reason.contains('impossible') &&
             hint.row == 3 &&
             hint.col == 1) {

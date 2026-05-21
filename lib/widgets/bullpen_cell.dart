@@ -98,9 +98,10 @@ class BullpenCell extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<GamePlaying>('gameState', gameState));
-    properties.add(IntProperty('row', row));
-    properties.add(IntProperty('col', col));
-    properties.add(DoubleProperty('cellSize', cellSize));
+    properties
+      ..add(DiagnosticsProperty<GamePlaying>('gameState', gameState))
+      ..add(IntProperty('row', row))
+      ..add(IntProperty('col', col))
+      ..add(DoubleProperty('cellSize', cellSize));
   }
 }

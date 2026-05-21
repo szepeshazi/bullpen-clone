@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bullpen/cubit/game_cubit.dart';
 import 'package:bullpen/cubit/game_state.dart';
 import 'package:bullpen/models/models.dart' show PuzzleBoard;
@@ -43,16 +45,22 @@ class _BullpenGridState extends State<BullpenGrid> {
 
   (int, int)? _cellAt(Offset localPosition) {
     final pos = localPosition - _gridOrigin;
-    if (_cellSize <= 0) return null;
+    if (_cellSize <= 0) {
+      return null;
+    }
     final col = (pos.dx / _cellSize).floor();
     final row = (pos.dy / _cellSize).floor();
     final size = widget.gameState.board.size;
-    if (row < 0 || row >= size || col < 0 || col >= size) return null;
+    if (row < 0 || row >= size || col < 0 || col >= size) {
+      return null;
+    }
     return (row, col);
   }
 
   void _onPointerDown(PointerDownEvent event) {
-    if (_activePointer != null) return; // ignore multi-touch
+    if (_activePointer != null) {
+      return; // ignore multi-touch
+    }
     _activePointer = event.pointer;
     _downPos = event.localPosition;
     _isDragging = false;
@@ -60,20 +68,28 @@ class _BullpenGridState extends State<BullpenGrid> {
     _lastDragCell = _cellAt(event.localPosition);
 
     final pointer = event.pointer;
-    Future.delayed(BullpenGrid.longPressDuration, () {
-      if (!mounted) return;
-      if (_activePointer != pointer || _isDragging) return;
+    unawaited(Future.delayed(BullpenGrid.longPressDuration, () {
+      if (!mounted) {
+        return;
+      }
+      if (_activePointer != pointer || _isDragging) {
+        return;
+      }
       _isLongPress = true;
       final cell = _lastDragCell;
-      if (cell == null) return;
+      if (cell == null) {
+        return;
+      }
       final (row, col) = cell;
-      HapticFeedback.mediumImpact();
+      unawaited(HapticFeedback.mediumImpact());
       context.read<GameCubit>().toggleBull(row, col);
-    });
+    }));
   }
 
   void _onPointerMove(PointerMoveEvent event) {
-    if (event.pointer != _activePointer || _isLongPress) return;
+    if (event.pointer != _activePointer || _isLongPress) {
+      return;
+    }
 
     final distance = (event.localPosition - _downPos!).distance;
 
@@ -83,7 +99,7 @@ class _BullpenGridState extends State<BullpenGrid> {
       if (cell != null) {
         final (row, col) = cell;
         if (context.read<GameCubit>().startDotDrag(row, col)) {
-          HapticFeedback.lightImpact();
+          unawaited(HapticFeedback.lightImpact());
           _lastDragCell = cell;
         }
       }
@@ -100,7 +116,9 @@ class _BullpenGridState extends State<BullpenGrid> {
   }
 
   void _onPointerUp(PointerUpEvent event) {
-    if (event.pointer != _activePointer) return;
+    if (event.pointer != _activePointer) {
+      return;
+    }
 
     if (_isDragging) {
       context.read<GameCubit>().endDotDrag();
@@ -108,7 +126,7 @@ class _BullpenGridState extends State<BullpenGrid> {
       final cell = _cellAt(event.localPosition);
       if (cell != null) {
         final (row, col) = cell;
-        HapticFeedback.lightImpact();
+        unawaited(HapticFeedback.lightImpact());
         context.read<GameCubit>().toggleDot(row, col);
       }
     }
@@ -117,7 +135,9 @@ class _BullpenGridState extends State<BullpenGrid> {
   }
 
   void _onPointerCancel(PointerCancelEvent event) {
-    if (event.pointer != _activePointer) return;
+    if (event.pointer != _activePointer) {
+      return;
+    }
     if (_isDragging) {
       context.read<GameCubit>().endDotDrag();
     }
@@ -223,7 +243,8 @@ class _GridBody extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<GamePlaying>('gameState', gameState));
-    properties.add(DoubleProperty('cellSize', cellSize));
+    properties
+      ..add(DiagnosticsProperty<GamePlaying>('gameState', gameState))
+      ..add(DoubleProperty('cellSize', cellSize));
   }
 }

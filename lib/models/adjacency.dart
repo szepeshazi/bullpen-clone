@@ -8,7 +8,9 @@ bool hasAdjacentMatch(
 ) {
   for (var dr = -1; dr <= 1; dr++) {
     for (var dc = -1; dc <= 1; dc++) {
-      if (dr == 0 && dc == 0) continue;
+      if (dr == 0 && dc == 0) {
+        continue;
+      }
       final nr = row + dr;
       final nc = col + dc;
       if (nr >= 0 && nr < size && nc >= 0 && nc < size && test(nr, nc)) {

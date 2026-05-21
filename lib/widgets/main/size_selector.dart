@@ -58,9 +58,11 @@ class SizeSelector extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IntProperty('selectedSize', selectedSize));
-    properties.add(
-      ObjectFlagProperty<ValueChanged<int>>.has('onSizeChanged', onSizeChanged),
-    );
+    properties
+      ..add(IntProperty('selectedSize', selectedSize))
+      ..add(ObjectFlagProperty<ValueChanged<int>>.has(
+        'onSizeChanged',
+        onSizeChanged,
+      ));
   }
 }

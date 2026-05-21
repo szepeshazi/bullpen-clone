@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:bullpen/widgets/grid_constants.dart';
@@ -18,8 +19,9 @@ class ShakingBull extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DoubleProperty('cellSize', cellSize));
-    properties.add(IntProperty('version', version));
+    properties
+      ..add(DoubleProperty('cellSize', cellSize))
+      ..add(IntProperty('version', version));
   }
 }
 
@@ -64,16 +66,16 @@ class _ShakingBullState extends State<ShakingBull>
       curve: Curves.linear,
     );
 
-    _shakeController.forward();
-    _smokeController.forward();
+    unawaited(_shakeController.forward());
+    unawaited(_smokeController.forward());
   }
 
   @override
   void didUpdateWidget(covariant ShakingBull oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.version != widget.version) {
-      _shakeController.forward(from: 0);
-      _smokeController.forward(from: 0);
+      unawaited(_shakeController.forward(from: 0));
+      unawaited(_smokeController.forward(from: 0));
     }
   }
 
@@ -96,7 +98,7 @@ class _ShakingBullState extends State<ShakingBull>
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            ..._SmokePuffs.build(size, _smokeAnimation.value),
+            ..._buildSmokePuffs(size, _smokeAnimation.value),
             Transform.translate(
               offset: Offset(_shakeX.value, _shakeY.value),
               child: _RedTintedBull(
@@ -173,87 +175,101 @@ class _RedTintedBull extends StatelessWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DoubleProperty('cellSize', cellSize));
-    properties.add(DoubleProperty('redAmount', redAmount));
+    properties
+      ..add(DoubleProperty('cellSize', cellSize))
+      ..add(DoubleProperty('redAmount', redAmount));
   }
 }
 
-class _SmokePuffs {
-  static const _repetitions = 3;
+const _smokePuffRepetitions = 3;
 
-  /// (dx, dy, timeFactor, opacityFactor, sizeFactor) per puff.
-  /// Mirrored to left/right nostrils.
-  static const _puffParams = [
-    (0.30, 0.60, 1.0, 1.0, 0.9),
-    (0.42, 0.48, 0.85, 0.85, 0.7),
-    (0.22, 0.44, 0.70, 0.65, 0.55),
-    (0.15, 0.62, 0.55, 0.50, 0.50),
-  ];
+/// (dx, dy, timeFactor, opacityFactor, sizeFactor) per puff.
+/// Mirrored to left/right nostrils.
+const _smokePuffParams = [
+  (0.30, 0.60, 1.0, 1.0, 0.9),
+  (0.42, 0.48, 0.85, 0.85, 0.7),
+  (0.22, 0.44, 0.70, 0.65, 0.55),
+  (0.15, 0.62, 0.55, 0.50, 0.50),
+];
 
-  static List<Widget> build(double cellSize, double raw) {
-    if (raw <= 0.005) return const [];
-
-    final widgets = <Widget>[];
-    for (var burst = 0; burst < _repetitions; burst++) {
-      final burstStart = burst / _repetitions;
-      final burstEnd = (burst + 1) / _repetitions;
-      if (raw < burstStart || raw > burstEnd) continue;
-
-      final t = ((raw - burstStart) / (burstEnd - burstStart)).clamp(0.0, 1.0);
-      final eased = Curves.easeOut.transform(t);
-      final opacity = eased < 0.25 ? eased / 0.25 : (1.0 - eased) / 0.75;
-      final burstScale = 1.0 - burst * 0.15;
-
-      for (final (dx, dy, tf, of_, sf) in _puffParams) {
-        final scaledSf = sf * burstScale;
-        widgets.add(
-          _puff(cellSize, -dx, dy, eased * tf, opacity * of_, scaledSf),
-        );
-        widgets.add(
-          _puff(cellSize, dx, dy, eased * tf, opacity * of_, scaledSf),
-        );
-      }
-    }
-    return widgets;
+List<Widget> _buildSmokePuffs(double cellSize, double raw) {
+  if (raw <= 0.005) {
+    return const [];
   }
 
-  static Widget _puff(
-    double cellSize,
-    double dx,
-    double dy,
-    double t,
-    double opacity,
-    double sizeFactor,
-  ) {
-    final puffSize = cellSize * sizeFactor * (0.3 + t * 0.7);
-    final x = cellSize / 2 + dx * cellSize * t - puffSize / 2;
-    final y = cellSize * 0.65 + dy * cellSize * t - puffSize / 2;
-    final clamped = opacity.clamp(0.0, 1.0);
+  final widgets = <Widget>[];
+  for (var burst = 0; burst < _smokePuffRepetitions; burst++) {
+    final burstStart = burst / _smokePuffRepetitions;
+    final burstEnd = (burst + 1) / _smokePuffRepetitions;
+    if (raw < burstStart || raw > burstEnd) {
+      continue;
+    }
 
-    return Positioned(
-      left: x,
-      top: y,
-      child: Opacity(
-        opacity: clamped,
-        child: Container(
-          width: puffSize,
-          height: puffSize,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: Colors.grey.shade400.withValues(alpha: clamped * 0.6),
-            ),
-            gradient: RadialGradient(
-              colors: [
-                Colors.white,
-                Colors.grey.shade200,
-                Colors.grey.shade300.withValues(alpha: 0),
-              ],
-              stops: const [0.0, 0.5, 1.0],
-            ),
+    final t = ((raw - burstStart) / (burstEnd - burstStart)).clamp(0.0, 1.0);
+    final eased = Curves.easeOut.transform(t);
+    final opacity = eased < 0.25 ? eased / 0.25 : (1.0 - eased) / 0.75;
+    final burstScale = 1.0 - burst * 0.15;
+
+    for (final (dx, dy, tf, of_, sf) in _smokePuffParams) {
+      final scaledSf = sf * burstScale;
+      widgets
+        ..add(_smokePuff(
+          cellSize,
+          -dx,
+          dy,
+          eased * tf,
+          opacity * of_,
+          scaledSf,
+        ))
+        ..add(_smokePuff(
+          cellSize,
+          dx,
+          dy,
+          eased * tf,
+          opacity * of_,
+          scaledSf,
+        ));
+    }
+  }
+  return widgets;
+}
+
+Widget _smokePuff(
+  double cellSize,
+  double dx,
+  double dy,
+  double t,
+  double opacity,
+  double sizeFactor,
+) {
+  final puffSize = cellSize * sizeFactor * (0.3 + t * 0.7);
+  final x = cellSize / 2 + dx * cellSize * t - puffSize / 2;
+  final y = cellSize * 0.65 + dy * cellSize * t - puffSize / 2;
+  final clamped = opacity.clamp(0.0, 1.0);
+
+  return Positioned(
+    left: x,
+    top: y,
+    child: Opacity(
+      opacity: clamped,
+      child: Container(
+        width: puffSize,
+        height: puffSize,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.grey.shade400.withValues(alpha: clamped * 0.6),
+          ),
+          gradient: RadialGradient(
+            colors: [
+              Colors.white,
+              Colors.grey.shade200,
+              Colors.grey.shade300.withValues(alpha: 0),
+            ],
+            stops: const [0.0, 0.5, 1.0],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
