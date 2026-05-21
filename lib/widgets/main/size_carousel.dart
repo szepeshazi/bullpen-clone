@@ -1,5 +1,6 @@
 import 'package:bullpen/logic/puzzle_config.dart';
 import 'package:bullpen/widgets/main/grid_card.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class SizeCarousel extends StatefulWidget {

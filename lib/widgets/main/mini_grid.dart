@@ -1,4 +1,5 @@
 import 'package:bullpen/theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Tiny preview of an N×N grid used inside size carousel cards.

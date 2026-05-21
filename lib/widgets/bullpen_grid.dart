@@ -5,6 +5,7 @@ import 'package:bullpen/models/puzzle_board.dart' show PuzzleBoard;
 import 'package:bullpen/widgets/bullpen_cell.dart';
 import 'package:bullpen/widgets/grid_constants.dart';
 import 'package:bullpen/widgets/pen_palette.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

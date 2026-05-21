@@ -1,5 +1,6 @@
 import 'package:bullpen/theme.dart';
 import 'package:bullpen/widgets/main/size_carousel.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class SizeSelector extends StatelessWidget {
