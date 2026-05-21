@@ -1,8 +1,8 @@
-import '../../../cubit/game_state.dart';
-import '../combinations.dart';
-import '../hint.dart';
-import '../hint_context.dart';
-import '../hint_rule.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/logic/hints/combinations.dart';
+import 'package:bullpen/logic/hints/hint.dart';
+import 'package:bullpen/logic/hints/hint_context.dart';
+import 'package:bullpen/logic/hints/hint_rule.dart';
 
 /// Dual of NakedSet: if N rows can serve only N pens, those pens must place
 /// all bulls within those rows — exclude their cells elsewhere.
@@ -10,16 +10,14 @@ class HiddenSetRule extends HintRule {
   const HiddenSetRule();
 
   @override
-  Hint? evaluate(HintContext ctx) {
-    return _scan(ctx, axis: _Axis.row) ?? _scan(ctx, axis: _Axis.col);
-  }
+  Hint? evaluate(HintContext ctx) => _scan(ctx, axis: _Axis.row) ?? _scan(ctx, axis: _Axis.col);
 
   Hint? _scan(HintContext ctx, {required _Axis axis}) {
     final active = axis == _Axis.row ? ctx.activeRows : ctx.activeCols;
     final counts = axis == _Axis.row ? ctx.rowCounts : ctx.colCounts;
     final toPens = axis == _Axis.row ? ctx.rowToPens : ctx.colToPens;
 
-    for (int subsetSize = 1;
+    for (var subsetSize = 1;
         subsetSize <= active.length && subsetSize <= (ctx.size ~/ 2);
         subsetSize++) {
       for (final subset in combinations(active, subsetSize)) {

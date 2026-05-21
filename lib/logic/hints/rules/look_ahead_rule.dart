@@ -1,6 +1,6 @@
-import '../hint.dart';
-import '../hint_context.dart';
-import '../hint_rule.dart';
+import 'package:bullpen/logic/hints/hint.dart';
+import 'package:bullpen/logic/hints/hint_context.dart';
+import 'package:bullpen/logic/hints/hint_rule.dart';
 
 /// Placing a bull at this cell would leave no valid spot for the group's
 /// remaining bull(s). Checks pen, row, and column groups in turn.
@@ -8,11 +8,9 @@ class LookAheadRule extends HintRule {
   const LookAheadRule();
 
   @override
-  Hint? evaluate(HintContext ctx) {
-    return _penLookAhead(ctx) ??
+  Hint? evaluate(HintContext ctx) => _penLookAhead(ctx) ??
         _rowLookAhead(ctx) ??
         _colLookAhead(ctx);
-  }
 
   Hint? _penLookAhead(HintContext ctx) {
     for (final pen in ctx.board.pens) {
@@ -32,7 +30,7 @@ class LookAheadRule extends HintRule {
   }
 
   Hint? _rowLookAhead(HintContext ctx) {
-    for (int r = 0; r < ctx.size; r++) {
+    for (var r = 0; r < ctx.size; r++) {
       if (ctx.rowCounts[r] != 0) continue;
       final valid = <(int, int)>[
         for (int c = 0; c < ctx.size; c++)
@@ -51,7 +49,7 @@ class LookAheadRule extends HintRule {
   }
 
   Hint? _colLookAhead(HintContext ctx) {
-    for (int c = 0; c < ctx.size; c++) {
+    for (var c = 0; c < ctx.size; c++) {
       if (ctx.colCounts[c] != 0) continue;
       final valid = <(int, int)>[
         for (int r = 0; r < ctx.size; r++)
@@ -76,7 +74,7 @@ class LookAheadRule extends HintRule {
     String reason,
   ) {
     for (final (r, c) in validCells) {
-      bool hasPartner = false;
+      var hasPartner = false;
       for (final (r2, c2) in validCells) {
         if (r2 == r && c2 == c) continue;
         if ((r2 - r).abs() <= 1 && (c2 - c).abs() <= 1) continue;

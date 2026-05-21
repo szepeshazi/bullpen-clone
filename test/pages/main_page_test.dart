@@ -22,7 +22,7 @@ void main() {
       // Trigger a swipe on the page view inside SizeCarousel.
       await tester.fling(find.byType(PageView), const Offset(-300, 0), 1000);
       // Drive the scroll animation without waiting for the infinite pulse.
-      for (int i = 0; i < 10; i++) {
+      for (var i = 0; i < 10; i++) {
         await tester.pump(const Duration(milliseconds: 50));
       }
 

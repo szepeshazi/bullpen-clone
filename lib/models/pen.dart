@@ -1,4 +1,4 @@
-import 'cell.dart';
+import 'package:bullpen/models/cell.dart';
 
 /// A contiguous group of cells that must contain exactly 2 bulls.
 class Pen {

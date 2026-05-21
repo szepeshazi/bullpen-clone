@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:bullpen/models/cell.dart';
 import 'package:bullpen/logic/grid_generator.dart';
 import 'package:bullpen/logic/grid_solver.dart';
+import 'package:bullpen/models/cell.dart';
 import 'package:bullpen/models/pen.dart';
 import 'package:bullpen/models/puzzle_board.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// Creates a simple 8×8 board where each pen is one row.
 PuzzleBoard _makeRowBasedBoard({int size = 8}) {
   final pens = <Pen>[];
-  for (int penId = 0; penId < size; penId++) {
+  for (var penId = 0; penId < size; penId++) {
     final cells = List.generate(
       size,
       (col) => Cell(row: penId, col: col, penId: penId),
@@ -33,7 +33,7 @@ void main() {
     test('solution has exactly 2 bulls per row', () {
       final board = _makeRowBasedBoard();
       final state = GridSolver.solve(board, random: Random(42))!;
-      for (int r = 0; r < 8; r++) {
+      for (var r = 0; r < 8; r++) {
         expect(state.bullsInRow(r), 2, reason: 'Row $r should have 2 bulls');
       }
     });
@@ -41,7 +41,7 @@ void main() {
     test('solution has exactly 2 bulls per column', () {
       final board = _makeRowBasedBoard();
       final state = GridSolver.solve(board, random: Random(42))!;
-      for (int c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
         expect(state.bullsInCol(c), 2, reason: 'Col $c should have 2 bulls');
       }
     });
@@ -60,8 +60,8 @@ void main() {
       final state = GridSolver.solve(board, random: Random(42))!;
       for (final bull in state.bulls) {
         // Check all 8 neighbors.
-        for (int dr = -1; dr <= 1; dr++) {
-          for (int dc = -1; dc <= 1; dc++) {
+        for (var dr = -1; dr <= 1; dr++) {
+          for (var dc = -1; dc <= 1; dc++) {
             if (dr == 0 && dc == 0) continue;
             final nr = bull.row + dr;
             final nc = bull.col + dc;
@@ -82,8 +82,8 @@ void main() {
       // retrying with different layouts succeeds quickly.
       // With variable pen sizes (including small 3–5 cell pens), more
       // attempts may be needed.
-      bool solved = false;
-      for (int attempt = 0; attempt < 500 && !solved; attempt++) {
+      var solved = false;
+      for (var attempt = 0; attempt < 500 && !solved; attempt++) {
         final board = GridGenerator.generate(8, random: Random(attempt));
         final state = GridSolver.solve(board, random: Random(attempt));
         if (state != null && state.isSolved) solved = true;
@@ -92,8 +92,8 @@ void main() {
     });
 
     test('solves randomly generated 10×10 boards with retry', () {
-      bool solved = false;
-      for (int attempt = 0; attempt < 500 && !solved; attempt++) {
+      var solved = false;
+      for (var attempt = 0; attempt < 500 && !solved; attempt++) {
         final board = GridGenerator.generate(10, random: Random(attempt));
         final state = GridSolver.solve(board, random: Random(attempt));
         if (state != null && state.isSolved) solved = true;
@@ -106,20 +106,20 @@ void main() {
       // This is extremely unlikely to be solvable with the constraint that
       // each pen needs exactly 2 bulls.
       final cells = <Cell>[];
-      for (int r = 0; r < 8; r++) {
-        for (int c = 0; c < 8; c++) {
+      for (var r = 0; r < 8; r++) {
+        for (var c = 0; c < 8; c++) {
           // Assign most cells to pen 0.
           cells.add(Cell(row: r, col: c, penId: 0));
         }
       }
       // Override 7 cells to be their own pens.
       final penCells = <int, List<Cell>>{0: []};
-      for (int i = 1; i < 8; i++) {
+      for (var i = 1; i < 8; i++) {
         penCells[i] = [Cell(row: 0, col: i, penId: i)];
       }
       // All other cells go to pen 0.
-      for (int r = 0; r < 8; r++) {
-        for (int c = 0; c < 8; c++) {
+      for (var r = 0; r < 8; r++) {
+        for (var c = 0; c < 8; c++) {
           if (r == 0 && c >= 1 && c < 8) continue;
           penCells[0]!.add(Cell(row: r, col: c, penId: 0));
         }

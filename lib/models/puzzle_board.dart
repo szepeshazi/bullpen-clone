@@ -1,5 +1,7 @@
-import 'cell.dart';
-import 'pen.dart';
+import 'package:bullpen/models/cell.dart';
+import 'package:bullpen/models/models.dart' show PuzzleState;
+import 'package:bullpen/models/pen.dart';
+import 'package:bullpen/models/puzzle_state.dart' show PuzzleState;
 
 /// The immutable layout of a Bullpen puzzle: grid dimensions, cells, and pens.
 ///

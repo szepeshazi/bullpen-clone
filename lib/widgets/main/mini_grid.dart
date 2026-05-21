@@ -1,18 +1,16 @@
+import 'package:bullpen/theme.dart';
 import 'package:flutter/material.dart';
-
-import '../../theme.dart';
 
 /// Tiny preview of an N×N grid used inside size carousel cards.
 class MiniGrid extends StatelessWidget {
   final int size;
 
-  const MiniGrid({super.key, required this.size});
+  const MiniGrid({required this.size, super.key});
 
   static const _gridVisualSize = 80.0;
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
+  Widget build(BuildContext context) => SizedBox(
       width: _gridVisualSize,
       height: _gridVisualSize,
       child: CustomPaint(
@@ -22,6 +20,11 @@ class MiniGrid extends StatelessWidget {
         ),
       ),
     );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IntProperty('size', size));
   }
 }
 
@@ -44,11 +47,11 @@ class _MiniGridPainter extends CustomPainter {
       ..strokeWidth = 0.8
       ..style = PaintingStyle.stroke;
 
-    for (int r = 0; r <= gridSize; r++) {
+    for (var r = 0; r <= gridSize; r++) {
       final y = r * cellSize;
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
-    for (int c = 0; c <= gridSize; c++) {
+    for (var c = 0; c <= gridSize; c++) {
       final x = c * cellSize;
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }

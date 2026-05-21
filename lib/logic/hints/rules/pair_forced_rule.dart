@@ -1,6 +1,6 @@
-import '../hint.dart';
-import '../hint_context.dart';
-import '../hint_rule.dart';
+import 'package:bullpen/logic/hints/hint.dart';
+import 'package:bullpen/logic/hints/hint_context.dart';
+import 'package:bullpen/logic/hints/hint_rule.dart';
 
 /// Group needs 2 more bulls; if a cell appears in every valid non-adjacent
 /// pair, it must contain a bull.
@@ -19,7 +19,7 @@ class PairForcedRule extends HintRule {
       if (hint != null) return hint;
     }
 
-    for (int r = 0; r < ctx.size; r++) {
+    for (var r = 0; r < ctx.size; r++) {
       if (ctx.rowCounts[r] != 0) continue;
       final cells = [
         for (int c = 0; c < ctx.size; c++)
@@ -29,7 +29,7 @@ class PairForcedRule extends HintRule {
       if (hint != null) return hint;
     }
 
-    for (int c = 0; c < ctx.size; c++) {
+    for (var c = 0; c < ctx.size; c++) {
       if (ctx.colCounts[c] != 0) continue;
       final cells = [
         for (int r = 0; r < ctx.size; r++)
@@ -58,9 +58,9 @@ class PairForcedRule extends HintRule {
     if (validCells.length <= 2) return -1;
 
     final pairs = <(int, int)>[];
-    for (int i = 0; i < validCells.length; i++) {
+    for (var i = 0; i < validCells.length; i++) {
       final (r1, c1) = validCells[i];
-      for (int j = i + 1; j < validCells.length; j++) {
+      for (var j = i + 1; j < validCells.length; j++) {
         final (r2, c2) = validCells[j];
         if ((r1 - r2).abs() <= 1 && (c1 - c2).abs() <= 1) continue;
         if (r1 == r2 && ctx.rowCounts[r1] > 0) continue;
@@ -77,7 +77,7 @@ class PairForcedRule extends HintRule {
       }
     }
     if (pairs.isEmpty) return -1;
-    for (int i = 0; i < validCells.length; i++) {
+    for (var i = 0; i < validCells.length; i++) {
       if (pairs.every((p) => p.$1 == i || p.$2 == i)) return i;
     }
     return -1;

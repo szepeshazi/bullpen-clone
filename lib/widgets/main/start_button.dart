@@ -1,14 +1,19 @@
+import 'package:bullpen/theme.dart';
 import 'package:flutter/material.dart';
-
-import '../../theme.dart';
 
 class StartButton extends StatefulWidget {
   final VoidCallback onPressed;
 
-  const StartButton({super.key, required this.onPressed});
+  const StartButton({required this.onPressed, super.key});
 
   @override
   State<StartButton> createState() => _StartButtonState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
+  }
 }
 
 class _StartButtonState extends State<StartButton>
@@ -23,7 +28,7 @@ class _StartButtonState extends State<StartButton>
       duration: const Duration(milliseconds: 1800),
       vsync: this,
     )..repeat(reverse: true);
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
+    _pulseAnimation = Tween<double>(begin: 1, end: 1.08).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
   }
@@ -35,12 +40,9 @@ class _StartButtonState extends State<StartButton>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
+  Widget build(BuildContext context) => AnimatedBuilder(
       animation: _pulseAnimation,
-      builder: (context, child) {
-        return Transform.scale(scale: _pulseAnimation.value, child: child);
-      },
+      builder: (context, child) => Transform.scale(scale: _pulseAnimation.value, child: child),
       child: SizedBox(
         width: 220,
         height: 56,
@@ -64,5 +66,4 @@ class _StartButtonState extends State<StartButton>
         ),
       ),
     );
-  }
 }

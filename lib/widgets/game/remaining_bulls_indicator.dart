@@ -1,16 +1,14 @@
+import 'package:bullpen/cubit/game_cubit.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../cubit/game_cubit.dart';
-import '../../cubit/game_state.dart';
-import '../../theme.dart';
 
 class RemainingBullsIndicator extends StatelessWidget {
   const RemainingBullsIndicator({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocSelector<GameCubit, GameState, ({int remaining, bool visible})>(
+  Widget build(BuildContext context) => BlocSelector<GameCubit, GameState, ({int remaining, bool visible})>(
       selector: _select,
       builder: (context, s) {
         if (!s.visible) return const SizedBox.shrink();
@@ -39,7 +37,6 @@ class RemainingBullsIndicator extends StatelessWidget {
         );
       },
     );
-  }
 
   ({int remaining, bool visible}) _select(GameState state) {
     if (state is GamePlaying && !state.solved) {
@@ -60,8 +57,7 @@ class _BullDot extends StatelessWidget {
   const _BullDot();
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       width: 10,
       height: 10,
       decoration: BoxDecoration(
@@ -69,5 +65,4 @@ class _BullDot extends StatelessWidget {
         border: Border.all(color: bullpenAccentColor, width: 1.5),
       ),
     );
-  }
 }

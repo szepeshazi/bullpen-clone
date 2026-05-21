@@ -1,8 +1,8 @@
-import '../../../cubit/game_state.dart';
-import '../combinations.dart';
-import '../hint.dart';
-import '../hint_context.dart';
-import '../hint_rule.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/logic/hints/combinations.dart';
+import 'package:bullpen/logic/hints/hint.dart';
+import 'package:bullpen/logic/hints/hint_context.dart';
+import 'package:bullpen/logic/hints/hint_rule.dart';
 
 /// Pigeonhole on rows/columns: if N rows fully contain N pens, no other pen
 /// can place bulls in those rows.
@@ -10,9 +10,7 @@ class NakedSetRule extends HintRule {
   const NakedSetRule();
 
   @override
-  Hint? evaluate(HintContext ctx) {
-    return _scan(ctx, axis: _Axis.row) ?? _scan(ctx, axis: _Axis.col);
-  }
+  Hint? evaluate(HintContext ctx) => _scan(ctx, axis: _Axis.row) ?? _scan(ctx, axis: _Axis.col);
 
   Hint? _scan(HintContext ctx, {required _Axis axis}) {
     final active = axis == _Axis.row ? ctx.activeRows : ctx.activeCols;
@@ -20,7 +18,7 @@ class NakedSetRule extends HintRule {
     final penValid =
         axis == _Axis.row ? ctx.penValidRows : ctx.penValidCols;
 
-    for (int subsetSize = 1;
+    for (var subsetSize = 1;
         subsetSize <= active.length && subsetSize <= (ctx.size ~/ 2);
         subsetSize++) {
       for (final subset in combinations(active, subsetSize)) {
@@ -43,7 +41,7 @@ class NakedSetRule extends HintRule {
         subset.fold<int>(0, (sum, i) => sum + 2 - counts[i]);
 
     final containedPenIds = <int>{};
-    int remainingNeed = 0;
+    var remainingNeed = 0;
     for (final pen in ctx.board.pens) {
       final pv = penValid[pen.id]!;
       if (pv.isNotEmpty && subsetSet.containsAll(pv)) {
@@ -66,7 +64,7 @@ class NakedSetRule extends HintRule {
     Set<int> containedPenIds,
   ) {
     for (final i in subset) {
-      for (int j = 0; j < ctx.size; j++) {
+      for (var j = 0; j < ctx.size; j++) {
         final (r, c) = axis == _Axis.row ? (i, j) : (j, i);
         if (ctx.marks[r][c] != CellMark.empty) continue;
         if (containedPenIds.contains(ctx.board.cellAt(r, c).penId)) continue;

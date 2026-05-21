@@ -1,6 +1,6 @@
-import '../cubit/game_state.dart';
-import '../models/adjacency.dart';
-import '../models/puzzle_board.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/models/adjacency.dart';
+import 'package:bullpen/models/puzzle_board.dart';
 
 class BullCounts {
   final List<(int, int)> bulls;
@@ -30,8 +30,8 @@ class BoardEvaluator {
     final colCounts = List.filled(size, 0);
     final penCounts = <int, int>{};
 
-    for (int r = 0; r < size; r++) {
-      for (int c = 0; c < size; c++) {
+    for (var r = 0; r < size; r++) {
+      for (var c = 0; c < size; c++) {
         if (marks[r][c] != CellMark.bull) continue;
         bulls.add((r, c));
         rowCounts[r]++;
@@ -86,7 +86,7 @@ class BoardEvaluator {
 
     if (counts.bulls.length != 2 * size) return false;
 
-    for (int i = 0; i < size; i++) {
+    for (var i = 0; i < size; i++) {
       if (counts.rowCounts[i] != 2) return false;
       if (counts.colCounts[i] != 2) return false;
     }

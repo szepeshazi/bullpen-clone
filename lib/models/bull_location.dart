@@ -1,4 +1,4 @@
-import 'cell.dart';
+import 'package:bullpen/models/cell.dart';
 
 class BullLocation {
   final Cell cell;

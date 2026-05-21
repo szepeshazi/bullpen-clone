@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// Creates a simple 8x8 board where each row is its own pen.
 PuzzleBoard _makeBoard({int size = 8}) {
   final pens = <Pen>[];
-  for (int penId = 0; penId < size; penId++) {
+  for (var penId = 0; penId < size; penId++) {
     final cells = List.generate(
       size,
       (col) => Cell(row: penId, col: col, penId: penId),
@@ -167,7 +167,7 @@ void main() {
 
     test('undo stack is capped at max history size', () {
       // Place dots in 110 different cells (more than the 100 limit).
-      for (int i = 0; i < 110; i++) {
+      for (var i = 0; i < 110; i++) {
         final row = i ~/ 8;
         final col = i % 8;
         if (row >= 8) break;

@@ -1,5 +1,5 @@
-import '../../cubit/game_state.dart';
-import '../../models/puzzle_board.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/models/puzzle_board.dart';
 
 /// Shared, pre-computed data used by every hint rule.
 class HintContext {
@@ -47,8 +47,8 @@ class HintContext {
     final colCounts = List.filled(size, 0);
     final penCounts = <int, int>{};
 
-    for (int r = 0; r < size; r++) {
-      for (int c = 0; c < size; c++) {
+    for (var r = 0; r < size; r++) {
+      for (var c = 0; c < size; c++) {
         if (marks[r][c] != CellMark.bull) continue;
         rowCounts[r]++;
         colCounts[c]++;
@@ -83,7 +83,7 @@ class HintContext {
     final rowToPens = <int, Set<int>>{};
     for (final r in activeRows) {
       final pens = <int>{};
-      for (int c = 0; c < size; c++) {
+      for (var c = 0; c < size; c++) {
         if (valid[r][c]) pens.add(board.cellAt(r, c).penId);
       }
       rowToPens[r] = pens;
@@ -91,7 +91,7 @@ class HintContext {
     final colToPens = <int, Set<int>>{};
     for (final c in activeCols) {
       final pens = <int>{};
-      for (int r = 0; r < size; r++) {
+      for (var r = 0; r < size; r++) {
         if (valid[r][c]) pens.add(board.cellAt(r, c).penId);
       }
       colToPens[c] = pens;
@@ -123,9 +123,9 @@ class HintContext {
   bool groupFeasible(List<(int, int)> candidates, int needed) {
     if (candidates.length < needed) return false;
     if (needed <= 1) return true;
-    for (int i = 0; i < candidates.length; i++) {
+    for (var i = 0; i < candidates.length; i++) {
       final (r1, c1) = candidates[i];
-      for (int j = i + 1; j < candidates.length; j++) {
+      for (var j = i + 1; j < candidates.length; j++) {
         final (r2, c2) = candidates[j];
         if (!_pairFeasible(r1, c1, r2, c2)) continue;
         return true;
@@ -153,8 +153,8 @@ class HintContext {
   /// Pre-computes [essential] cells: those whose removal makes some group
   /// infeasible. Only checked once at construction.
   void _populateEssential() {
-    for (int r = 0; r < size; r++) {
-      for (int c = 0; c < size; c++) {
+    for (var r = 0; r < size; r++) {
+      for (var c = 0; c < size; c++) {
         if (!valid[r][c]) continue;
         if (_isEssentialFor(r, c)) essential.add((r, c));
       }

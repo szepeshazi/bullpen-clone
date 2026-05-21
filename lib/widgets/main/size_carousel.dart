@@ -1,21 +1,24 @@
+import 'package:bullpen/logic/puzzle_config.dart';
+import 'package:bullpen/widgets/main/grid_card.dart';
 import 'package:flutter/material.dart';
-
-import 'grid_card.dart';
 
 class SizeCarousel extends StatefulWidget {
   final int selectedSize;
   final ValueChanged<int> onSizeChanged;
 
   const SizeCarousel({
-    super.key,
-    required this.selectedSize,
-    required this.onSizeChanged,
+    required this.selectedSize, required this.onSizeChanged, super.key,
   });
-
-  static const supportedSizes = [8, 9, 10, 11, 12, 13, 14, 15, 16];
 
   @override
   State<SizeCarousel> createState() => _SizeCarouselState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IntProperty('selectedSize', selectedSize));
+    properties.add(ObjectFlagProperty<ValueChanged<int>>.has('onSizeChanged', onSizeChanged));
+  }
 }
 
 class _SizeCarouselState extends State<SizeCarousel> {
@@ -26,7 +29,7 @@ class _SizeCarouselState extends State<SizeCarousel> {
   void initState() {
     super.initState();
     _controller = PageController(
-      initialPage: SizeCarousel.supportedSizes.indexOf(widget.selectedSize),
+      initialPage: puzzleSupportedSizes.indexOf(widget.selectedSize),
       viewportFraction: _viewportFraction,
     );
   }
@@ -38,15 +41,14 @@ class _SizeCarouselState extends State<SizeCarousel> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return PageView.builder(
+  Widget build(BuildContext context) => PageView.builder(
       controller: _controller,
-      itemCount: SizeCarousel.supportedSizes.length,
+      itemCount: puzzleSupportedSizes.length,
       onPageChanged: (index) =>
-          widget.onSizeChanged(SizeCarousel.supportedSizes[index]),
+          widget.onSizeChanged(puzzleSupportedSizes[index]),
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
-        final size = SizeCarousel.supportedSizes[index];
+        final size = puzzleSupportedSizes[index];
         final isSelected = size == widget.selectedSize;
         return _CarouselItem(
           size: size,
@@ -55,11 +57,10 @@ class _SizeCarouselState extends State<SizeCarousel> {
         );
       },
     );
-  }
 
   void _animateToSize(int size) {
     _controller.animateToPage(
-      SizeCarousel.supportedSizes.indexOf(size),
+      puzzleSupportedSizes.indexOf(size),
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
@@ -78,8 +79,7 @@ class _CarouselItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return AnimatedScale(
+  Widget build(BuildContext context) => AnimatedScale(
       scale: isSelected ? 1.0 : 0.78,
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeOut,
@@ -92,5 +92,12 @@ class _CarouselItem extends StatelessWidget {
         ),
       ),
     );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IntProperty('size', size));
+    properties.add(DiagnosticsProperty<bool>('isSelected', isSelected));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
   }
 }

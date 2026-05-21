@@ -1,14 +1,12 @@
+import 'package:bullpen/pages/main_page.dart';
+import 'package:bullpen/theme.dart';
 import 'package:flutter/material.dart';
-
-import '../../pages/main_page.dart';
-import '../../theme.dart';
 
 class BackToMainButton extends StatelessWidget {
   const BackToMainButton({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return TextButton.icon(
+  Widget build(BuildContext context) => TextButton.icon(
       onPressed: () => Navigator.of(context).pushReplacement(MainPage.route()),
       icon: const Icon(Icons.arrow_back, size: 18),
       label: const Text('Back to Main Page'),
@@ -20,5 +18,4 @@ class BackToMainButton extends StatelessWidget {
         ),
       ),
     );
-  }
 }

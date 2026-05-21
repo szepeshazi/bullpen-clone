@@ -1,16 +1,14 @@
+import 'package:bullpen/cubit/game_cubit.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../cubit/game_cubit.dart';
-import '../../cubit/game_state.dart';
-import '../../theme.dart';
 
 class UndoRedoRow extends StatelessWidget {
   const UndoRedoRow({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocSelector<GameCubit, GameState,
+  Widget build(BuildContext context) => BlocSelector<GameCubit, GameState,
         ({bool canUndo, bool canRedo, bool visible})>(
       selector: _select,
       builder: (context, s) {
@@ -46,7 +44,6 @@ class UndoRedoRow extends StatelessWidget {
         );
       },
     );
-  }
 
   ({bool canUndo, bool canRedo, bool visible}) _select(GameState state) {
     if (state is GamePlaying && !state.solved) {
@@ -72,8 +69,7 @@ class _ActionButton extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return IconButton(
+  Widget build(BuildContext context) => IconButton(
       onPressed: onPressed,
       icon: Icon(icon),
       tooltip: tooltip,
@@ -81,5 +77,12 @@ class _ActionButton extends StatelessWidget {
       disabledColor: bullpenAccentColor.withValues(alpha: 0.3),
       iconSize: 28,
     );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(StringProperty('tooltip', tooltip));
+    properties.add(ObjectFlagProperty<VoidCallback?>.has('onPressed', onPressed));
   }
 }

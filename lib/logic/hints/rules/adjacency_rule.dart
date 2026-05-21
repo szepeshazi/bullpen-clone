@@ -1,8 +1,8 @@
-import '../../../cubit/game_state.dart';
-import '../../../models/adjacency.dart';
-import '../hint.dart';
-import '../hint_context.dart';
-import '../hint_rule.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/logic/hints/hint.dart';
+import 'package:bullpen/logic/hints/hint_context.dart';
+import 'package:bullpen/logic/hints/hint_rule.dart';
+import 'package:bullpen/models/adjacency.dart';
 
 /// Empty cell sits next to an existing bull (any of 8 neighbours) → exclude it.
 class AdjacencyRule extends HintRule {
@@ -10,8 +10,8 @@ class AdjacencyRule extends HintRule {
 
   @override
   Hint? evaluate(HintContext ctx) {
-    for (int r = 0; r < ctx.size; r++) {
-      for (int c = 0; c < ctx.size; c++) {
+    for (var r = 0; r < ctx.size; r++) {
+      for (var c = 0; c < ctx.size; c++) {
         if (ctx.marks[r][c] != CellMark.empty) continue;
         final hasBullNeighbour = hasAdjacentMatch(
           r,

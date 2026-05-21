@@ -1,17 +1,25 @@
 import 'dart:math';
 
+import 'package:bullpen/widgets/grid_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'grid_constants.dart';
+final _rng = Random();
 
 class ShakingBull extends StatefulWidget {
   final double cellSize;
   final int version;
-  const ShakingBull({super.key, required this.cellSize, required this.version});
+  const ShakingBull({required this.cellSize, required this.version, super.key});
 
   @override
   State<ShakingBull> createState() => _ShakingBullState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DoubleProperty('cellSize', cellSize));
+    properties.add(IntProperty('version', version));
+  }
 }
 
 class _ShakingBullState extends State<ShakingBull>
@@ -26,16 +34,14 @@ class _ShakingBullState extends State<ShakingBull>
   @override
   void initState() {
     super.initState();
-    final rng = Random();
-
     _shakeController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    _shakeX = _randomShake(rng, 18, 16).animate(
+    _shakeX = _randomShake(_rng, 18, 16).animate(
       CurvedAnimation(parent: _shakeController, curve: Curves.easeOut),
     );
-    _shakeY = _randomShake(rng, 18, 8).animate(
+    _shakeY = _randomShake(_rng, 18, 8).animate(
       CurvedAnimation(parent: _shakeController, curve: Curves.easeOut),
     );
 
@@ -79,8 +85,7 @@ class _ShakingBullState extends State<ShakingBull>
 
     return AnimatedBuilder(
       animation: Listenable.merge([_shakeX, _shakeY, _smokeAnimation]),
-      builder: (context, child) {
-        return SizedBox(
+      builder: (context, child) => SizedBox(
           width: size,
           height: size,
           child: Stack(
@@ -97,9 +102,8 @@ class _ShakingBullState extends State<ShakingBull>
               ),
             ],
           ),
-        );
-      },
-      child: SvgPicture.asset(bullSvgAsset, fit: BoxFit.contain),
+        ),
+      child: SvgPicture.asset(bullSvgAsset),
     );
   }
 }
@@ -109,7 +113,7 @@ class _ShakingBullState extends State<ShakingBull>
 TweenSequence<double> _randomShake(Random rng, int numSteps, double maxAmp) {
   final items = <TweenSequenceItem<double>>[];
   double prev = 0;
-  for (int i = 0; i < numSteps; i++) {
+  for (var i = 0; i < numSteps; i++) {
     final decay = 1.0 - i / numSteps;
     final amp = maxAmp * decay;
     final sign = (i.isEven ? 1.0 : -1.0) * (0.5 + rng.nextDouble() * 0.5);
@@ -136,10 +140,9 @@ class _RedTintedBull extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
+  Widget build(BuildContext context) => Padding(
       padding: EdgeInsets.all(cellSize * bullPaddingFraction),
-      child: Container(
+      child: DecoratedBox(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           boxShadow: [
@@ -159,6 +162,12 @@ class _RedTintedBull extends StatelessWidget {
         ),
       ),
     );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DoubleProperty('cellSize', cellSize));
+    properties.add(DoubleProperty('redAmount', redAmount));
   }
 }
 
@@ -178,7 +187,7 @@ class _SmokePuffs {
     if (raw <= 0.005) return const [];
 
     final widgets = <Widget>[];
-    for (int burst = 0; burst < _repetitions; burst++) {
+    for (var burst = 0; burst < _repetitions; burst++) {
       final burstStart = burst / _repetitions;
       final burstEnd = (burst + 1) / _repetitions;
       if (raw < burstStart || raw > burstEnd) continue;
@@ -222,13 +231,12 @@ class _SmokePuffs {
             shape: BoxShape.circle,
             border: Border.all(
               color: Colors.grey.shade400.withValues(alpha: clamped * 0.6),
-              width: 1.0,
             ),
             gradient: RadialGradient(
               colors: [
                 Colors.white,
                 Colors.grey.shade200,
-                Colors.grey.shade300.withValues(alpha: 0.0),
+                Colors.grey.shade300.withValues(alpha: 0),
               ],
               stops: const [0.0, 0.5, 1.0],
             ),

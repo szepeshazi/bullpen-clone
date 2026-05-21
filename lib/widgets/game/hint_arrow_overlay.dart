@@ -1,10 +1,9 @@
 import 'dart:math';
 
+import 'package:bullpen/logic/hint_finder.dart';
+import 'package:bullpen/theme.dart';
+import 'package:bullpen/widgets/grid_constants.dart';
 import 'package:flutter/material.dart';
-
-import '../../logic/hint_finder.dart';
-import '../../theme.dart';
-import '../grid_constants.dart';
 
 const _mustPlaceColor = Color(0xFF2E7D32);
 
@@ -16,16 +15,21 @@ class HintArrowOverlay extends StatefulWidget {
   final double areaHeight;
 
   const HintArrowOverlay({
-    super.key,
-    required this.hintCell,
-    required this.hintType,
-    required this.boardSize,
-    required this.areaWidth,
-    required this.areaHeight,
+    required this.hintCell, required this.hintType, required this.boardSize, required this.areaWidth, required this.areaHeight, super.key,
   });
 
   @override
   State<HintArrowOverlay> createState() => _HintArrowOverlayState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<(int, int)>('hintCell', hintCell));
+    properties.add(EnumProperty<HintType>('hintType', hintType));
+    properties.add(IntProperty('boardSize', boardSize));
+    properties.add(DoubleProperty('areaWidth', areaWidth));
+    properties.add(DoubleProperty('areaHeight', areaHeight));
+  }
 }
 
 class _HintArrowOverlayState extends State<HintArrowOverlay>

@@ -1,6 +1,5 @@
+import 'package:bullpen/theme.dart';
 import 'package:flutter/material.dart';
-
-import '../theme.dart';
 
 const penFillColors = <Color>[
   Color(0xFFF2C6D0), // pink / rose
@@ -14,7 +13,7 @@ const penFillColors = <Color>[
   Color(0xFFFAD8E8), // light pink
 ];
 
-const penBorderColor = bullpenAccentColor;
+const Color penBorderColor = bullpenAccentColor;
 
 class PenColorSet {
   final Color fill;
@@ -30,8 +29,10 @@ class PenColorSet {
 
 final Map<Color, PenColorSet> _cache = {};
 
-PenColorSet colorsForPen(Color penColor) {
-  return _cache.putIfAbsent(penColor, () {
+PenColorSet colorsForPenId(int penId) =>
+    _colorSetFor(penFillColors[penId % penFillColors.length]);
+
+PenColorSet _colorSetFor(Color penColor) => _cache.putIfAbsent(penColor, () {
     final hsl = HSLColor.fromColor(penColor);
     final cellBorder = hsl
         .withSaturation((hsl.saturation * 1.1).clamp(0.0, 1.0))
@@ -43,7 +44,3 @@ PenColorSet colorsForPen(Color penColor) {
         .toColor();
     return PenColorSet(fill: penColor, cellBorder: cellBorder, dot: dot);
   });
-}
-
-PenColorSet colorsForPenId(int penId) =>
-    colorsForPen(penFillColors[penId % penFillColors.length]);

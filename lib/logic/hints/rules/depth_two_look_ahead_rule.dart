@@ -1,6 +1,6 @@
-import '../hint.dart';
-import '../hint_context.dart';
-import '../hint_rule.dart';
+import 'package:bullpen/logic/hints/hint.dart';
+import 'package:bullpen/logic/hints/hint_context.dart';
+import 'package:bullpen/logic/hints/hint_rule.dart';
 
 /// Simulates placing a bull at each valid cell and checks whether any
 /// row/column/pen then becomes provably infeasible. Mutates context counts
@@ -20,13 +20,11 @@ class DepthTwoLookAheadRule extends HintRule {
     return null;
   }
 
-  List<(int, int)> _validCells(HintContext ctx) {
-    return [
+  List<(int, int)> _validCells(HintContext ctx) => [
       for (int r = 0; r < ctx.size; r++)
         for (int c = 0; c < ctx.size; c++)
           if (ctx.valid[r][c]) (r, c),
     ];
-  }
 
   Hint? _trySimulate(HintContext ctx, int r, int c) {
     final simPenId = ctx.board.cellAt(r, c).penId;
@@ -53,7 +51,7 @@ class DepthTwoLookAheadRule extends HintRule {
       return true;
     }
 
-    for (int r2 = 0; r2 < ctx.size; r2++) {
+    for (var r2 = 0; r2 < ctx.size; r2++) {
       final needed = 2 - ctx.rowCounts[r2];
       if (needed <= 0) continue;
       final candidates = <(int, int)>[
@@ -69,7 +67,7 @@ class DepthTwoLookAheadRule extends HintRule {
       }
     }
 
-    for (int c2 = 0; c2 < ctx.size; c2++) {
+    for (var c2 = 0; c2 < ctx.size; c2++) {
       final needed = 2 - ctx.colCounts[c2];
       if (needed <= 0) continue;
       final candidates = <(int, int)>[
@@ -110,9 +108,9 @@ class DepthTwoLookAheadRule extends HintRule {
   ) {
     if (candidates.length < needed) return false;
     if (needed <= 1) return true;
-    for (int i = 0; i < candidates.length; i++) {
+    for (var i = 0; i < candidates.length; i++) {
       final (r1, c1) = candidates[i];
-      for (int j = i + 1; j < candidates.length; j++) {
+      for (var j = i + 1; j < candidates.length; j++) {
         final (r2, c2) = candidates[j];
         if ((r1 - r2).abs() <= 1 && (c1 - c2).abs() <= 1) continue;
         if (r1 == r2 && ctx.rowCounts[r1] + 2 > 2) continue;

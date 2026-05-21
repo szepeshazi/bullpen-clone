@@ -1,10 +1,9 @@
+import 'package:bullpen/cubit/game_cubit.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/logic/hint_finder.dart';
+import 'package:bullpen/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../cubit/game_cubit.dart';
-import '../../cubit/game_state.dart';
-import '../../logic/hint_finder.dart';
-import '../../theme.dart';
 
 const _mustPlaceColor = Color(0xFF2E7D32);
 
@@ -12,8 +11,7 @@ class HintReasonBanner extends StatelessWidget {
   const HintReasonBanner({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocSelector<GameCubit, GameState,
+  Widget build(BuildContext context) => BlocSelector<GameCubit, GameState,
         ({String? reason, HintType? type})>(
       selector: _select,
       builder: (context, hint) {
@@ -35,13 +33,10 @@ class HintReasonBanner extends StatelessWidget {
         );
       },
     );
-  }
 
-  ({String? reason, HintType? type}) _select(GameState state) {
-    return state is GamePlaying
+  ({String? reason, HintType? type}) _select(GameState state) => state is GamePlaying
         ? (reason: state.hintReason, type: state.hintType)
         : (reason: null, type: null);
-  }
 }
 
 class _Banner extends StatelessWidget {
@@ -51,16 +46,11 @@ class _Banner extends StatelessWidget {
   final VoidCallback onApply;
 
   const _Banner({
-    super.key,
-    required this.reason,
-    required this.color,
-    required this.isMustPlace,
-    required this.onApply,
+    required this.reason, required this.color, required this.isMustPlace, required this.onApply, super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
+  Widget build(BuildContext context) => Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       child: Container(
         padding: const EdgeInsets.only(left: 12),
@@ -92,6 +82,14 @@ class _Banner extends StatelessWidget {
         ),
       ),
     );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('reason', reason));
+    properties.add(ColorProperty('color', color));
+    properties.add(DiagnosticsProperty<bool>('isMustPlace', isMustPlace));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onApply', onApply));
   }
 }
 
@@ -102,8 +100,7 @@ class _ApplyButton extends StatelessWidget {
   const _ApplyButton({required this.color, required this.onTap});
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
+  Widget build(BuildContext context) => GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Padding(
@@ -117,5 +114,11 @@ class _ApplyButton extends StatelessWidget {
         ),
       ),
     );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(ColorProperty('color', color));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
   }
 }

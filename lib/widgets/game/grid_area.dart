@@ -1,22 +1,20 @@
+import 'package:bullpen/cubit/game_cubit.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/logic/hint_finder.dart';
+import 'package:bullpen/pages/main_page.dart';
+import 'package:bullpen/theme.dart';
+import 'package:bullpen/widgets/bullpen_grid.dart';
+import 'package:bullpen/widgets/celebration_overlay.dart';
+import 'package:bullpen/widgets/game/hint_arrow_overlay.dart';
+import 'package:bullpen/widgets/game/hint_reason_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../cubit/game_cubit.dart';
-import '../../cubit/game_state.dart';
-import '../../logic/hint_finder.dart';
-import '../../pages/main_page.dart';
-import '../../theme.dart';
-import '../bullpen_grid.dart';
-import '../celebration_overlay.dart';
-import 'hint_arrow_overlay.dart';
-import 'hint_reason_banner.dart';
 
 class GridArea extends StatelessWidget {
   const GridArea({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<GameCubit, GameState>(
+  Widget build(BuildContext context) => BlocConsumer<GameCubit, GameState>(
       listenWhen: (prev, curr) => curr is GameError,
       listener: _onError,
       builder: (context, state) {
@@ -31,7 +29,6 @@ class GridArea extends StatelessWidget {
         return const SizedBox.shrink();
       },
     );
-  }
 
   void _onError(BuildContext context, GameState state) {
     if (state is! GameError) return;
@@ -49,14 +46,12 @@ class _PlayingArea extends StatelessWidget {
   const _PlayingArea({required this.state});
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Stack(
+  Widget build(BuildContext context) => LayoutBuilder(
+      builder: (context, constraints) => Stack(
           clipBehavior: Clip.none,
           children: [
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(12),
               child: BullpenGrid(gameState: state),
             ),
             if (state.hasHint)
@@ -81,8 +76,12 @@ class _PlayingArea extends StatelessWidget {
                 ),
               ),
           ],
-        );
-      },
+        ),
     );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<GamePlaying>('state', state));
   }
 }

@@ -1,5 +1,7 @@
 const bullSvgAsset = 'assets/bull-head.svg';
 
+const pageTransitionDuration = Duration(milliseconds: 400);
+
 const gridFraction = 0.9;
 const penBorderWidth = 1.0;
 const cellBorderWidth = 0.75;

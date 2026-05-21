@@ -1,7 +1,6 @@
+import 'package:bullpen/logic/hint_finder.dart';
+import 'package:bullpen/models/models.dart';
 import 'package:flutter/foundation.dart';
-
-import '../logic/hint_finder.dart';
-import '../models/models.dart';
 
 enum CellMark { empty, dot, bull }
 
@@ -59,8 +58,7 @@ class GamePlaying extends GameState {
     required PuzzleBoard board,
     required PuzzleState solution,
     required int gridSize,
-  }) {
-    return GamePlaying(
+  }) => GamePlaying(
       board: board,
       solution: solution,
       gridSize: gridSize,
@@ -69,7 +67,6 @@ class GamePlaying extends GameState {
         (_) => List.filled(board.size, CellMark.empty),
       ),
     );
-  }
 
   /// Creates a copy with updated fields.
   ///
@@ -86,8 +83,7 @@ class GamePlaying extends GameState {
     String? hintReason,
     HintType? hintType,
     bool clearHint = false,
-  }) {
-    return GamePlaying(
+  }) => GamePlaying(
       board: board,
       solution: solution,
       gridSize: gridSize,
@@ -101,7 +97,6 @@ class GamePlaying extends GameState {
       hintReason: clearHint ? null : (hintReason ?? this.hintReason),
       hintType: clearHint ? null : (hintType ?? this.hintType),
     );
-  }
 
   bool get canUndo => undoStack.isNotEmpty;
   bool get canRedo => redoStack.isNotEmpty;

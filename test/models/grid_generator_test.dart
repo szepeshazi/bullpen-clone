@@ -84,9 +84,9 @@ void main() {
 
     test('pens have valid sizes (some small, all at least 5)', () {
       final board = GridGenerator.generate(8, random: Random(42));
-      final avgSize = 64 ~/ 8; // 8
+      const avgSize = 64 ~/ 8; // 8
 
-      bool hasSmall = false;
+      var hasSmall = false;
       for (final pen in board.pens) {
         expect(pen.size, greaterThanOrEqualTo(5),
             reason: 'Pen ${pen.id} has only ${pen.size} cells (min 5)');
@@ -101,7 +101,7 @@ void main() {
       expect(board.size, 8);
       expect(board.pens, hasLength(8));
 
-      int totalCells = board.pens.fold(0, (sum, pen) => sum + pen.size);
+      final totalCells = board.pens.fold(0, (sum, pen) => sum + pen.size);
       expect(totalCells, 64);
     });
 
@@ -110,7 +110,7 @@ void main() {
       expect(board.size, 16);
       expect(board.pens, hasLength(16));
 
-      int totalCells = board.pens.fold(0, (sum, pen) => sum + pen.size);
+      final totalCells = board.pens.fold(0, (sum, pen) => sum + pen.size);
       expect(totalCells, 256);
     });
 
@@ -129,8 +129,8 @@ void main() {
       final board1 = GridGenerator.generate(8, random: Random(99));
       final board2 = GridGenerator.generate(8, random: Random(99));
 
-      for (int r = 0; r < 8; r++) {
-        for (int c = 0; c < 8; c++) {
+      for (var r = 0; r < 8; r++) {
+        for (var c = 0; c < 8; c++) {
           expect(board1.cellAt(r, c).penId, board2.cellAt(r, c).penId,
               reason: 'Cell ($r, $c) should have same penId with same seed');
         }

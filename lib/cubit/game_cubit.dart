@@ -1,14 +1,13 @@
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/cubit/marks_history.dart';
+import 'package:bullpen/logic/board_evaluator.dart';
+import 'package:bullpen/logic/grid_generator.dart';
+import 'package:bullpen/logic/grid_solver.dart';
+import 'package:bullpen/logic/hint_finder.dart';
+import 'package:bullpen/models/puzzle_board.dart';
+import 'package:bullpen/models/puzzle_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../logic/board_evaluator.dart';
-import '../logic/grid_generator.dart';
-import '../logic/grid_solver.dart';
-import '../logic/hint_finder.dart';
-import '../models/puzzle_board.dart';
-import '../models/puzzle_state.dart';
-import 'game_state.dart';
-import 'marks_history.dart';
 
 class _SolveResult {
   final PuzzleBoard board;
@@ -116,7 +115,7 @@ class GameCubit extends Cubit<GameState> {
   // Snapshot saved at drag start; used as the single undo entry for the drag.
   List<List<CellMark>>? _dragUndoSnapshot;
   // Whether the current drag places dots (true) or clears marks (false).
-  bool _dragPlacing = true;
+  var _dragPlacing = true;
 
   void toggleDot(int row, int col) {
     final current = state;
@@ -314,7 +313,7 @@ class GameCubit extends Cubit<GameState> {
 
 _SolveResult? _generateAndSolve(int size) {
   const maxAttempts = 200;
-  for (int attempt = 0; attempt < maxAttempts; attempt++) {
+  for (var attempt = 0; attempt < maxAttempts; attempt++) {
     final board = GridGenerator.generate(size);
     final state = GridSolver.solve(board);
     if (state != null) return _SolveResult(board, state);

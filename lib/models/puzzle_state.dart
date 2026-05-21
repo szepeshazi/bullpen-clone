@@ -1,7 +1,7 @@
-import 'adjacency.dart';
-import 'bull_location.dart';
-import 'cell.dart';
-import 'puzzle_board.dart';
+import 'package:bullpen/models/adjacency.dart';
+import 'package:bullpen/models/bull_location.dart';
+import 'package:bullpen/models/cell.dart';
+import 'package:bullpen/models/puzzle_board.dart';
 
 /// Mutable bull placement tracked over an immutable [PuzzleBoard], with
 /// O(1) row/column/pen counters and a 2D occupancy grid for fast adjacency.
@@ -28,7 +28,8 @@ class PuzzleState {
   int get bullCount => _bulls.length;
 
   bool placeBull(Cell cell) {
-    final r = cell.row, c = cell.col;
+    final r = cell.row;
+    final c = cell.col;
     if (_occupied[r][c]) return false;
     _bulls.add(BullLocation(cell: board.cellAt(r, c)));
     _occupied[r][c] = true;
@@ -41,7 +42,8 @@ class PuzzleState {
   /// Stack-discipline optimisation: backtracking almost always pops the
   /// last-placed bull, so we shortcut to O(1) `removeLast()` in that case.
   bool removeBull(Cell cell) {
-    final r = cell.row, c = cell.col;
+    final r = cell.row;
+    final c = cell.col;
     if (!_occupied[r][c]) return false;
 
     // Fast path: backtracking almost always removes the most recent bull.
@@ -60,7 +62,7 @@ class PuzzleState {
 
   void clear() {
     _bulls.clear();
-    for (int i = 0; i < board.size; i++) {
+    for (var i = 0; i < board.size; i++) {
       _rowCounts[i] = 0;
       _colCounts[i] = 0;
       _occupied[i].fillRange(0, board.size, false);
@@ -75,19 +77,17 @@ class PuzzleState {
   int bullsInCol(int col) => _colCounts[col];
   int bullsInPen(int penId) => _penCounts[penId] ?? 0;
 
-  bool hasAdjacentBull(Cell cell) {
-    return hasAdjacentMatch(
+  bool hasAdjacentBull(Cell cell) => hasAdjacentMatch(
       cell.row,
       cell.col,
       board.size,
       (nr, nc) => _occupied[nr][nc],
     );
-  }
 
   /// Skips adjacency — the solver enforces adjacency incrementally.
   /// [isSolved] still re-checks adjacency as a safety net.
   bool get isValid {
-    for (int i = 0; i < board.size; i++) {
+    for (var i = 0; i < board.size; i++) {
       if (_rowCounts[i] > 2) return false;
       if (_colCounts[i] > 2) return false;
     }
@@ -101,7 +101,7 @@ class PuzzleState {
     final s = board.size;
     if (_bulls.length != 2 * s) return false;
 
-    for (int i = 0; i < s; i++) {
+    for (var i = 0; i < s; i++) {
       if (_rowCounts[i] != 2) return false;
       if (_colCounts[i] != 2) return false;
     }

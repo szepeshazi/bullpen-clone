@@ -1,17 +1,15 @@
+import 'package:bullpen/theme.dart';
+import 'package:bullpen/widgets/main/mini_grid.dart';
 import 'package:flutter/material.dart';
-
-import '../../theme.dart';
-import 'mini_grid.dart';
 
 class GridCard extends StatelessWidget {
   final int size;
   final bool isSelected;
 
-  const GridCard({super.key, required this.size, required this.isSelected});
+  const GridCard({required this.size, required this.isSelected, super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: isSelected
@@ -36,5 +34,11 @@ class GridCard extends StatelessWidget {
       ),
       child: Center(child: MiniGrid(size: size)),
     );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IntProperty('size', size));
+    properties.add(DiagnosticsProperty<bool>('isSelected', isSelected));
   }
 }

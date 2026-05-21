@@ -1,15 +1,20 @@
 import 'dart:math';
 
+import 'package:bullpen/theme.dart';
 import 'package:flutter/material.dart';
-
-import '../theme.dart';
 
 class CelebrationOverlay extends StatefulWidget {
   final VoidCallback onDismiss;
-  const CelebrationOverlay({super.key, required this.onDismiss});
+  const CelebrationOverlay({required this.onDismiss, super.key});
 
   @override
   State<CelebrationOverlay> createState() => _CelebrationOverlayState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onDismiss', onDismiss));
+  }
 }
 
 class _CelebrationOverlayState extends State<CelebrationOverlay>
@@ -30,7 +35,7 @@ class _CelebrationOverlayState extends State<CelebrationOverlay>
       vsync: this,
     );
     _fadeIn = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
-    _scaleIn = Tween<double>(begin: 0.3, end: 1.0).animate(
+    _scaleIn = Tween<double>(begin: 0.3, end: 1).animate(
       CurvedAnimation(parent: _fadeController, curve: Curves.elasticOut),
     );
 
@@ -53,8 +58,7 @@ class _CelebrationOverlayState extends State<CelebrationOverlay>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
+  Widget build(BuildContext context) => GestureDetector(
       onTap: widget.onDismiss,
       child: FadeTransition(
         opacity: _fadeIn,
@@ -81,15 +85,13 @@ class _CelebrationOverlayState extends State<CelebrationOverlay>
         ),
       ),
     );
-  }
 }
 
 class _CongratsCard extends StatelessWidget {
   const _CongratsCard();
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -132,7 +134,6 @@ class _CongratsCard extends StatelessWidget {
         ],
       ),
     );
-  }
 }
 
 class _ConfettiPiece {
@@ -167,8 +168,7 @@ class _ConfettiPiece {
     Color(0xFF42E8E0),
   ];
 
-  factory _ConfettiPiece.random(Random rng) {
-    return _ConfettiPiece(
+  factory _ConfettiPiece.random(Random rng) => _ConfettiPiece(
       x: rng.nextDouble(),
       startY: -rng.nextDouble() * 0.3,
       speed: 0.3 + rng.nextDouble() * 0.7,
@@ -178,7 +178,6 @@ class _ConfettiPiece {
       wobbleAmount: 0.02 + rng.nextDouble() * 0.04,
       color: _colors[rng.nextInt(_colors.length)],
     );
-  }
 }
 
 class _ConfettiPainter extends CustomPainter {

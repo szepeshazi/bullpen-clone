@@ -1,7 +1,6 @@
+import 'package:bullpen/pages/main_page.dart';
+import 'package:bullpen/theme.dart';
 import 'package:flutter/material.dart';
-
-import 'pages/main_page.dart';
-import 'theme.dart';
 
 void main() {
   runApp(const BullpenApp());
@@ -11,8 +10,7 @@ class BullpenApp extends StatelessWidget {
   const BullpenApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context) => MaterialApp(
       title: 'Bullpen',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -25,5 +23,4 @@ class BullpenApp extends StatelessWidget {
       ),
       home: const MainPage(),
     );
-  }
 }

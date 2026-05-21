@@ -8,7 +8,7 @@ import 'package:bullpen/models/puzzle_state.dart';
 /// doesn't depend on specific pen geometry.
 PuzzleBoard makeRowPenBoard({int size = 8}) {
   final pens = <Pen>[];
-  for (int penId = 0; penId < size; penId++) {
+  for (var penId = 0; penId < size; penId++) {
     final cells = List.generate(
       size,
       (col) => Cell(row: penId, col: col, penId: penId),

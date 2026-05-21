@@ -1,6 +1,6 @@
-import '../hint.dart';
-import '../hint_context.dart';
-import '../hint_rule.dart';
+import 'package:bullpen/logic/hints/hint.dart';
+import 'package:bullpen/logic/hints/hint_context.dart';
+import 'package:bullpen/logic/hints/hint_rule.dart';
 
 /// Group needs k more bulls and has exactly k valid positions left → those
 /// positions must contain bulls.
@@ -9,7 +9,7 @@ class ForcedPlacementRule extends HintRule {
 
   @override
   Hint? evaluate(HintContext ctx) {
-    for (int r = 0; r < ctx.size; r++) {
+    for (var r = 0; r < ctx.size; r++) {
       final needed = 2 - ctx.rowCounts[r];
       if (needed <= 0) continue;
       final cells = [
@@ -20,7 +20,7 @@ class ForcedPlacementRule extends HintRule {
       if (hint != null) return hint;
     }
 
-    for (int c = 0; c < ctx.size; c++) {
+    for (var c = 0; c < ctx.size; c++) {
       final needed = 2 - ctx.colCounts[c];
       if (needed <= 0) continue;
       final cells = [

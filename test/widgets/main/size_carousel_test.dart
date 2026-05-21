@@ -1,3 +1,4 @@
+import 'package:bullpen/logic/puzzle_config.dart';
 import 'package:bullpen/widgets/main/size_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,7 +27,7 @@ void main() {
         const Offset(-300, 0),
         1000,
       );
-      for (int i = 0; i < 10; i++) {
+      for (var i = 0; i < 10; i++) {
         await tester.pump(const Duration(milliseconds: 50));
       }
 
@@ -34,8 +35,8 @@ void main() {
       expect(lastSize, isNot(8));
     });
 
-    test('exposes all supported sizes 8..16', () {
-      expect(SizeCarousel.supportedSizes, [8, 9, 10, 11, 12, 13, 14, 15, 16]);
+    test('supported sizes run 8..16', () {
+      expect(puzzleSupportedSizes, [8, 9, 10, 11, 12, 13, 14, 15, 16]);
     });
   });
 }

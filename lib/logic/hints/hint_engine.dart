@@ -1,18 +1,18 @@
-import '../../cubit/game_state.dart';
-import '../../models/puzzle_board.dart';
-import 'hint.dart';
-import 'hint_context.dart';
-import 'hint_rule.dart';
-import 'rules/adjacency_rule.dart';
-import 'rules/column_full_rule.dart';
-import 'rules/depth_two_look_ahead_rule.dart';
-import 'rules/forced_placement_rule.dart';
-import 'rules/hidden_set_rule.dart';
-import 'rules/look_ahead_rule.dart';
-import 'rules/naked_set_rule.dart';
-import 'rules/pair_forced_rule.dart';
-import 'rules/pen_full_rule.dart';
-import 'rules/row_full_rule.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/logic/hints/hint.dart';
+import 'package:bullpen/logic/hints/hint_context.dart';
+import 'package:bullpen/logic/hints/hint_rule.dart';
+import 'package:bullpen/logic/hints/rules/adjacency_rule.dart';
+import 'package:bullpen/logic/hints/rules/column_full_rule.dart';
+import 'package:bullpen/logic/hints/rules/depth_two_look_ahead_rule.dart';
+import 'package:bullpen/logic/hints/rules/forced_placement_rule.dart';
+import 'package:bullpen/logic/hints/rules/hidden_set_rule.dart';
+import 'package:bullpen/logic/hints/rules/look_ahead_rule.dart';
+import 'package:bullpen/logic/hints/rules/naked_set_rule.dart';
+import 'package:bullpen/logic/hints/rules/pair_forced_rule.dart';
+import 'package:bullpen/logic/hints/rules/pen_full_rule.dart';
+import 'package:bullpen/logic/hints/rules/row_full_rule.dart';
+import 'package:bullpen/models/puzzle_board.dart';
 
 /// Runs hint rules in priority order; returns the first match.
 class HintEngine {

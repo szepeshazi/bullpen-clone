@@ -1,10 +1,9 @@
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/widgets/grid_constants.dart';
+import 'package:bullpen/widgets/pen_palette.dart';
+import 'package:bullpen/widgets/shaking_bull.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import '../cubit/game_state.dart';
-import 'grid_constants.dart';
-import 'pen_palette.dart';
-import 'shaking_bull.dart';
 
 class BullpenCell extends StatelessWidget {
   final GamePlaying gameState;
@@ -13,11 +12,7 @@ class BullpenCell extends StatelessWidget {
   final double cellSize;
 
   const BullpenCell({
-    super.key,
-    required this.gameState,
-    required this.row,
-    required this.col,
-    required this.cellSize,
+    required this.gameState, required this.row, required this.col, required this.cellSize, super.key,
   });
 
   /// top, left, bottom, right.
@@ -36,7 +31,7 @@ class BullpenCell extends StatelessWidget {
     return SizedBox(
       width: cellSize,
       height: cellSize,
-      child: Container(
+      child: DecoratedBox(
         decoration: BoxDecoration(
           color: colors.fill,
           border: Border(
@@ -54,18 +49,17 @@ class BullpenCell extends StatelessWidget {
   List<bool> _computePenBorders(int size, int penId) {
     final board = gameState.board;
     return _borderDirs.map((d) {
-      final nr = row + d.$1, nc = col + d.$2;
+      final nr = row + d.$1;
+      final nc = col + d.$2;
       return nr < 0 || nr >= size || nc < 0 || nc >= size ||
           board.cellAt(nr, nc).penId != penId;
     }).toList();
   }
 
-  BorderSide _borderSide(bool isPenEdge, PenColorSet colors) {
-    return BorderSide(
+  BorderSide _borderSide(bool isPenEdge, PenColorSet colors) => BorderSide(
       color: isPenEdge ? penBorderColor : colors.cellBorder,
       width: isPenEdge ? penBorderWidth : cellBorderWidth,
     );
-  }
 
   Widget _markWidget(CellMark mark, PenColorSet colors, bool isViolation) {
     switch (mark) {
@@ -74,7 +68,7 @@ class BullpenCell extends StatelessWidget {
             ? ShakingBull(cellSize: cellSize, version: gameState.version)
             : Padding(
                 padding: EdgeInsets.all(cellSize * bullPaddingFraction),
-                child: SvgPicture.asset(bullSvgAsset, fit: BoxFit.contain),
+                child: SvgPicture.asset(bullSvgAsset),
               );
       case CellMark.dot:
         return Center(
@@ -84,12 +78,21 @@ class BullpenCell extends StatelessWidget {
             decoration: BoxDecoration(
               color: colors.dot,
               shape: BoxShape.circle,
-              border: Border.all(color: penBorderColor, width: 1.0),
+              border: Border.all(color: penBorderColor),
             ),
           ),
         );
       case CellMark.empty:
         return const SizedBox.shrink();
     }
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<GamePlaying>('gameState', gameState));
+    properties.add(IntProperty('row', row));
+    properties.add(IntProperty('col', col));
+    properties.add(DoubleProperty('cellSize', cellSize));
   }
 }

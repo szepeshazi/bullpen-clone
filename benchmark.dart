@@ -5,8 +5,8 @@ import 'lib/logic/grid_solver.dart';
 void main() {
   final sw = Stopwatch();
   for (final size in [8, 9, 10, 11, 12, 13, 14, 15, 16]) {
-    int solved = 0;
-    int attempts = 0;
+    var solved = 0;
+    var attempts = 0;
     sw.reset();
     sw.start();
     while (solved < 3 && attempts < 1000) {

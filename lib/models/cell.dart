@@ -15,13 +15,11 @@ class Cell {
   });
 
   /// Creates a copy of this cell with a different penId.
-  Cell copyWith({int? penId}) {
-    return Cell(
+  Cell copyWith({int? penId}) => Cell(
       row: row,
       col: col,
       penId: penId ?? this.penId,
     );
-  }
 
   @override
   bool operator ==(Object other) =>

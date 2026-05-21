@@ -1,21 +1,17 @@
+import 'package:bullpen/theme.dart';
+import 'package:bullpen/widgets/main/size_carousel.dart';
 import 'package:flutter/material.dart';
-
-import '../../theme.dart';
-import 'size_carousel.dart';
 
 class SizeSelector extends StatelessWidget {
   final int selectedSize;
   final ValueChanged<int> onSizeChanged;
 
   const SizeSelector({
-    super.key,
-    required this.selectedSize,
-    required this.onSizeChanged,
+    required this.selectedSize, required this.onSizeChanged, super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
@@ -55,5 +51,11 @@ class SizeSelector extends StatelessWidget {
         ),
       ],
     );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IntProperty('selectedSize', selectedSize));
+    properties.add(ObjectFlagProperty<ValueChanged<int>>.has('onSizeChanged', onSizeChanged));
   }
 }

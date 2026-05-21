@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/test_board.dart';
 
+final Duration _drain = BullpenGrid.longPressDuration + const Duration(milliseconds: 100);
+
 void main() {
   Future<void> pumpGrid(WidgetTester tester, GameCubit cubit) async {
     await tester.pumpWidget(
@@ -39,7 +41,7 @@ void main() {
       final center = tester.getCenter(find.byType(BullpenGrid));
       await tester.tapAt(center);
       // Wait past the 400ms long-press timer to let it fire harmlessly.
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(_drain);
 
       final state = cubit.state as GamePlaying;
       final hasAnyDot = state.marks.any((row) => row.contains(CellMark.dot));
@@ -56,7 +58,7 @@ void main() {
       final center = tester.getCenter(find.byType(BullpenGrid));
       final gesture = await tester.startGesture(center);
       // Long-press threshold is 400ms in the widget.
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(_drain);
       await gesture.up();
       await tester.pump();
 
@@ -82,13 +84,13 @@ void main() {
       // Move past 8px threshold first.
       await gesture.moveBy(const Offset(0, 15));
       await tester.pump();
-      for (int i = 0; i < 5; i++) {
+      for (var i = 0; i < 5; i++) {
         await gesture.moveBy(Offset(0, cellStep));
         await tester.pump();
       }
       await gesture.up();
       // Drain the long-press timer.
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(_drain);
 
       final state = cubit.state as GamePlaying;
       final dotCount = state.marks

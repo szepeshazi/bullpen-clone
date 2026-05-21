@@ -1,22 +1,31 @@
+import 'package:bullpen/cubit/game_cubit.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/models/models.dart' show PuzzleBoard;
+import 'package:bullpen/models/puzzle_board.dart' show PuzzleBoard;
+import 'package:bullpen/widgets/bullpen_cell.dart';
+import 'package:bullpen/widgets/grid_constants.dart';
+import 'package:bullpen/widgets/pen_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../cubit/game_cubit.dart';
-import '../cubit/game_state.dart';
-import 'bullpen_cell.dart';
-import 'grid_constants.dart';
-import 'pen_palette.dart';
 
 /// Displays a [PuzzleBoard] with player interaction.
 /// Tap toggles dots, long-press places/removes bulls, drag streams dots.
 class BullpenGrid extends StatefulWidget {
   final GamePlaying gameState;
 
-  const BullpenGrid({super.key, required this.gameState});
+  static const longPressDuration = Duration(milliseconds: 400);
+
+  const BullpenGrid({required this.gameState, super.key});
 
   @override
   State<BullpenGrid> createState() => _BullpenGridState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<GamePlaying>('gameState', gameState));
+  }
 }
 
 class _BullpenGridState extends State<BullpenGrid> {
@@ -24,11 +33,10 @@ class _BullpenGridState extends State<BullpenGrid> {
   Offset _gridOrigin = Offset.zero;
 
   static const _dragThreshold = 8.0;
-  static const _longPressDuration = Duration(milliseconds: 400);
 
   Offset? _downPos;
-  bool _isDragging = false;
-  bool _isLongPress = false;
+  var _isDragging = false;
+  var _isLongPress = false;
   (int, int)? _lastDragCell;
   int? _activePointer;
 
@@ -51,7 +59,7 @@ class _BullpenGridState extends State<BullpenGrid> {
     _lastDragCell = _cellAt(event.localPosition);
 
     final pointer = event.pointer;
-    Future.delayed(_longPressDuration, () {
+    Future.delayed(BullpenGrid.longPressDuration, () {
       if (!mounted) return;
       if (_activePointer != pointer || _isDragging) return;
       _isLongPress = true;
@@ -134,7 +142,7 @@ class _BullpenGridState extends State<BullpenGrid> {
             : constraints.maxHeight;
         final gridSide = maxSide * gridFraction;
         _cellSize = gridSide / board.size;
-        _gridOrigin = Offset(outerBorderWidth, outerBorderWidth);
+        _gridOrigin = const Offset(outerBorderWidth, outerBorderWidth);
 
         return Center(
           child: Listener(
@@ -163,8 +171,7 @@ class _GridFrame extends StatelessWidget {
   const _GridFrame({required this.gridSide, required this.child});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       width: gridSide + outerBorderWidth * 2,
       height: gridSide + outerBorderWidth * 2,
       decoration: BoxDecoration(
@@ -177,6 +184,11 @@ class _GridFrame extends StatelessWidget {
         child: SizedBox(width: gridSide, height: gridSide, child: child),
       ),
     );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DoubleProperty('gridSide', gridSide));
   }
 }
 
@@ -190,19 +202,22 @@ class _GridBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = gameState.board.size;
     return Column(
-      children: List.generate(size, (row) {
-        return Row(
-          children: List.generate(size, (col) {
-            return BullpenCell(
+      children: List.generate(size, (row) => Row(
+          children: List.generate(size, (col) => BullpenCell(
               key: ValueKey((row, col)),
               gameState: gameState,
               row: row,
               col: col,
               cellSize: cellSize,
-            );
-          }),
-        );
-      }),
+            )),
+        )),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<GamePlaying>('gameState', gameState));
+    properties.add(DoubleProperty('cellSize', cellSize));
   }
 }

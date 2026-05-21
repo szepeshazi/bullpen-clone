@@ -1,7 +1,7 @@
-import '../../../cubit/game_state.dart';
-import '../hint.dart';
-import '../hint_context.dart';
-import '../hint_rule.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/logic/hints/hint.dart';
+import 'package:bullpen/logic/hints/hint_context.dart';
+import 'package:bullpen/logic/hints/hint_rule.dart';
 
 /// Column already holds 2 bulls → exclude remaining empty cells.
 class ColumnFullRule extends HintRule {
@@ -9,9 +9,9 @@ class ColumnFullRule extends HintRule {
 
   @override
   Hint? evaluate(HintContext ctx) {
-    for (int c = 0; c < ctx.size; c++) {
+    for (var c = 0; c < ctx.size; c++) {
       if (ctx.colCounts[c] < 2) continue;
-      for (int r = 0; r < ctx.size; r++) {
+      for (var r = 0; r < ctx.size; r++) {
         if (ctx.marks[r][c] == CellMark.empty) {
           return Hint(
             row: r,

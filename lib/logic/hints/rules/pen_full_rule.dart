@@ -1,7 +1,7 @@
-import '../../../cubit/game_state.dart';
-import '../hint.dart';
-import '../hint_context.dart';
-import '../hint_rule.dart';
+import 'package:bullpen/cubit/game_state.dart';
+import 'package:bullpen/logic/hints/hint.dart';
+import 'package:bullpen/logic/hints/hint_context.dart';
+import 'package:bullpen/logic/hints/hint_rule.dart';
 
 /// Pen already holds 2 bulls → exclude remaining empty cells in it.
 class PenFullRule extends HintRule {

@@ -1,16 +1,14 @@
+import 'package:bullpen/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import '../../theme.dart';
 
 class BullpenTitle extends StatelessWidget {
   final bool compact;
 
-  const BullpenTitle({super.key, required this.compact});
+  const BullpenTitle({required this.compact, super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => Column(
       children: [
         SvgPicture.asset(
           'assets/bull-head.svg',
@@ -42,5 +40,10 @@ class BullpenTitle extends StatelessWidget {
         ),
       ],
     );
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('compact', compact));
   }
 }
