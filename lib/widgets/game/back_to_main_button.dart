@@ -7,15 +7,12 @@ class BackToMainButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TextButton.icon(
-      onPressed: () => Navigator.of(context).pushReplacement(MainPage.route()),
-      icon: const Icon(Icons.arrow_back, size: 18),
-      label: const Text('Back to Main Page'),
-      style: TextButton.styleFrom(
-        foregroundColor: bullpenAccentColor,
-        textStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
+    onPressed: () => Navigator.of(context).pushReplacement(MainPage.route()),
+    icon: const Icon(Icons.arrow_back, size: 18),
+    label: const Text('Back to Main Page'),
+    style: TextButton.styleFrom(
+      foregroundColor: bullpenAccentColor,
+      textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+    ),
+  );
 }

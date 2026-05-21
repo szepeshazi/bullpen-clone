@@ -78,11 +78,11 @@ class PuzzleState {
   int bullsInPen(int penId) => _penCounts[penId] ?? 0;
 
   bool hasAdjacentBull(Cell cell) => hasAdjacentMatch(
-      cell.row,
-      cell.col,
-      board.size,
-      (nr, nc) => _occupied[nr][nc],
-    );
+    cell.row,
+    cell.col,
+    board.size,
+    (nr, nc) => _occupied[nr][nc],
+  );
 
   /// Skips adjacency — the solver enforces adjacency incrementally.
   /// [isSolved] still re-checks adjacency as a safety net.

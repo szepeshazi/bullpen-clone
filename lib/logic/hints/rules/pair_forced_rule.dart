@@ -49,7 +49,8 @@ class PairForcedRule extends HintRule {
       row: r,
       col: c,
       type: HintType.mustPlace,
-      reason: 'This cell must be a bull — it is needed as a partner '
+      reason:
+          'This cell must be a bull — it is needed as a partner '
           'for every possible placement in $group',
     );
   }
@@ -64,13 +65,11 @@ class PairForcedRule extends HintRule {
         final (r2, c2) = validCells[j];
         if ((r1 - r2).abs() <= 1 && (c1 - c2).abs() <= 1) continue;
         if (r1 == r2 && ctx.rowCounts[r1] > 0) continue;
-        if (r1 != r2 &&
-            (ctx.rowCounts[r1] >= 2 || ctx.rowCounts[r2] >= 2)) {
+        if (r1 != r2 && (ctx.rowCounts[r1] >= 2 || ctx.rowCounts[r2] >= 2)) {
           continue;
         }
         if (c1 == c2 && ctx.colCounts[c1] > 0) continue;
-        if (c1 != c2 &&
-            (ctx.colCounts[c1] >= 2 || ctx.colCounts[c2] >= 2)) {
+        if (c1 != c2 && (ctx.colCounts[c1] >= 2 || ctx.colCounts[c2] >= 2)) {
           continue;
         }
         pairs.add((i, j));

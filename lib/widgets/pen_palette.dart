@@ -33,14 +33,14 @@ PenColorSet colorsForPenId(int penId) =>
     _colorSetFor(penFillColors[penId % penFillColors.length]);
 
 PenColorSet _colorSetFor(Color penColor) => _cache.putIfAbsent(penColor, () {
-    final hsl = HSLColor.fromColor(penColor);
-    final cellBorder = hsl
-        .withSaturation((hsl.saturation * 1.1).clamp(0.0, 1.0))
-        .withLightness((hsl.lightness - 0.08).clamp(0.0, 1.0))
-        .toColor();
-    final dot = hsl
-        .withSaturation((hsl.saturation * 1.4).clamp(0.0, 1.0))
-        .withLightness((hsl.lightness - 0.22).clamp(0.0, 1.0))
-        .toColor();
-    return PenColorSet(fill: penColor, cellBorder: cellBorder, dot: dot);
-  });
+  final hsl = HSLColor.fromColor(penColor);
+  final cellBorder = hsl
+      .withSaturation((hsl.saturation * 1.1).clamp(0.0, 1.0))
+      .withLightness((hsl.lightness - 0.08).clamp(0.0, 1.0))
+      .toColor();
+  final dot = hsl
+      .withSaturation((hsl.saturation * 1.4).clamp(0.0, 1.0))
+      .withLightness((hsl.lightness - 0.22).clamp(0.0, 1.0))
+      .toColor();
+  return PenColorSet(fill: penColor, cellBorder: cellBorder, dot: dot);
+});

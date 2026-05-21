@@ -28,9 +28,7 @@ void main() {
     });
 
     test('containsCell returns false for non-member cells', () {
-      final cells = [
-        const Cell(row: 2, col: 3, penId: 1),
-      ];
+      final cells = [const Cell(row: 2, col: 3, penId: 1)];
       final pen = Pen(id: 1, cells: cells);
 
       expect(pen.containsCell(const Cell(row: 0, col: 0, penId: 1)), isFalse);

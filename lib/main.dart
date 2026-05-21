@@ -11,16 +11,16 @@ class BullpenApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-      title: 'Bullpen',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: bullpenBgColor,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: bullpenAccentColor,
-          surface: bullpenBgColor,
-        ),
-        useMaterial3: true,
+    title: 'Bullpen',
+    debugShowCheckedModeBanner: false,
+    theme: ThemeData(
+      scaffoldBackgroundColor: bullpenBgColor,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: bullpenAccentColor,
+        surface: bullpenBgColor,
       ),
-      home: const MainPage(),
-    );
+      useMaterial3: true,
+    ),
+    home: const MainPage(),
+  );
 }

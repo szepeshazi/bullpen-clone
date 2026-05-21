@@ -8,9 +8,8 @@ class LookAheadRule extends HintRule {
   const LookAheadRule();
 
   @override
-  Hint? evaluate(HintContext ctx) => _penLookAhead(ctx) ??
-        _rowLookAhead(ctx) ??
-        _colLookAhead(ctx);
+  Hint? evaluate(HintContext ctx) =>
+      _penLookAhead(ctx) ?? _rowLookAhead(ctx) ?? _colLookAhead(ctx);
 
   Hint? _penLookAhead(HintContext ctx) {
     for (final pen in ctx.board.pens) {
@@ -86,7 +85,8 @@ class LookAheadRule extends HintRule {
         return Hint(
           row: r,
           col: c,
-          reason: 'Placing a bull here would leave no valid spot '
+          reason:
+              'Placing a bull here would leave no valid spot '
               'for the second bull in $reason',
         );
       }

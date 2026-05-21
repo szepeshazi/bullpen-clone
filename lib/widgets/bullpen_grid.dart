@@ -172,18 +172,17 @@ class _GridFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      width: gridSide + outerBorderWidth * 2,
-      height: gridSide + outerBorderWidth * 2,
-      decoration: BoxDecoration(
-        border: Border.all(color: penBorderColor, width: outerBorderWidth),
-        borderRadius: BorderRadius.circular(outerBorderRadius),
-      ),
-      child: ClipRRect(
-        borderRadius:
-            BorderRadius.circular(outerBorderRadius - outerBorderWidth),
-        child: SizedBox(width: gridSide, height: gridSide, child: child),
-      ),
-    );
+    width: gridSide + outerBorderWidth * 2,
+    height: gridSide + outerBorderWidth * 2,
+    decoration: BoxDecoration(
+      border: Border.all(color: penBorderColor, width: outerBorderWidth),
+      borderRadius: BorderRadius.circular(outerBorderRadius),
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(outerBorderRadius - outerBorderWidth),
+      child: SizedBox(width: gridSide, height: gridSide, child: child),
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -202,15 +201,21 @@ class _GridBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = gameState.board.size;
     return Column(
-      children: List.generate(size, (row) => Row(
-          children: List.generate(size, (col) => BullpenCell(
+      children: List.generate(
+        size,
+        (row) => Row(
+          children: List.generate(
+            size,
+            (col) => BullpenCell(
               key: ValueKey((row, col)),
               gameState: gameState,
               row: row,
               col: col,
               cellSize: cellSize,
-            )),
-        )),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

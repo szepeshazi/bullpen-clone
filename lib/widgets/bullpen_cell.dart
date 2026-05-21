@@ -12,7 +12,11 @@ class BullpenCell extends StatelessWidget {
   final double cellSize;
 
   const BullpenCell({
-    required this.gameState, required this.row, required this.col, required this.cellSize, super.key,
+    required this.gameState,
+    required this.row,
+    required this.col,
+    required this.cellSize,
+    super.key,
   });
 
   /// top, left, bottom, right.
@@ -51,15 +55,18 @@ class BullpenCell extends StatelessWidget {
     return _borderDirs.map((d) {
       final nr = row + d.$1;
       final nc = col + d.$2;
-      return nr < 0 || nr >= size || nc < 0 || nc >= size ||
+      return nr < 0 ||
+          nr >= size ||
+          nc < 0 ||
+          nc >= size ||
           board.cellAt(nr, nc).penId != penId;
     }).toList();
   }
 
   BorderSide _borderSide(bool isPenEdge, PenColorSet colors) => BorderSide(
-      color: isPenEdge ? penBorderColor : colors.cellBorder,
-      width: isPenEdge ? penBorderWidth : cellBorderWidth,
-    );
+    color: isPenEdge ? penBorderColor : colors.cellBorder,
+    width: isPenEdge ? penBorderWidth : cellBorderWidth,
+  );
 
   Widget _markWidget(CellMark mark, PenColorSet colors, bool isViolation) {
     switch (mark) {

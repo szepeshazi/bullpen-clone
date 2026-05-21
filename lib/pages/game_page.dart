@@ -14,32 +14,32 @@ class GamePage extends StatelessWidget {
 
   /// Route that injects a fresh [GameCubit] for the given size.
   static Route<void> route(int gridSize) => PageRouteBuilder(
-      pageBuilder: (_, _, _) => GamePage(gridSize: gridSize),
-      transitionsBuilder: (_, animation, _, child) =>
-          FadeTransition(opacity: animation, child: child),
-      transitionDuration: pageTransitionDuration,
-    );
+    pageBuilder: (_, _, _) => GamePage(gridSize: gridSize),
+    transitionsBuilder: (_, animation, _, child) =>
+        FadeTransition(opacity: animation, child: child),
+    transitionDuration: pageTransitionDuration,
+  );
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-      create: (_) => GameCubit(initialSize: gridSize),
-      child: const Scaffold(
-        body: SafeArea(
-          child: Column(
-            children: [
-              SizedBox(height: 12),
-              Expanded(child: GridArea()),
-              SizedBox(height: 8),
-              RemainingBullsIndicator(),
-              UndoRedoRow(),
-              SizedBox(height: 8),
-              BackToMainButton(),
-              SizedBox(height: 12),
-            ],
-          ),
+    create: (_) => GameCubit(initialSize: gridSize),
+    child: const Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            SizedBox(height: 12),
+            Expanded(child: GridArea()),
+            SizedBox(height: 8),
+            RemainingBullsIndicator(),
+            UndoRedoRow(),
+            SizedBox(height: 8),
+            BackToMainButton(),
+            SizedBox(height: 12),
+          ],
         ),
       ),
-    );
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

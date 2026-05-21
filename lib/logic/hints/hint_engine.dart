@@ -22,18 +22,18 @@ class HintEngine {
 
   /// Default rule set in the order findHint historically evaluated them.
   HintEngine.defaultRules()
-      : rules = const [
-          RowFullRule(),
-          ColumnFullRule(),
-          PenFullRule(),
-          AdjacencyRule(),
-          NakedSetRule(),
-          HiddenSetRule(),
-          LookAheadRule(),
-          DepthTwoLookAheadRule(),
-          ForcedPlacementRule(),
-          PairForcedRule(),
-        ];
+    : rules = const [
+        RowFullRule(),
+        ColumnFullRule(),
+        PenFullRule(),
+        AdjacencyRule(),
+        NakedSetRule(),
+        HiddenSetRule(),
+        LookAheadRule(),
+        DepthTwoLookAheadRule(),
+        ForcedPlacementRule(),
+        PairForcedRule(),
+      ];
 
   Hint? findHint(PuzzleBoard board, List<List<CellMark>> marks) {
     final ctx = HintContext.build(board, marks);

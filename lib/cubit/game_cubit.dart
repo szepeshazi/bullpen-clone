@@ -20,8 +20,8 @@ class GameCubit extends Cubit<GameState> {
   int _gridSize;
 
   GameCubit({int initialSize = 8, bool skipGenerate = false})
-      : _gridSize = initialSize,
-        super(const GameInitial()) {
+    : _gridSize = initialSize,
+      super(const GameInitial()) {
     if (!skipGenerate) generate();
   }
 
@@ -51,11 +51,13 @@ class GameCubit extends Cubit<GameState> {
     required PuzzleState solution,
   }) {
     _gridSize = board.size;
-    emit(GamePlaying.initial(
-      board: board,
-      solution: solution,
-      gridSize: board.size,
-    ));
+    emit(
+      GamePlaying.initial(
+        board: board,
+        solution: solution,
+        gridSize: board.size,
+      ),
+    );
   }
 
   Future<void> generate() async {
@@ -65,17 +67,22 @@ class GameCubit extends Cubit<GameState> {
     try {
       final result = await compute(_generateAndSolve, size);
       if (result != null) {
-        emit(GamePlaying.initial(
-          board: result.board,
-          solution: result.state,
-          gridSize: size,
-        ));
+        emit(
+          GamePlaying.initial(
+            board: result.board,
+            solution: result.state,
+            gridSize: size,
+          ),
+        );
       } else {
-        emit(GameError(
-          gridSize: size,
-          message: 'Could not generate a solvable $size×$size grid. '
-              'Try again or pick a different size.',
-        ));
+        emit(
+          GameError(
+            gridSize: size,
+            message:
+                'Could not generate a solvable $size×$size grid. '
+                'Try again or pick a different size.',
+          ),
+        );
       }
     } catch (e) {
       emit(GameError(gridSize: size, message: e.toString()));
@@ -89,12 +96,14 @@ class GameCubit extends Cubit<GameState> {
     final hint = findHint(current.board, current.marks);
     if (hint == null) return;
 
-    emit(current.copyWith(
-      hintCell: (hint.row, hint.col),
-      hintReason: hint.reason,
-      hintType: hint.type,
-      version: current.version + 1,
-    ));
+    emit(
+      current.copyWith(
+        hintCell: (hint.row, hint.col),
+        hintReason: hint.reason,
+        hintType: hint.type,
+        version: current.version + 1,
+      ),
+    );
   }
 
   /// Applies the current hint (dot for exclude, bull for mustPlace), then
@@ -123,20 +132,21 @@ class GameCubit extends Cubit<GameState> {
 
     final mark = current.markAt(row, col);
     final newMarks = MarksHistory.clone(current.marks);
-    newMarks[row][col] =
-        mark == CellMark.empty ? CellMark.dot : CellMark.empty;
+    newMarks[row][col] = mark == CellMark.empty ? CellMark.dot : CellMark.empty;
 
-    emit(current.copyWith(
-      marks: newMarks,
-      violations: BoardEvaluator.findViolations(current.board, newMarks),
-      version: current.version + 1,
-      undoStack: MarksHistory.push(
-        current.undoStack,
-        MarksHistory.clone(current.marks),
+    emit(
+      current.copyWith(
+        marks: newMarks,
+        violations: BoardEvaluator.findViolations(current.board, newMarks),
+        version: current.version + 1,
+        undoStack: MarksHistory.push(
+          current.undoStack,
+          MarksHistory.clone(current.marks),
+        ),
+        redoStack: const [],
+        clearHint: true,
       ),
-      redoStack: const [],
-      clearHint: true,
-    ));
+    );
   }
 
   /// Begins a drag. Starting on empty → placing mode; otherwise → clearing.
@@ -152,12 +162,14 @@ class GameCubit extends Cubit<GameState> {
     final newMarks = MarksHistory.clone(current.marks);
     newMarks[row][col] = _dragPlacing ? CellMark.dot : CellMark.empty;
 
-    emit(current.copyWith(
-      marks: newMarks,
-      violations: BoardEvaluator.findViolations(current.board, newMarks),
-      version: current.version + 1,
-      clearHint: true,
-    ));
+    emit(
+      current.copyWith(
+        marks: newMarks,
+        violations: BoardEvaluator.findViolations(current.board, newMarks),
+        version: current.version + 1,
+        clearHint: true,
+      ),
+    );
     return true;
   }
 
@@ -179,12 +191,14 @@ class GameCubit extends Cubit<GameState> {
     final newMarks = MarksHistory.clone(current.marks);
     newMarks[row][col] = target;
 
-    emit(current.copyWith(
-      marks: newMarks,
-      violations: BoardEvaluator.findViolations(current.board, newMarks),
-      version: current.version + 1,
-      clearHint: true,
-    ));
+    emit(
+      current.copyWith(
+        marks: newMarks,
+        violations: BoardEvaluator.findViolations(current.board, newMarks),
+        version: current.version + 1,
+        clearHint: true,
+      ),
+    );
   }
 
   /// Ends a drag. Pushes the saved snapshot as a single undo entry.
@@ -197,12 +211,14 @@ class GameCubit extends Cubit<GameState> {
 
     if (current is! GamePlaying) return;
 
-    emit(current.copyWith(
-      undoStack: MarksHistory.push(current.undoStack, snapshot),
-      redoStack: const [],
-      version: current.version + 1,
-      clearHint: true,
-    ));
+    emit(
+      current.copyWith(
+        undoStack: MarksHistory.push(current.undoStack, snapshot),
+        redoStack: const [],
+        version: current.version + 1,
+        clearHint: true,
+      ),
+    );
   }
 
   void toggleBull(int row, int col) {
@@ -218,14 +234,16 @@ class GameCubit extends Cubit<GameState> {
 
     if (mark == CellMark.bull) {
       newMarks[row][col] = CellMark.empty;
-      emit(current.copyWith(
-        marks: newMarks,
-        violations: BoardEvaluator.findViolations(current.board, newMarks),
-        version: current.version + 1,
-        undoStack: newUndoStack,
-        redoStack: const [],
-        clearHint: true,
-      ));
+      emit(
+        current.copyWith(
+          marks: newMarks,
+          violations: BoardEvaluator.findViolations(current.board, newMarks),
+          version: current.version + 1,
+          undoStack: newUndoStack,
+          redoStack: const [],
+          clearHint: true,
+        ),
+      );
       return;
     }
 
@@ -233,26 +251,30 @@ class GameCubit extends Cubit<GameState> {
     final violations = BoardEvaluator.findViolations(current.board, newMarks);
 
     if (violations.isNotEmpty) {
-      emit(current.copyWith(
-        marks: newMarks,
-        violations: violations,
-        version: current.version + 1,
-        undoStack: newUndoStack,
-        redoStack: const [],
-        clearHint: true,
-      ));
+      emit(
+        current.copyWith(
+          marks: newMarks,
+          violations: violations,
+          version: current.version + 1,
+          undoStack: newUndoStack,
+          redoStack: const [],
+          clearHint: true,
+        ),
+      );
       return;
     }
 
-    emit(current.copyWith(
-      marks: newMarks,
-      violations: const {},
-      version: current.version + 1,
-      solved: BoardEvaluator.isSolved(current.board, newMarks),
-      undoStack: newUndoStack,
-      redoStack: const [],
-      clearHint: true,
-    ));
+    emit(
+      current.copyWith(
+        marks: newMarks,
+        violations: const {},
+        version: current.version + 1,
+        solved: BoardEvaluator.isSolved(current.board, newMarks),
+        undoStack: newUndoStack,
+        redoStack: const [],
+        clearHint: true,
+      ),
+    );
   }
 
   void undo() {
@@ -262,15 +284,17 @@ class GameCubit extends Cubit<GameState> {
     final newUndo = [...current.undoStack];
     final previousMarks = newUndo.removeLast();
 
-    emit(current.copyWith(
-      marks: previousMarks,
-      violations: BoardEvaluator.findViolations(current.board, previousMarks),
-      version: current.version + 1,
-      solved: false,
-      undoStack: newUndo,
-      redoStack: [...current.redoStack, MarksHistory.clone(current.marks)],
-      clearHint: true,
-    ));
+    emit(
+      current.copyWith(
+        marks: previousMarks,
+        violations: BoardEvaluator.findViolations(current.board, previousMarks),
+        version: current.version + 1,
+        solved: false,
+        undoStack: newUndo,
+        redoStack: [...current.redoStack, MarksHistory.clone(current.marks)],
+        clearHint: true,
+      ),
+    );
   }
 
   void redo() {
@@ -281,21 +305,23 @@ class GameCubit extends Cubit<GameState> {
     final nextMarks = newRedo.removeLast();
 
     final violations = BoardEvaluator.findViolations(current.board, nextMarks);
-    final solved = violations.isEmpty &&
-        BoardEvaluator.isSolved(current.board, nextMarks);
+    final solved =
+        violations.isEmpty && BoardEvaluator.isSolved(current.board, nextMarks);
 
-    emit(current.copyWith(
-      marks: nextMarks,
-      violations: violations,
-      version: current.version + 1,
-      solved: solved,
-      undoStack: MarksHistory.push(
-        current.undoStack,
-        MarksHistory.clone(current.marks),
+    emit(
+      current.copyWith(
+        marks: nextMarks,
+        violations: violations,
+        version: current.version + 1,
+        solved: solved,
+        undoStack: MarksHistory.push(
+          current.undoStack,
+          MarksHistory.clone(current.marks),
+        ),
+        redoStack: newRedo,
+        clearHint: true,
       ),
-      redoStack: newRedo,
-      clearHint: true,
-    ));
+    );
   }
 
   /// Clears violations (after shake animation finishes).
@@ -303,11 +329,13 @@ class GameCubit extends Cubit<GameState> {
     final current = state;
     if (current is! GamePlaying) return;
     if (current.violations.isEmpty) return;
-    emit(current.copyWith(
-      violations: const {},
-      version: current.version + 1,
-      clearHint: true,
-    ));
+    emit(
+      current.copyWith(
+        violations: const {},
+        version: current.version + 1,
+        clearHint: true,
+      ),
+    );
   }
 }
 

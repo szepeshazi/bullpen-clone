@@ -10,16 +10,19 @@ class HiddenSetRule extends HintRule {
   const HiddenSetRule();
 
   @override
-  Hint? evaluate(HintContext ctx) => _scan(ctx, axis: _Axis.row) ?? _scan(ctx, axis: _Axis.col);
+  Hint? evaluate(HintContext ctx) =>
+      _scan(ctx, axis: _Axis.row) ?? _scan(ctx, axis: _Axis.col);
 
   Hint? _scan(HintContext ctx, {required _Axis axis}) {
     final active = axis == _Axis.row ? ctx.activeRows : ctx.activeCols;
     final counts = axis == _Axis.row ? ctx.rowCounts : ctx.colCounts;
     final toPens = axis == _Axis.row ? ctx.rowToPens : ctx.colToPens;
 
-    for (var subsetSize = 1;
-        subsetSize <= active.length && subsetSize <= (ctx.size ~/ 2);
-        subsetSize++) {
+    for (
+      var subsetSize = 1;
+      subsetSize <= active.length && subsetSize <= (ctx.size ~/ 2);
+      subsetSize++
+    ) {
       for (final subset in combinations(active, subsetSize)) {
         final hint = _checkSubset(ctx, axis, subset, counts, toPens);
         if (hint != null) return hint;
@@ -41,8 +44,10 @@ class HiddenSetRule extends HintRule {
     }
     if (touching.length < 2) return null;
 
-    final remainingCapacity =
-        subset.fold<int>(0, (sum, i) => sum + 2 - counts[i]);
+    final remainingCapacity = subset.fold<int>(
+      0,
+      (sum, i) => sum + 2 - counts[i],
+    );
     final remainingNeed = touching.fold<int>(
       0,
       (sum, penId) => sum + 2 - (ctx.penCounts[penId] ?? 0),

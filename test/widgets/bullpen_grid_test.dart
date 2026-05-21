@@ -7,7 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/test_board.dart';
 
-final Duration _drain = BullpenGrid.longPressDuration + const Duration(milliseconds: 100);
+final Duration _drain =
+    BullpenGrid.longPressDuration + const Duration(milliseconds: 100);
 
 void main() {
   Future<void> pumpGrid(WidgetTester tester, GameCubit cubit) async {
@@ -45,8 +46,11 @@ void main() {
 
       final state = cubit.state as GamePlaying;
       final hasAnyDot = state.marks.any((row) => row.contains(CellMark.dot));
-      expect(hasAnyDot, isTrue,
-          reason: 'A short tap should place at least one dot');
+      expect(
+        hasAnyDot,
+        isTrue,
+        reason: 'A short tap should place at least one dot',
+      );
 
       cubit.close();
     });
@@ -64,8 +68,7 @@ void main() {
 
       final state = cubit.state as GamePlaying;
       final hasAnyBull = state.marks.any((row) => row.contains(CellMark.bull));
-      expect(hasAnyBull, isTrue,
-          reason: 'A long press should place a bull');
+      expect(hasAnyBull, isTrue, reason: 'A long press should place a bull');
 
       cubit.close();
     });
@@ -97,8 +100,11 @@ void main() {
           .expand((row) => row)
           .where((m) => m == CellMark.dot)
           .length;
-      expect(dotCount, greaterThanOrEqualTo(2),
-          reason: 'Drag should mark multiple cells');
+      expect(
+        dotCount,
+        greaterThanOrEqualTo(2),
+        reason: 'Drag should mark multiple cells',
+      );
 
       cubit.close();
     });

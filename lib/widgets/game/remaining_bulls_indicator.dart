@@ -8,35 +8,36 @@ class RemainingBullsIndicator extends StatelessWidget {
   const RemainingBullsIndicator({super.key});
 
   @override
-  Widget build(BuildContext context) => BlocSelector<GameCubit, GameState, ({int remaining, bool visible})>(
-      selector: _select,
-      builder: (context, s) {
-        if (!s.visible) return const SizedBox.shrink();
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Remaining bulls',
-              style: TextStyle(
-                color: bullpenAccentColor,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+  Widget build(BuildContext context) =>
+      BlocSelector<GameCubit, GameState, ({int remaining, bool visible})>(
+        selector: _select,
+        builder: (context, s) {
+          if (!s.visible) return const SizedBox.shrink();
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Remaining bulls',
+                style: TextStyle(
+                  color: bullpenAccentColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Wrap(
-                spacing: 4,
-                runSpacing: 4,
-                alignment: WrapAlignment.center,
-                children: List.generate(s.remaining, (_) => const _BullDot()),
+              const SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Wrap(
+                  spacing: 4,
+                  runSpacing: 4,
+                  alignment: WrapAlignment.center,
+                  children: List.generate(s.remaining, (_) => const _BullDot()),
+                ),
               ),
-            ),
-          ],
-        );
-      },
-    );
+            ],
+          );
+        },
+      );
 
   ({int remaining, bool visible}) _select(GameState state) {
     if (state is GamePlaying && !state.solved) {
@@ -58,11 +59,11 @@ class _BullDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      width: 10,
-      height: 10,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: bullpenAccentColor, width: 1.5),
-      ),
-    );
+    width: 10,
+    height: 10,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      border: Border.all(color: bullpenAccentColor, width: 1.5),
+    ),
+  );
 }

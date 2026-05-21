@@ -59,14 +59,14 @@ class GamePlaying extends GameState {
     required PuzzleState solution,
     required int gridSize,
   }) => GamePlaying(
-      board: board,
-      solution: solution,
-      gridSize: gridSize,
-      marks: List.generate(
-        board.size,
-        (_) => List.filled(board.size, CellMark.empty),
-      ),
-    );
+    board: board,
+    solution: solution,
+    gridSize: gridSize,
+    marks: List.generate(
+      board.size,
+      (_) => List.filled(board.size, CellMark.empty),
+    ),
+  );
 
   /// Creates a copy with updated fields.
   ///
@@ -84,19 +84,19 @@ class GamePlaying extends GameState {
     HintType? hintType,
     bool clearHint = false,
   }) => GamePlaying(
-      board: board,
-      solution: solution,
-      gridSize: gridSize,
-      marks: marks ?? this.marks,
-      violations: violations ?? this.violations,
-      version: version ?? this.version,
-      solved: solved ?? this.solved,
-      undoStack: undoStack ?? this.undoStack,
-      redoStack: redoStack ?? this.redoStack,
-      hintCell: clearHint ? null : (hintCell ?? this.hintCell),
-      hintReason: clearHint ? null : (hintReason ?? this.hintReason),
-      hintType: clearHint ? null : (hintType ?? this.hintType),
-    );
+    board: board,
+    solution: solution,
+    gridSize: gridSize,
+    marks: marks ?? this.marks,
+    violations: violations ?? this.violations,
+    version: version ?? this.version,
+    solved: solved ?? this.solved,
+    undoStack: undoStack ?? this.undoStack,
+    redoStack: redoStack ?? this.redoStack,
+    hintCell: clearHint ? null : (hintCell ?? this.hintCell),
+    hintReason: clearHint ? null : (hintReason ?? this.hintReason),
+    hintType: clearHint ? null : (hintType ?? this.hintType),
+  );
 
   bool get canUndo => undoStack.isNotEmpty;
   bool get canRedo => redoStack.isNotEmpty;

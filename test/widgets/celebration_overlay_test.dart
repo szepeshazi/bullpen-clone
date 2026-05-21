@@ -7,9 +7,7 @@ void main() {
     testWidgets('renders congratulations message', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CelebrationOverlay(onDismiss: () {}),
-          ),
+          home: Scaffold(body: CelebrationOverlay(onDismiss: () {})),
         ),
       );
       await tester.pump(const Duration(milliseconds: 100));

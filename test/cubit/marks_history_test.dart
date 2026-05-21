@@ -33,8 +33,11 @@ void main() {
       final copy = MarksHistory.clone(original);
 
       copy[0][0] = CellMark.bull;
-      expect(original[0][0], CellMark.empty,
-          reason: 'mutation of clone must not affect original');
+      expect(
+        original[0][0],
+        CellMark.empty,
+        reason: 'mutation of clone must not affect original',
+      );
     });
   });
 }

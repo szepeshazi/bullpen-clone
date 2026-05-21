@@ -77,8 +77,14 @@ class HintContext {
       penValidCols[pen.id] = cols;
     }
 
-    final activeRows = [for (int r = 0; r < size; r++) if (rowCounts[r] < 2) r];
-    final activeCols = [for (int c = 0; c < size; c++) if (colCounts[c] < 2) c];
+    final activeRows = [
+      for (int r = 0; r < size; r++)
+        if (rowCounts[r] < 2) r,
+    ];
+    final activeCols = [
+      for (int c = 0; c < size; c++)
+        if (colCounts[c] < 2) c,
+    ];
 
     final rowToPens = <int, Set<int>>{};
     for (final r in activeRows) {
@@ -143,8 +149,7 @@ class HintContext {
     final p1 = board.cellAt(r1, c1).penId;
     final p2 = board.cellAt(r2, c2).penId;
     if (p1 == p2 && (penCounts[p1] ?? 0) + 2 > 2) return false;
-    if (p1 != p2 &&
-        ((penCounts[p1] ?? 0) >= 2 || (penCounts[p2] ?? 0) >= 2)) {
+    if (p1 != p2 && ((penCounts[p1] ?? 0) >= 2 || (penCounts[p2] ?? 0) >= 2)) {
       return false;
     }
     return true;
@@ -196,8 +201,7 @@ class HintContext {
       for (final cell in pen.cells)
         if (valid[cell.row][cell.col]) (cell.row, cell.col),
     ];
-    final others =
-        all.where((e) => !(e.$1 == r && e.$2 == c)).toList();
+    final others = all.where((e) => !(e.$1 == r && e.$2 == c)).toList();
     return groupFeasible(all, needed) && !groupFeasible(others, needed);
   }
 }

@@ -21,10 +21,10 @@ class DepthTwoLookAheadRule extends HintRule {
   }
 
   List<(int, int)> _validCells(HintContext ctx) => [
-      for (int r = 0; r < ctx.size; r++)
-        for (int c = 0; c < ctx.size; c++)
-          if (ctx.valid[r][c]) (r, c),
-    ];
+    for (int r = 0; r < ctx.size; r++)
+      for (int c = 0; c < ctx.size; c++)
+        if (ctx.valid[r][c]) (r, c),
+  ];
 
   Hint? _trySimulate(HintContext ctx, int r, int c) {
     final simPenId = ctx.board.cellAt(r, c).penId;
@@ -114,21 +114,18 @@ class DepthTwoLookAheadRule extends HintRule {
         final (r2, c2) = candidates[j];
         if ((r1 - r2).abs() <= 1 && (c1 - c2).abs() <= 1) continue;
         if (r1 == r2 && ctx.rowCounts[r1] + 2 > 2) continue;
-        if (r1 != r2 &&
-            (ctx.rowCounts[r1] >= 2 || ctx.rowCounts[r2] >= 2)) {
+        if (r1 != r2 && (ctx.rowCounts[r1] >= 2 || ctx.rowCounts[r2] >= 2)) {
           continue;
         }
         if (c1 == c2 && ctx.colCounts[c1] + 2 > 2) continue;
-        if (c1 != c2 &&
-            (ctx.colCounts[c1] >= 2 || ctx.colCounts[c2] >= 2)) {
+        if (c1 != c2 && (ctx.colCounts[c1] >= 2 || ctx.colCounts[c2] >= 2)) {
           continue;
         }
         final p1 = ctx.board.cellAt(r1, c1).penId;
         final p2 = ctx.board.cellAt(r2, c2).penId;
         if (p1 == p2 && (ctx.penCounts[p1] ?? 0) + 2 > 2) continue;
         if (p1 != p2 &&
-            ((ctx.penCounts[p1] ?? 0) >= 2 ||
-                (ctx.penCounts[p2] ?? 0) >= 2)) {
+            ((ctx.penCounts[p1] ?? 0) >= 2 || (ctx.penCounts[p2] ?? 0) >= 2)) {
           continue;
         }
         return true;

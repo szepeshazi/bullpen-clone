@@ -13,7 +13,9 @@ class CelebrationOverlay extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(ObjectFlagProperty<VoidCallback>.has('onDismiss', onDismiss));
+    properties.add(
+      ObjectFlagProperty<VoidCallback>.has('onDismiss', onDismiss),
+    );
   }
 }
 
@@ -59,32 +61,32 @@ class _CelebrationOverlayState extends State<CelebrationOverlay>
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-      onTap: widget.onDismiss,
-      child: FadeTransition(
-        opacity: _fadeIn,
-        child: Stack(
-          children: [
-            Container(color: Colors.black.withValues(alpha: 0.5)),
-            AnimatedBuilder(
-              animation: _confettiController,
-              builder: (context, _) => CustomPaint(
-                painter: _ConfettiPainter(
-                  confetti: _confetti,
-                  progress: _confettiController.value,
-                ),
-                size: MediaQuery.of(context).size,
+    onTap: widget.onDismiss,
+    child: FadeTransition(
+      opacity: _fadeIn,
+      child: Stack(
+        children: [
+          Container(color: Colors.black.withValues(alpha: 0.5)),
+          AnimatedBuilder(
+            animation: _confettiController,
+            builder: (context, _) => CustomPaint(
+              painter: _ConfettiPainter(
+                confetti: _confetti,
+                progress: _confettiController.value,
               ),
+              size: MediaQuery.of(context).size,
             ),
-            Center(
-              child: ScaleTransition(
-                scale: _scaleIn,
-                child: const _CongratsCard(),
-              ),
+          ),
+          Center(
+            child: ScaleTransition(
+              scale: _scaleIn,
+              child: const _CongratsCard(),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
+    ),
+  );
 }
 
 class _CongratsCard extends StatelessWidget {
@@ -92,48 +94,48 @@ class _CongratsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 30,
-            spreadRadius: 5,
+    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(24),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.3),
+          blurRadius: 30,
+          spreadRadius: 5,
+        ),
+      ],
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Text('🎉', style: TextStyle(fontSize: 64)),
+        const SizedBox(height: 16),
+        const Text(
+          'Congratulations!',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: bullpenAccentColor,
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('🎉', style: TextStyle(fontSize: 64)),
-          const SizedBox(height: 16),
-          const Text(
-            'Congratulations!',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: bullpenAccentColor,
-            ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'All bulls are in their pens!',
+          style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          'Tap anywhere to continue',
+          style: TextStyle(
+            fontSize: 13,
+            color: Colors.grey.shade400,
+            fontStyle: FontStyle.italic,
           ),
-          const SizedBox(height: 8),
-          Text(
-            'All bulls are in their pens!',
-            style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Tap anywhere to continue',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade400,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-        ],
-      ),
-    );
+        ),
+      ],
+    ),
+  );
 }
 
 class _ConfettiPiece {
@@ -169,15 +171,15 @@ class _ConfettiPiece {
   ];
 
   factory _ConfettiPiece.random(Random rng) => _ConfettiPiece(
-      x: rng.nextDouble(),
-      startY: -rng.nextDouble() * 0.3,
-      speed: 0.3 + rng.nextDouble() * 0.7,
-      size: 4 + rng.nextDouble() * 8,
-      rotation: rng.nextDouble() * pi * 2,
-      wobbleSpeed: 1 + rng.nextDouble() * 3,
-      wobbleAmount: 0.02 + rng.nextDouble() * 0.04,
-      color: _colors[rng.nextInt(_colors.length)],
-    );
+    x: rng.nextDouble(),
+    startY: -rng.nextDouble() * 0.3,
+    speed: 0.3 + rng.nextDouble() * 0.7,
+    size: 4 + rng.nextDouble() * 8,
+    rotation: rng.nextDouble() * pi * 2,
+    wobbleSpeed: 1 + rng.nextDouble() * 3,
+    wobbleAmount: 0.02 + rng.nextDouble() * 0.04,
+    color: _colors[rng.nextInt(_colors.length)],
+  );
 }
 
 class _ConfettiPainter extends CustomPainter {

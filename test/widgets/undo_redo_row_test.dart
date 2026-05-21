@@ -12,10 +12,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: BlocProvider.value(
-            value: cubit,
-            child: const UndoRedoRow(),
-          ),
+          body: BlocProvider.value(value: cubit, child: const UndoRedoRow()),
         ),
       ),
     );

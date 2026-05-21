@@ -14,8 +14,9 @@ void main() {
       expect(find.text('8 × 8'), findsOneWidget);
     });
 
-    testWidgets('size label updates when carousel reports a new size',
-        (tester) async {
+    testWidgets('size label updates when carousel reports a new size', (
+      tester,
+    ) async {
       await tester.pumpWidget(const MaterialApp(home: MainPage()));
       await tester.pump(const Duration(milliseconds: 300));
 

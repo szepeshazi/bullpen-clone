@@ -10,11 +10,11 @@ class MainPage extends StatefulWidget {
 
   /// Route that re-enters the main page (used after game completion or back).
   static Route<void> route() => PageRouteBuilder(
-      pageBuilder: (_, _, _) => const MainPage(),
-      transitionsBuilder: (_, animation, _, child) =>
-          FadeTransition(opacity: animation, child: child),
-      transitionDuration: pageTransitionDuration,
-    );
+    pageBuilder: (_, _, _) => const MainPage(),
+    transitionsBuilder: (_, animation, _, child) =>
+        FadeTransition(opacity: animation, child: child),
+    transitionDuration: pageTransitionDuration,
+  );
 
   @override
   State<MainPage> createState() => _MainPageState();

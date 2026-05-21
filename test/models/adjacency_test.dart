@@ -39,10 +39,7 @@ void main() {
 
     test('handles corners correctly', () {
       // Nothing around (0,0) in a 1x1 grid.
-      expect(
-        hasAdjacentMatch(0, 0, 1, (nr, nc) => true),
-        isFalse,
-      );
+      expect(hasAdjacentMatch(0, 0, 1, (nr, nc) => true), isFalse);
     });
 
     test('does not match the cell itself', () {

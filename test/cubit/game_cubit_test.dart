@@ -77,10 +77,7 @@ void main() {
       final cubit = GameCubit(skipGenerate: true);
       await cubit.generate();
 
-      expect(
-        cubit.state,
-        anyOf(isA<GamePlaying>(), isA<GameError>()),
-      );
+      expect(cubit.state, anyOf(isA<GamePlaying>(), isA<GameError>()));
       cubit.close();
     });
   });

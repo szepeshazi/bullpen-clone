@@ -6,14 +6,22 @@ import '../helpers/test_board.dart';
 
 // Known-valid 8×8 solution (verified in game_grid_test.dart).
 const _solved = [
-  (0, 1), (0, 3),
-  (1, 5), (1, 7),
-  (2, 1), (2, 3),
-  (3, 5), (3, 7),
-  (4, 0), (4, 2),
-  (5, 4), (5, 6),
-  (6, 0), (6, 2),
-  (7, 4), (7, 6),
+  (0, 1),
+  (0, 3),
+  (1, 5),
+  (1, 7),
+  (2, 1),
+  (2, 3),
+  (3, 5),
+  (3, 7),
+  (4, 0),
+  (4, 2),
+  (5, 4),
+  (5, 6),
+  (6, 0),
+  (6, 2),
+  (7, 4),
+  (7, 6),
 ];
 
 List<List<CellMark>> _marksFrom(List<(int, int)> placements, {int size = 8}) {

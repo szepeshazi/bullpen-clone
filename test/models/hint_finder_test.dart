@@ -680,10 +680,16 @@ void main() {
         iterations++;
       }
 
-      expect(excludedCells.contains((0, 0)), isFalse,
-          reason: '(0,0) is essential for row 0 and should not be excluded');
-      expect(excludedCells.contains((0, 4)), isFalse,
-          reason: '(0,4) is essential for row 0 and should not be excluded');
+      expect(
+        excludedCells.contains((0, 0)),
+        isFalse,
+        reason: '(0,0) is essential for row 0 and should not be excluded',
+      );
+      expect(
+        excludedCells.contains((0, 4)),
+        isFalse,
+        reason: '(0,4) is essential for row 0 and should not be excluded',
+      );
     });
 
     test('non-essential cell in broken group is not protected', () {
@@ -772,7 +778,8 @@ void main() {
         final hint = findHint(board, marks);
         if (hint == null || hint.type == HintType.mustPlace) break;
         if (hint.reason.contains('impossible') &&
-            hint.row == 3 && hint.col == 1) {
+            hint.row == 3 &&
+            hint.col == 1) {
           depthHint = hint;
           break;
         }
@@ -794,8 +801,7 @@ void main() {
 
     test('returns null when all cells are dotted', () {
       final board = _rowPenBoard();
-      final marks = List.generate(
-          8, (_) => List.filled(8, CellMark.dot));
+      final marks = List.generate(8, (_) => List.filled(8, CellMark.dot));
       expect(findHint(board, marks), isNull);
     });
   });
@@ -839,9 +845,7 @@ PuzzleBoard _intersectionTestBoard() {
   final cells = <int, List<Cell>>{};
 
   // Pen 0: row 0 cols 0-3 (4 cells, fully in row 0)
-  cells[0] = [
-    for (int c = 0; c < 4; c++) Cell(row: 0, col: c, penId: 0),
-  ];
+  cells[0] = [for (int c = 0; c < 4; c++) Cell(row: 0, col: c, penId: 0)];
   // Pen 1: row 0 cols 4-7 + row 1 cols 0-3 (spans rows 0-1)
   cells[1] = [
     for (int c = 4; c < 8; c++) Cell(row: 0, col: c, penId: 1),
@@ -878,9 +882,7 @@ PuzzleBoard _intersectionTestBoard() {
     for (int c = 0; c < 8; c++) Cell(row: 7, col: c, penId: 7),
   ];
 
-  final pens = [
-    for (final e in cells.entries) Pen(id: e.key, cells: e.value),
-  ];
+  final pens = [for (final e in cells.entries) Pen(id: e.key, cells: e.value)];
   return PuzzleBoard(size: size, pens: pens);
 }
 
@@ -912,14 +914,10 @@ PuzzleBoard _nakedSetTestBoard() {
   ];
   // Pens 3-7: one row each for rows 3-7
   for (var p = 3; p <= 7; p++) {
-    cells[p] = [
-      for (int c = 0; c < 8; c++) Cell(row: p, col: c, penId: p),
-    ];
+    cells[p] = [for (int c = 0; c < 8; c++) Cell(row: p, col: c, penId: p)];
   }
 
-  final pens = [
-    for (final e in cells.entries) Pen(id: e.key, cells: e.value),
-  ];
+  final pens = [for (final e in cells.entries) Pen(id: e.key, cells: e.value)];
   return PuzzleBoard(size: size, pens: pens);
 }
 
@@ -952,9 +950,7 @@ PuzzleBoard _hiddenSetTestBoard() {
   // Diagonal-shifted pattern so each pen touches all 6 rows.
   // Row 2: cols 1-6 → 6 cells, one per pen
   // Rows 3-7: cols 0-7 → 8 cells each, distributed among 6 pens
-  final penCells = <int, List<(int, int)>>{
-    for (int p = 2; p <= 7; p++) p: [],
-  };
+  final penCells = <int, List<(int, int)>>{for (int p = 2; p <= 7; p++) p: []};
 
   // Row 2: pen (col-1)+2 for cols 1-6
   for (var c = 1; c <= 6; c++) {
@@ -986,9 +982,7 @@ PuzzleBoard _hiddenSetTestBoard() {
     }
   }
 
-  final pens = [
-    for (final e in cells.entries) Pen(id: e.key, cells: e.value),
-  ];
+  final pens = [for (final e in cells.entries) Pen(id: e.key, cells: e.value)];
   return PuzzleBoard(size: size, pens: pens);
 }
 

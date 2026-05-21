@@ -38,12 +38,16 @@ class _ShakingBullState extends State<ShakingBull>
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    _shakeX = _randomShake(_rng, 18, 16).animate(
-      CurvedAnimation(parent: _shakeController, curve: Curves.easeOut),
-    );
-    _shakeY = _randomShake(_rng, 18, 8).animate(
-      CurvedAnimation(parent: _shakeController, curve: Curves.easeOut),
-    );
+    _shakeX = _randomShake(
+      _rng,
+      18,
+      16,
+    ).animate(CurvedAnimation(parent: _shakeController, curve: Curves.easeOut));
+    _shakeY = _randomShake(
+      _rng,
+      18,
+      8,
+    ).animate(CurvedAnimation(parent: _shakeController, curve: Curves.easeOut));
 
     _redAnimation = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 0, end: 0.75), weight: 1),
@@ -86,23 +90,23 @@ class _ShakingBullState extends State<ShakingBull>
     return AnimatedBuilder(
       animation: Listenable.merge([_shakeX, _shakeY, _smokeAnimation]),
       builder: (context, child) => SizedBox(
-          width: size,
-          height: size,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              ..._SmokePuffs.build(size, _smokeAnimation.value),
-              Transform.translate(
-                offset: Offset(_shakeX.value, _shakeY.value),
-                child: _RedTintedBull(
-                  cellSize: size,
-                  redAmount: _redAnimation.value,
-                  child: child!,
-                ),
+        width: size,
+        height: size,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            ..._SmokePuffs.build(size, _smokeAnimation.value),
+            Transform.translate(
+              offset: Offset(_shakeX.value, _shakeY.value),
+              child: _RedTintedBull(
+                cellSize: size,
+                redAmount: _redAnimation.value,
+                child: child!,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
       child: SvgPicture.asset(bullSvgAsset),
     );
   }
@@ -118,10 +122,12 @@ TweenSequence<double> _randomShake(Random rng, int numSteps, double maxAmp) {
     final amp = maxAmp * decay;
     final sign = (i.isEven ? 1.0 : -1.0) * (0.5 + rng.nextDouble() * 0.5);
     final target = sign * amp * (0.4 + rng.nextDouble() * 0.6);
-    items.add(TweenSequenceItem(
-      tween: Tween(begin: prev, end: target),
-      weight: 1.0 + rng.nextDouble(),
-    ));
+    items.add(
+      TweenSequenceItem(
+        tween: Tween(begin: prev, end: target),
+        weight: 1.0 + rng.nextDouble(),
+      ),
+    );
     prev = target;
   }
   items.add(TweenSequenceItem(tween: Tween(begin: prev, end: 0), weight: 1));
@@ -141,27 +147,27 @@ class _RedTintedBull extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-      padding: EdgeInsets.all(cellSize * bullPaddingFraction),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.red.withValues(alpha: redAmount * 0.8),
-              blurRadius: cellSize * 0.3,
-              spreadRadius: cellSize * 0.05,
-            ),
-          ],
-        ),
-        child: ColorFiltered(
-          colorFilter: ColorFilter.mode(
-            Colors.red.withValues(alpha: redAmount),
-            BlendMode.srcATop,
+    padding: EdgeInsets.all(cellSize * bullPaddingFraction),
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.red.withValues(alpha: redAmount * 0.8),
+            blurRadius: cellSize * 0.3,
+            spreadRadius: cellSize * 0.05,
           ),
-          child: child,
-        ),
+        ],
       ),
-    );
+      child: ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          Colors.red.withValues(alpha: redAmount),
+          BlendMode.srcATop,
+        ),
+        child: child,
+      ),
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -199,8 +205,12 @@ class _SmokePuffs {
 
       for (final (dx, dy, tf, of_, sf) in _puffParams) {
         final scaledSf = sf * burstScale;
-        widgets.add(_puff(cellSize, -dx, dy, eased * tf, opacity * of_, scaledSf));
-        widgets.add(_puff(cellSize, dx, dy, eased * tf, opacity * of_, scaledSf));
+        widgets.add(
+          _puff(cellSize, -dx, dy, eased * tf, opacity * of_, scaledSf),
+        );
+        widgets.add(
+          _puff(cellSize, dx, dy, eased * tf, opacity * of_, scaledSf),
+        );
       }
     }
     return widgets;

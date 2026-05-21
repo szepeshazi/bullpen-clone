@@ -10,17 +10,19 @@ class NakedSetRule extends HintRule {
   const NakedSetRule();
 
   @override
-  Hint? evaluate(HintContext ctx) => _scan(ctx, axis: _Axis.row) ?? _scan(ctx, axis: _Axis.col);
+  Hint? evaluate(HintContext ctx) =>
+      _scan(ctx, axis: _Axis.row) ?? _scan(ctx, axis: _Axis.col);
 
   Hint? _scan(HintContext ctx, {required _Axis axis}) {
     final active = axis == _Axis.row ? ctx.activeRows : ctx.activeCols;
     final counts = axis == _Axis.row ? ctx.rowCounts : ctx.colCounts;
-    final penValid =
-        axis == _Axis.row ? ctx.penValidRows : ctx.penValidCols;
+    final penValid = axis == _Axis.row ? ctx.penValidRows : ctx.penValidCols;
 
-    for (var subsetSize = 1;
-        subsetSize <= active.length && subsetSize <= (ctx.size ~/ 2);
-        subsetSize++) {
+    for (
+      var subsetSize = 1;
+      subsetSize <= active.length && subsetSize <= (ctx.size ~/ 2);
+      subsetSize++
+    ) {
       for (final subset in combinations(active, subsetSize)) {
         final hint = _checkSubset(ctx, axis, subset, counts, penValid);
         if (hint != null) return hint;
@@ -37,8 +39,10 @@ class NakedSetRule extends HintRule {
     Map<int, Set<int>> penValid,
   ) {
     final subsetSet = subset.toSet();
-    final remainingCapacity =
-        subset.fold<int>(0, (sum, i) => sum + 2 - counts[i]);
+    final remainingCapacity = subset.fold<int>(
+      0,
+      (sum, i) => sum + 2 - counts[i],
+    );
 
     final containedPenIds = <int>{};
     var remainingNeed = 0;
@@ -69,7 +73,11 @@ class NakedSetRule extends HintRule {
         if (ctx.marks[r][c] != CellMark.empty) continue;
         if (containedPenIds.contains(ctx.board.cellAt(r, c).penId)) continue;
         if (ctx.essential.contains((r, c))) continue;
-        return Hint(row: r, col: c, reason: _reason(axis, subset, containedPenIds));
+        return Hint(
+          row: r,
+          col: c,
+          reason: _reason(axis, subset, containedPenIds),
+        );
       }
     }
     return null;

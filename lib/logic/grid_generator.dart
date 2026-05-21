@@ -29,10 +29,7 @@ class GridGenerator {
     final targetSizes = _assignTargetSizes(numPens, totalCells, rng);
 
     // penAssignment[row][col] = penId or -1 if unassigned.
-    final penAssignment = List.generate(
-      size,
-      (_) => List.filled(size, -1),
-    );
+    final penAssignment = List.generate(size, (_) => List.filled(size, -1));
 
     // Place seeds: spread them as evenly as possible across the grid.
     final seeds = _placeSeedsRandomly(size, numPens, rng);
@@ -42,9 +39,11 @@ class GridGenerator {
     for (var penId = 0; penId < numPens; penId++) {
       final (r, c) = seeds[penId];
       penAssignment[r][c] = penId;
-      frontiers[penId] = _neighbors(r, c, size)
-          .where((n) => penAssignment[n.$1][n.$2] == -1)
-          .toList();
+      frontiers[penId] = _neighbors(
+        r,
+        c,
+        size,
+      ).where((n) => penAssignment[n.$1][n.$2] == -1).toList();
     }
 
     // Phase 1: grow pens respecting target sizes.
@@ -211,11 +210,7 @@ class GridGenerator {
 
   /// Places [count] seed positions spread across the grid with some
   /// randomness so pens don't look too uniform.
-  static List<(int, int)> _placeSeedsRandomly(
-    int size,
-    int count,
-    Random rng,
-  ) {
+  static List<(int, int)> _placeSeedsRandomly(int size, int count, Random rng) {
     final seeds = <(int, int)>{};
 
     // Use a grid-based approach: divide into roughly sqrt(count) × sqrt(count)
@@ -248,9 +243,9 @@ class GridGenerator {
 
   /// Returns orthogonal (4-connected) neighbors of (r, c) within the grid.
   static List<(int, int)> _neighbors(int r, int c, int size) => [
-      if (r > 0) (r - 1, c),
-      if (r < size - 1) (r + 1, c),
-      if (c > 0) (r, c - 1),
-      if (c < size - 1) (r, c + 1),
-    ];
+    if (r > 0) (r - 1, c),
+    if (r < size - 1) (r + 1, c),
+    if (c > 0) (r, c - 1),
+    if (c < size - 1) (r, c + 1),
+  ];
 }

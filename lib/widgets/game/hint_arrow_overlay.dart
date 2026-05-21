@@ -15,7 +15,12 @@ class HintArrowOverlay extends StatefulWidget {
   final double areaHeight;
 
   const HintArrowOverlay({
-    required this.hintCell, required this.hintType, required this.boardSize, required this.areaWidth, required this.areaHeight, super.key,
+    required this.hintCell,
+    required this.hintType,
+    required this.boardSize,
+    required this.areaWidth,
+    required this.areaHeight,
+    super.key,
   });
 
   @override
@@ -158,7 +163,12 @@ class _DiagonalArrowPainter extends CustomPainter {
       ..lineTo(s * 0.58, 0)
       ..close();
 
-    canvas.drawPath(path, Paint()..color = color..style = PaintingStyle.fill);
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.fill,
+    );
     canvas.drawPath(
       path,
       Paint()

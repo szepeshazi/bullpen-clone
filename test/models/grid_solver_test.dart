@@ -50,8 +50,11 @@ void main() {
       final board = _makeRowBasedBoard();
       final state = GridSolver.solve(board, random: Random(42))!;
       for (final pen in board.pens) {
-        expect(state.bullsInPen(pen.id), 2,
-            reason: 'Pen ${pen.id} should have 2 bulls');
+        expect(
+          state.bullsInPen(pen.id),
+          2,
+          reason: 'Pen ${pen.id} should have 2 bulls',
+        );
       }
     });
 
@@ -66,10 +69,13 @@ void main() {
             final nr = bull.row + dr;
             final nc = bull.col + dc;
             if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
-              expect(state.hasBullAt(nr, nc), isFalse,
-                  reason:
-                      'Bull at (${bull.row},${bull.col}) is adjacent to '
-                      'bull at ($nr,$nc)');
+              expect(
+                state.hasBullAt(nr, nc),
+                isFalse,
+                reason:
+                    'Bull at (${bull.row},${bull.col}) is adjacent to '
+                    'bull at ($nr,$nc)',
+              );
             }
           }
         }
@@ -88,7 +94,11 @@ void main() {
         final state = GridSolver.solve(board, random: Random(attempt));
         if (state != null && state.isSolved) solved = true;
       }
-      expect(solved, isTrue, reason: 'Should solve at least one 8×8 board in 500 attempts');
+      expect(
+        solved,
+        isTrue,
+        reason: 'Should solve at least one 8×8 board in 500 attempts',
+      );
     });
 
     test('solves randomly generated 10×10 boards with retry', () {
@@ -98,7 +108,11 @@ void main() {
         final state = GridSolver.solve(board, random: Random(attempt));
         if (state != null && state.isSolved) solved = true;
       }
-      expect(solved, isTrue, reason: 'Should solve at least one 10×10 board in 500 attempts');
+      expect(
+        solved,
+        isTrue,
+        reason: 'Should solve at least one 10×10 board in 500 attempts',
+      );
     });
 
     test('returns null for unsolvable board within node budget', () {
@@ -148,8 +162,11 @@ void main() {
       final pos1 = state1!.bulls.map((b) => (b.row, b.col)).toSet();
       final pos2 = state2!.bulls.map((b) => (b.row, b.col)).toSet();
       // At least one position should differ.
-      expect(pos1 == pos2, isFalse,
-          reason: 'Different seeds should usually produce different solutions');
+      expect(
+        pos1 == pos2,
+        isFalse,
+        reason: 'Different seeds should usually produce different solutions',
+      );
     });
   });
 }

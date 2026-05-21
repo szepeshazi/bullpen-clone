@@ -20,10 +20,7 @@ class PuzzleBoard {
   /// Map from penId → Pen for O(1) lookup.
   late final Map<int, Pen> _penMap;
 
-  PuzzleBoard({
-    required this.size,
-    required this.pens,
-  }) {
+  PuzzleBoard({required this.size, required this.pens}) {
     if (size < 8 || size > 16) {
       throw ArgumentError('Grid size must be between 8 and 16, got $size');
     }

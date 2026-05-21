@@ -13,11 +13,7 @@ class RowFullRule extends HintRule {
       if (ctx.rowCounts[r] < 2) continue;
       for (var c = 0; c < ctx.size; c++) {
         if (ctx.marks[r][c] == CellMark.empty) {
-          return Hint(
-            row: r,
-            col: c,
-            reason: 'This row already has 2 bulls',
-          );
+          return Hint(row: r, col: c, reason: 'This row already has 2 bulls');
         }
       }
     }

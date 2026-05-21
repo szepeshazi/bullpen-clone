@@ -11,15 +11,15 @@ class MiniGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-      width: _gridVisualSize,
-      height: _gridVisualSize,
-      child: CustomPaint(
-        painter: _MiniGridPainter(
-          gridSize: size,
-          cellSize: _gridVisualSize / size,
-        ),
+    width: _gridVisualSize,
+    height: _gridVisualSize,
+    child: CustomPaint(
+      painter: _MiniGridPainter(
+        gridSize: size,
+        cellSize: _gridVisualSize / size,
       ),
-    );
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

@@ -12,7 +12,9 @@ class StartButton extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
+    properties.add(
+      ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed),
+    );
   }
 }
 
@@ -41,29 +43,30 @@ class _StartButtonState extends State<StartButton>
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-      animation: _pulseAnimation,
-      builder: (context, child) => Transform.scale(scale: _pulseAnimation.value, child: child),
-      child: SizedBox(
-        width: 220,
-        height: 56,
-        child: ElevatedButton(
-          onPressed: widget.onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: bullpenAccentColor,
-            foregroundColor: Colors.white,
-            elevation: 6,
-            shadowColor: bullpenAccentColor.withValues(alpha: 0.4),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
-            ),
-            textStyle: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 2,
-            ),
+    animation: _pulseAnimation,
+    builder: (context, child) =>
+        Transform.scale(scale: _pulseAnimation.value, child: child),
+    child: SizedBox(
+      width: 220,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: widget.onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: bullpenAccentColor,
+          foregroundColor: Colors.white,
+          elevation: 6,
+          shadowColor: bullpenAccentColor.withValues(alpha: 0.4),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
           ),
-          child: const Text('START'),
+          textStyle: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 2,
+          ),
         ),
+        child: const Text('START'),
       ),
-    );
+    ),
+  );
 }

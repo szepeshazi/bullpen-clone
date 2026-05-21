@@ -15,20 +15,20 @@ class GridArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocConsumer<GameCubit, GameState>(
-      listenWhen: (prev, curr) => curr is GameError,
-      listener: _onError,
-      builder: (context, state) {
-        if (state is GameGenerating) {
-          return const Center(
-            child: CircularProgressIndicator(color: bullpenAccentColor),
-          );
-        }
-        if (state is GamePlaying) {
-          return _PlayingArea(state: state);
-        }
-        return const SizedBox.shrink();
-      },
-    );
+    listenWhen: (prev, curr) => curr is GameError,
+    listener: _onError,
+    builder: (context, state) {
+      if (state is GameGenerating) {
+        return const Center(
+          child: CircularProgressIndicator(color: bullpenAccentColor),
+        );
+      }
+      if (state is GamePlaying) {
+        return _PlayingArea(state: state);
+      }
+      return const SizedBox.shrink();
+    },
+  );
 
   void _onError(BuildContext context, GameState state) {
     if (state is! GameError) return;
@@ -47,37 +47,37 @@ class _PlayingArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
-      builder: (context, constraints) => Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: BullpenGrid(gameState: state),
-            ),
-            if (state.hasHint)
-              HintArrowOverlay(
-                hintCell: state.hintCell!,
-                hintType: state.hintType ?? HintType.exclude,
-                boardSize: state.board.size,
-                areaWidth: constraints.maxWidth,
-                areaHeight: constraints.maxHeight,
-              ),
-            const Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: HintReasonBanner(),
-            ),
-            if (state.solved)
-              Positioned.fill(
-                child: CelebrationOverlay(
-                  onDismiss: () => Navigator.of(context)
-                      .pushReplacement(MainPage.route()),
-                ),
-              ),
-          ],
+    builder: (context, constraints) => Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: BullpenGrid(gameState: state),
         ),
-    );
+        if (state.hasHint)
+          HintArrowOverlay(
+            hintCell: state.hintCell!,
+            hintType: state.hintType ?? HintType.exclude,
+            boardSize: state.board.size,
+            areaWidth: constraints.maxWidth,
+            areaHeight: constraints.maxHeight,
+          ),
+        const Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: HintReasonBanner(),
+        ),
+        if (state.solved)
+          Positioned.fill(
+            child: CelebrationOverlay(
+              onDismiss: () =>
+                  Navigator.of(context).pushReplacement(MainPage.route()),
+            ),
+          ),
+      ],
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

@@ -10,30 +10,28 @@ class GridCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    decoration: BoxDecoration(
+      color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.6),
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(
         color: isSelected
-            ? Colors.white
-            : Colors.white.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isSelected
-              ? bullpenAccentColor
-              : bullpenAccentColor.withValues(alpha: 0.2),
-          width: isSelected ? 2.5 : 1.5,
-        ),
-        boxShadow: isSelected
-            ? [
-                BoxShadow(
-                  color: bullpenAccentColor.withValues(alpha: 0.2),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : [],
+            ? bullpenAccentColor
+            : bullpenAccentColor.withValues(alpha: 0.2),
+        width: isSelected ? 2.5 : 1.5,
       ),
-      child: Center(child: MiniGrid(size: size)),
-    );
+      boxShadow: isSelected
+          ? [
+              BoxShadow(
+                color: bullpenAccentColor.withValues(alpha: 0.2),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ]
+          : [],
+    ),
+    child: Center(child: MiniGrid(size: size)),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

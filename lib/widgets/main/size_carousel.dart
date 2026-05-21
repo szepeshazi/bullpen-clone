@@ -7,7 +7,9 @@ class SizeCarousel extends StatefulWidget {
   final ValueChanged<int> onSizeChanged;
 
   const SizeCarousel({
-    required this.selectedSize, required this.onSizeChanged, super.key,
+    required this.selectedSize,
+    required this.onSizeChanged,
+    super.key,
   });
 
   @override
@@ -17,7 +19,9 @@ class SizeCarousel extends StatefulWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(IntProperty('selectedSize', selectedSize));
-    properties.add(ObjectFlagProperty<ValueChanged<int>>.has('onSizeChanged', onSizeChanged));
+    properties.add(
+      ObjectFlagProperty<ValueChanged<int>>.has('onSizeChanged', onSizeChanged),
+    );
   }
 }
 
@@ -42,21 +46,20 @@ class _SizeCarouselState extends State<SizeCarousel> {
 
   @override
   Widget build(BuildContext context) => PageView.builder(
-      controller: _controller,
-      itemCount: puzzleSupportedSizes.length,
-      onPageChanged: (index) =>
-          widget.onSizeChanged(puzzleSupportedSizes[index]),
-      physics: const BouncingScrollPhysics(),
-      itemBuilder: (context, index) {
-        final size = puzzleSupportedSizes[index];
-        final isSelected = size == widget.selectedSize;
-        return _CarouselItem(
-          size: size,
-          isSelected: isSelected,
-          onTap: () => _animateToSize(size),
-        );
-      },
-    );
+    controller: _controller,
+    itemCount: puzzleSupportedSizes.length,
+    onPageChanged: (index) => widget.onSizeChanged(puzzleSupportedSizes[index]),
+    physics: const BouncingScrollPhysics(),
+    itemBuilder: (context, index) {
+      final size = puzzleSupportedSizes[index];
+      final isSelected = size == widget.selectedSize;
+      return _CarouselItem(
+        size: size,
+        isSelected: isSelected,
+        onTap: () => _animateToSize(size),
+      );
+    },
+  );
 
   void _animateToSize(int size) {
     _controller.animateToPage(
@@ -80,18 +83,18 @@ class _CarouselItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AnimatedScale(
-      scale: isSelected ? 1.0 : 0.78,
+    scale: isSelected ? 1.0 : 0.78,
+    duration: const Duration(milliseconds: 250),
+    curve: Curves.easeOut,
+    child: AnimatedOpacity(
+      opacity: isSelected ? 1.0 : 0.45,
       duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-      child: AnimatedOpacity(
-        opacity: isSelected ? 1.0 : 0.45,
-        duration: const Duration(milliseconds: 250),
-        child: GestureDetector(
-          onTap: onTap,
-          child: GridCard(size: size, isSelected: isSelected),
-        ),
+      child: GestureDetector(
+        onTap: onTap,
+        child: GridCard(size: size, isSelected: isSelected),
       ),
-    );
+    ),
+  );
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

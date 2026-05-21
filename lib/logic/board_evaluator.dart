@@ -20,10 +20,7 @@ class BullCounts {
 class BoardEvaluator {
   BoardEvaluator._();
 
-  static BullCounts countBulls(
-    PuzzleBoard board,
-    List<List<CellMark>> marks,
-  ) {
+  static BullCounts countBulls(PuzzleBoard board, List<List<CellMark>> marks) {
     final size = board.size;
     final bulls = <(int, int)>[];
     final rowCounts = List.filled(size, 0);

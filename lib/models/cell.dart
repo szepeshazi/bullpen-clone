@@ -8,18 +8,11 @@ class Cell {
   final int col;
   final int penId;
 
-  const Cell({
-    required this.row,
-    required this.col,
-    required this.penId,
-  });
+  const Cell({required this.row, required this.col, required this.penId});
 
   /// Creates a copy of this cell with a different penId.
-  Cell copyWith({int? penId}) => Cell(
-      row: row,
-      col: col,
-      penId: penId ?? this.penId,
-    );
+  Cell copyWith({int? penId}) =>
+      Cell(row: row, col: col, penId: penId ?? this.penId);
 
   @override
   bool operator ==(Object other) =>
